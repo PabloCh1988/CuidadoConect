@@ -62,11 +62,14 @@
                <h4>General</h4>
                <ul class="list-unstyled components">
                   <li class="active">
+                     <a href="#home"><i class="fa fa-desktop blue1_color"></i> <span>Escritorio</span></a>
+                  </li>
+                  <li>
                      <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
                            class="fa fa-users yellow_color"></i> <span>Administración General</span></a>
                      <ul class="collapse list-unstyled" id="dashboard">
                         <li>
-                           <a href="dashboard.html">> <span>Registro de Personas</span></a>
+                           <a href="#personas">> <span>Registro de Personas</span></a>
                         </li>
                         <li>
                            <a href="dashboard_2.html">> <span>Acceso a Familiar</span></a>
@@ -97,8 +100,8 @@
                         <li><a href="media_gallery.html">> <span>Citas Médicas</span></a></li>
                      </ul>
                   </li>
-                  <li><a href="tables.html"><i class="fa fa-table purple_color2"></i> <span>Tables</span></a></li>
-                  <li>
+                  
+                  <!-- <li>
                      <a href="#apps" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
                            class="fa fa-object-group blue2_color"></i> <span>Apps</span></a>
                      <ul class="collapse list-unstyled" id="apps">
@@ -133,7 +136,7 @@
                   </li>
                   <li><a href="map.html"><i class="fa fa-map purple_color2"></i> <span>Map</span></a></li>
                   <li><a href="charts.html"><i class="fa fa-bar-chart-o green_color"></i> <span>Charts</span></a></li>
-                  <li><a href="settings.html"><i class="fa fa-cog yellow_color"></i> <span>Settings</span></a></li>
+                  <li><a href="settings.html"><i class="fa fa-cog yellow_color"></i> <span>Settings</span></a></li> -->
                </ul>
             </div>
          </nav>
@@ -178,282 +181,11 @@
             </div>
             <!-- end topbar -->
 
-            <!-- dashboard inner  Contenido Principal-->
+            <!-- dashboard inner  Contenido Principal que se carga por el hash-->
             <div class="midde_cont">
-               <div class="container-fluid">
-                  <div class="row column_title">
-                     <div class="col-md-12">
-                        <div class="MarcodeInicio"></div>
-                        <button type="button" class="model_bt btn" data-toggle="modal" data-target="#ModalCrearPersonas"
-                           aria-hidden="true">Agregar
-                           Persona</button>
-                     </div>
-                     <!-- table section Personas -->
-                     <div class="col-md-12 margin_top_30">
-                        <div class="white_shd full margin_bottom_30">
-                           <div class="full dash_head">
-                              <div class="heading1 margin_0">
-                                 <h3>Personas</h3>
-                              </div>
-                           </div>
-                           <div class="table_section padding_infor_info">
-                              <div class="table-responsive-sm">
-                                 <table id="Personas" class="table table-hover">
-                                    <thead>
-                                       <tr class="table-primary">
-                                          <th>Id</th>
-                                          <th>Nombre y Apellido</th>
-                                          <th>Fecha de Nacimiento</th>
-                                          <th>Sexo</th>
-                                          <th>DNI</th>
-                                          <th>Telefono</th>
-                                          <th></th>
+               <div id="app" class="container-fluid">
+                  
 
-                                       </tr>
-                                    </thead>
-                                    <tbody id="todasLasPersonas"></tbody>
-                                 </table>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- The Modal -->
-                  <div id="ModalCrearPersonas" class="modal fade" tabindex="-1" data-backdrop="static"
-                     data-keyboard="false">
-                     <div class="modal-dialog">
-                        <div class="modal-content">
-                           <!-- Modal Header -->
-                           <div class="modal-header dash_head">
-                              <h4 class="modal-title">Agregar Persona</h4>
-                           </div>
-                           <!-- Modal body -->
-                           <div class="modal-body">
-                              <div>
-
-                                 <input type="hidden" id="PersonaId">
-
-                                 <label for="Nombre" class="form-label">Nombre y Apellido</label>
-                                 <input type="text" class="form-control" id="Nombre" placeholder="Nombre">
-
-                                 <label for="Fecha" class="form-label">Fecha</label>
-                                 <input type="date" class="form-control" id="Fecha" placeholder="Fecha de Nacimiento">
-
-                                 <label for="Sexo" class="form-label">Sexo</label>
-                                 <select name="" id="Sexo" class="form-control">
-                                    <option value="" selected disabled>Seleccione una Opción</option>
-                                    <option value="Masculino">Masculino</option>
-                                    <option value="Femenino">Femenino</option>
-                                 </select>
-
-                                 <label for="DNI" class="form-label">DNI</label>
-                                 <input type="number" class="form-control" id="DNI" placeholder="Numero de Documento">
-
-                                 <label for="Telefono" class="form-label">Telefono</label>
-                                 <input type="tel" class="form-control" id="Telefono" placeholder="Numero de Telefono">
-
-                                 <span id="errorCrear" class="text-danger"></span>
-
-                              </div>
-                           </div>
-                           <div class="modal-footer">
-                              <button type="button" class="btn btn-primary" onclick="guardarPersona()">Guardar</button>
-                              <button type="button" class="btn btn-danger" data-dismiss="modal"
-                                 onclick="VaciarModal()">Close</button>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-
-                  <!-- Tabla Empleados -->
-                  <div class="row column1">
-                     <div class="col-md-12 margin_top_30">
-                        <button type="button" class="model_bt btn" data-toggle="modal"
-                           data-target="#ModalCrearEmpleados" aria-hidden="true"
-                           onclick="cargarPersonasEnSelect();">Agregar Empleado</button>
-                     </div>
-
-                     <div class="col-md-12 margin_top_30">
-                        <div class="white_shd full margin_bottom_30">
-                           <div class="full dash_head">
-                              <div class="heading1 margin_0">
-                                 <h3>Empleados</h3>
-                              </div>
-                           </div>
-                           <div class="table_section padding_infor_info">
-                              <div class="table-responsive-sm">
-                                 <table id="Empleados" class="table table-hover">
-                                    <thead>
-                                       <tr class="table-primary">
-                                          <th>Id</th>
-                                          <th>Nombre y Apellido</th>
-                                          <th>Turno</th>
-                                          <th>Tareas Asignadas</th>
-                                          <th></th>
-                                          <th></th>
-                                       </tr>
-                                    </thead>
-                                    <tbody id="todosLosEmpleados"></tbody>
-                                 </table>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- The Modal EMPLEADOS -->
-                  <div id="ModalCrearEmpleados" class="modal fade" tabindex="-1" data-backdrop="static"
-                     data-keyboard="false">
-                     <div class="modal-dialog">
-                        <div class="modal-content">
-                           <!-- Modal Header -->
-                           <div class="modal-header dash_head">
-                              <h4 class="modal-title">Agregar Empleado</h4>
-                           </div>
-                           <!-- Modal body -->
-                           <div class="modal-body">
-                              <div>
-
-                                 <input type="hidden" id="EmpleadoId">
-
-                                 <label for="PersonaIdEmpleado" class="form-label">Persona</label>
-                                 <select id="PersonaIdEmpleado" class="form-control">
-                                    <option value="" selected disabled>Seleccione una persona</option>
-                                 </select>
-
-
-
-                                 <span id="errorCrear" class="text-danger"></span>
-
-                              </div>
-                           </div>
-                           <div class="modal-footer">
-                              <button type="button" class="btn btn-primary" onclick="guardarPersona()">Guardar</button>
-                              <button type="button" class="btn btn-danger" data-dismiss="modal"
-                                 onclick="VaciarModal()">Close</button>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- row -->
-                  <div class="row column1">
-                     <div class="col-md-12 margin_top_30">
-                        <div class="white_shd full margin_bottom_30">
-                           <!-- dash_head es el color del encabezado -->
-                           <div class="full dash_head">
-
-                              <div class="heading1 margin_0">
-                                 <h3>Residentes</h3>
-                              </div>
-                           </div>
-                           <div class="full price_table padding_infor_info">
-                              <div class="row">
-                                 <!-- column contact -->
-                                 <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 profile_details margin_bottom_30">
-                                    <div class="contact_blog">
-                                       <div class="contact_inner">
-                                          <div class="left">
-                                             <h3>Lidia Perez</h3>
-                                             <p><strong>Edad: </strong>70 Años</p>
-                                             <p><strong>Fecha de Ingreso: </strong>30/05/2025</p>
-                                             <ul class="list-unstyled">
-                                                <li><i class="fa fa-envelope-o"></i> : test@gmail.com</li>
-                                                <li><i class="fa fa-phone"></i> : 3562-505258</li>
-                                             </ul>
-                                          </div>
-                                          <div class="right">
-                                             <div class="profile_contacts">
-                                                <img class="img-responsive" src="images/layout_img/msg1.png" alt="#" />
-                                             </div>
-                                          </div>
-                                          <div class="bottom_list">
-                                             <div class="right_button">
-                                                <button type="button" class="btn btn-success btn-xs"> <i
-                                                      class="fa fa-user">
-                                                   </i> <i class="fa fa-comments-o"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-primary btn-xs">
-                                                   <i class="fa fa-user"> </i> Ver Perfil
-                                                </button>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <!-- end column contact blog -->
-                                 <!-- column contact -->
-                                 <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 profile_details margin_bottom_30">
-                                    <div class="contact_blog">
-                                       <div class="contact_inner">
-                                          <div class="left">
-                                             <h3>John Smith</h3>
-                                             <p><strong>Edad: </strong>60 Años</p>
-                                             <p><strong>Fecha de Ingreso: </strong>27/05/2025</p>
-                                             <ul class="list-unstyled">
-                                                <li><i class="fa fa-envelope-o"></i> : test@gmail.com</li>
-                                                <li><i class="fa fa-phone"></i> : 3562-545452</li>
-                                             </ul>
-                                          </div>
-                                          <div class="right">
-                                             <div class="profile_contacts">
-                                                <img class="img-responsive" src="images/layout_img/msg5.png" alt="#" />
-                                             </div>
-                                          </div>
-                                          <div class="bottom_list">
-                                             <div class="right_button">
-                                                <button type="button" class="btn btn-success btn-xs"> <i
-                                                      class="fa fa-user">
-                                                   </i> <i class="fa fa-comments-o"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-primary btn-xs">
-                                                   <i class="fa fa-user"> </i> Ver Perfil
-                                                </button>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <!-- end column contact blog -->
-                                 <!-- column contact -->
-                                 <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 profile_details margin_bottom_30">
-                                    <div class="contact_blog">
-                                       <div class="contact_inner">
-                                          <div class="left">
-                                             <h3>David Ruiz</h3>
-                                             <p><strong>Edad: </strong>75 Años</p>
-                                             <p><strong>Fecha de Ingreso: </strong>29/05/2025</p>
-                                             <ul class="list-unstyled">
-                                                <li><i class="fa fa-envelope-o"></i> : test@gmail.com</li>
-                                                <li><i class="fa fa-phone"></i> : 3562-414145</li>
-                                             </ul>
-                                          </div>
-                                          <div class="right">
-                                             <div class="profile_contacts">
-                                                <img class="img-responsive" src="images/layout_img/msg2.png" alt="#" />
-                                             </div>
-                                          </div>
-                                          <div class="bottom_list">
-                                             <div class="right_button">
-                                                <button type="button" class="btn btn-success btn-xs"> <i
-                                                      class="fa fa-user">
-                                                   </i> <i class="fa fa-comments-o"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-primary btn-xs">
-                                                   <i class="fa fa-user"> </i> Ver Perfil
-                                                </button>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <!-- end column contact blog -->
-
-
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <!-- end row -->
-                  </div>
                </div>
 
                <!-- footer -->
@@ -489,15 +221,19 @@
       var ps = new PerfectScrollbar('#sidebar');
    </script>
    <!-- custom js -->
+    <script src="Js_Funciones/config.js"></script>
    <script src="js/custom.js"></script>
    <script src="js/chart_custom_style2.js"></script>
-   <script src="Js_Funciones/index.js"></script>
-   <script src="Js_Funciones/Empleados.js"></script>
-   <script src="Js_Funciones/common/ObtenerPersonasDropdown.js"></script>
+   <script src="Js_Funciones/index.js"></script>   
+   
    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
       integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
    <!-- Sweet Alert -->
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   
+   <script src="Js_Funciones/Empleados.js"></script>
+   <script src="Js_Funciones/common/ObtenerPersonasDropdown.js"></script>
+   <script src="Js_Funciones/main.js"></script>
    <script type="text/javascript">
       window.onload = function () {
          ObtenerPersonas();

@@ -1,0 +1,148 @@
+<div class="row column_title">
+    <div class="col-md-12">
+        <div class="MarcodeInicio"></div>
+        <button type="button" class="model_bt btn" data-toggle="modal" data-target="#ModalCrearPersonas"
+            aria-hidden="true">Agregar
+            Persona</button>
+    </div>
+    <!-- table section Personas -->
+    <div class="col-md-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="full dash_head">
+                <div class="heading1 margin_0">
+                    <h3>Personas</h3>
+                </div>
+            </div>
+            <div class="table_section padding_infor_info">
+                <div class="table-responsive-sm">
+                    <table id="Personas" class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th>Id</th>
+                                <th>Nombre y Apellido</th>
+                                <th>Fecha de Nacimiento</th>
+                                <th>Sexo</th>
+                                <th>DNI</th>
+                                <th>Telefono</th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="todasLasPersonas"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- The Modal -->
+<div id="ModalCrearPersonas" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header dash_head">
+                <h4 class="modal-title">Agregar Persona</h4>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div>
+
+                    <input type="hidden" id="PersonaId">
+
+                    <label for="Nombre" class="form-label">Nombre y Apellido</label>
+                    <input type="text" class="form-control" id="Nombre" placeholder="Nombre">
+
+                    <label for="Fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" id="Fecha" placeholder="Fecha de Nacimiento">
+
+                    <label for="Sexo" class="form-label">Sexo</label>
+                    <select name="" id="Sexo" class="form-control">
+                        <option value="" selected disabled>Seleccione una Opción</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+
+                    <label for="DNI" class="form-label">DNI</label>
+                    <input type="number" class="form-control" id="DNI" placeholder="Numero de Documento">
+
+                    <label for="Telefono" class="form-label">Telefono</label>
+                    <input type="tel" class="form-control" id="Telefono" placeholder="Numero de Telefono">
+
+                    <span id="errorCrear" class="text-danger"></span>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="guardarPersona()">Guardar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="VaciarModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla Empleados -->
+<div class="row column1">
+    <div class="col-md-12 margin_top_30">
+        <button type="button" class="model_bt btn" data-toggle="modal" data-target="#ModalCrearEmpleados"
+            aria-hidden="true" onclick="cargarPersonasEnSelect();">Agregar Empleado</button>
+    </div>
+
+    <div class="col-md-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="full dash_head">
+                <div class="heading1 margin_0">
+                    <h3>Empleados</h3>
+                </div>
+            </div>
+            <div class="table_section padding_infor_info">
+                <div class="table-responsive-sm">
+                    <table id="Empleados" class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th>Id</th>
+                                <th>Nombre y Apellido</th>
+                                <th>Turno</th>
+                                <th>Tareas Asignadas</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="todosLosEmpleados"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- The Modal EMPLEADOS -->
+<div id="ModalCrearEmpleados" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header dash_head">
+                <h4 class="modal-title">Agregar Empleado</h4>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div>
+
+                    <input type="hidden" id="EmpleadoId">
+
+                    <label for="PersonaIdEmpleado" class="form-label">Persona</label>
+                    <select id="PersonaIdEmpleado" class="form-control">
+                        <option value="" selected disabled>Seleccione una persona</option>
+                    </select>
+
+
+
+                    <span id="errorCrear" class="text-danger"></span>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="guardarPersona()">Guardar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="VaciarModal()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
