@@ -28,7 +28,7 @@ function MostrarEmpleados(data) {
         $("#todosLosEmpleados").append(
             "<tr>" +
             "<td>" + empleado.id + "</td>" +
-            "<td>" + empleado.persona.nombre + "</td>" +
+            "<td>" + empleado.persona.nombreyApellido + "</td>" +
             "<td>" + empleado.turno + "</td>" +
             "<td>" + empleado.tareasAsignadas + "</td>" +
             
@@ -44,13 +44,12 @@ async function cargarPersonasEnSelect() {
     const select = document.getElementById('PersonaIdEmpleado');
     select.innerHTML = '<option value="" selected disabled>Seleccione una persona</option>';
     personas.forEach(p => {
-        select.innerHTML += `<option value="${p.id}">${p.nombreyApellido} (DNI: ${p.dni})</option>`;
+        select.innerHTML += `<option value="${p.id}">${p.nombreyApellido}</option>`;
     });
 }
 
 // Llama a esta función cuando abras el modal de empleados
 $('#ModalCrearEmpleados').on('show.bs.modal', cargarPersonasEnSelect);
-console.log(cargarPersonasEnSelect)
 
 async function CrearEmpleado() {
     const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
