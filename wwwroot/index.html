@@ -317,17 +317,27 @@
 
                                  <label for="PersonaIdEmpleado" class="form-label">Persona</label>
                                  <select id="PersonaIdEmpleado" class="form-control">
-                                    <option value="" selected disabled>Seleccione una persona</option>
+                                    <option value="" selected hidden>Seleccione una persona</option>
                                  </select>
+                                 <span id="errorCrear" class="text-danger"></span>
 
-
-
+                                 <label for="turno" class="form-label">turno</label>
+                                  <select name="" id="turno" class="form-control">
+                                    <option value="" selected hidden>Seleccione una Opción</option>
+                                    <option value="1">Mañana</option>
+                                    <option value="2">Tarde</option>
+                                    <option value="3">Noche</option>
+                                 </select>
+                                 <span id="errorCrear" class="text-danger"></span>
+                                 
+                                 <label for="tareasAsignadas" class="form-label">Tarea asignada</label>
+                                 <input type="text" class="form-control" id="tareasAsignadas" placeholder="Tareas Asignadas">
                                  <span id="errorCrear" class="text-danger"></span>
 
                               </div>
                            </div>
                            <div class="modal-footer">
-                              <button type="button" class="btn btn-primary" onclick="guardarPersona()">Guardar</button>
+                              <button type="button" class="btn btn-primary" onclick="CrearEmpleado()">Guardar</button>
                               <button type="button" class="btn btn-danger" data-dismiss="modal"
                                  onclick="VaciarModal()">Close</button>
                            </div>
