@@ -24,8 +24,10 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Persona>>> GetPersona()
         {
-            return await _context.Persona.ToListAsync();
+            var personas = await _context.Persona.ToListAsync();
+            return Ok(personas);
         }
+
 
         // GET: api/Personas/5
         [HttpGet("{id}")]
@@ -86,7 +88,7 @@ namespace CuidadoConect.Controllers
             if (existePersona > 0) // si ya existe una persona con el mismo DNI
             {
                 return BadRequest("Ya existe una persona con el mismo DNI."); // Retorna un error si ya existe una persona con el mismo DNI
-            } 
+            }
             _context.Persona.Add(persona);
             await _context.SaveChangesAsync();
 

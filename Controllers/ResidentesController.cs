@@ -78,10 +78,18 @@ namespace CuidadoConect.Controllers
         public async Task<ActionResult<Residente>> PostResidente(Residente residente)
         {
             _context.Residente.Add(residente);
+
+            var persona = await _context.Persona.FindAsync(residente.PersonaId); // Buscar la persona y asignar rol
+            if (persona != null)
+            {
+                persona.Rol = "Residente"; // Guardar rol en Persona
+            }
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetResidente", new { id = residente.Id }, residente);
         }
+
 
         // DELETE: api/Residentes/5
         [HttpDelete("{id}")]

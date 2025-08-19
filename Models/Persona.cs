@@ -9,6 +9,7 @@ public class Persona
     public SexoPersona Sexo { get; set; }
     public int DNI { get; set; }
     public string? Telefono { get; set; }
+    public string? Rol { get; set; }
 
     public virtual ICollection<Empleado>? Empleados { get; set; }
     public virtual ICollection<Profesional>? Profesionales { get; set; }

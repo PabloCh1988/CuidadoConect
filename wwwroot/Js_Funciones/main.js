@@ -1,22 +1,26 @@
 function cargarVista(view) {
-    fetch(`../views/${view}.html`)
+    const getToken = localStorage.getItem('token');
+    const authHeaders = () => ({
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${getToken}`
+    }); // Configurar los headers de autenticación
+    fetch(`../views/${view}.html`,)
         .then(res => res.text())
         .then(html => {
             const app = document.getElementById('app');
             app.innerHTML = html;
             if (view === 'personas') {
                 ObtenerPersonas();
+            }
+            else if (view === 'especialidad') {
+                ObtenerEspecialidades();
+                ObtenerProfesionales();
+            } else if (view === 'empleado') {
                 ObtenerEmpleados();
             }
-            // } else if (view === 'ticket') {
-            //     ObtenerTickets();
-            // } else if (view === 'cliente') {
-            //     ObtenerClientes();
-            // } else if (view === 'puestolaboral') {
-            //     ObtenerPuestos();
-            // } else if (view === 'desarrollador') {
-            //     ObtenerDesarrolladores();
-            // }
+            else if (view === 'obraSocial') {
+                GetObrasSociales();
+            }
 
             // Ejecutar scripts de la vista si los hay
             const tempDiv = document.createElement('div');
@@ -44,30 +48,10 @@ function navigateTo(vista) {
     window.location.hash = vista;
 }
 
-// function actualizarLinkActivo() {
-//     const vistaActual = window.location.hash.replace('#', '') || 'home';
-
-//     const todosItemsNav = document.querySelectorAll('.nav-item');
-//     todosItemsNav.forEach(item => item.classList.remove('active'));
-
-//     const todosLinks = document.querySelectorAll('a[href^="#"]');
-//     todosLinks.forEach(link => {
-//         const href = link.getAttribute('href').replace('#', '');
-//         if (href === vistaActual) {
-//             link.classList.add('active');
-//         } else {
-//             link.classList.remove('active');
-//         }
-//     });
-// }
 // Escuchar cambios en la URL con hash
 window.addEventListener('hashchange', cargarVistaPorHash);
 
-// window.addEventListener('load', actualizarLinkActivo);
-
 // Cargar vista inicial
 window.addEventListener('DOMContentLoaded', () => {
-    // actualizarLinkActivo();
     cargarVistaPorHash();
-    // verificarUsuario();
 });

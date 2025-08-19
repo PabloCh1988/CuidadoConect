@@ -69,7 +69,7 @@ namespace CuidadoConect.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(especialidad);
         }
 
         // POST: api/Especialidades

@@ -24,6 +24,8 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleado()
         {
+            var empleados = await _context.Empleado.Include(e => e.Persona)
+            .ToListAsync();
             return await _context.Empleado.ToListAsync();
         }
 
@@ -69,7 +71,7 @@ namespace CuidadoConect.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(empleado);
         }
 
         // POST: api/Empleados
@@ -78,6 +80,13 @@ namespace CuidadoConect.Controllers
         public async Task<ActionResult<Empleado>> PostEmpleado(Empleado empleado)
         {
             _context.Empleado.Add(empleado);
+
+            // 🔹 Buscar la persona y asignar rol
+            var persona = await _context.Persona.FindAsync(empleado.PersonaId);
+            if (persona != null)
+            {
+                persona.Rol = "Empleado";
+            }
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEmpleado", new { id = empleado.Id }, empleado);

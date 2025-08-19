@@ -57,19 +57,24 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
+// Configurar CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7233") // tu frontend
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
 });
 
+builder.Services.AddControllers();
 var app = builder.Build();
+
+// Usar CORS
+app.UseCors("AllowFrontend");
+
 
 app.UseSwagger();
 app.UseSwaggerUI();

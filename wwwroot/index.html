@@ -75,7 +75,7 @@
                            <a href="dashboard_2.html">> <span>Acceso a Familiar</span></a>
                         </li>
                         <li>
-                           <a href="dashboard_2.html">> <span>Turno Laboral</span></a>
+                           <a href="#empleado">> <span>Turno Laboral</span></a>
                         </li>
                      </ul>
                   </li>
@@ -83,6 +83,7 @@
                      <a href="#apps" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
                            class="fa fa-plus-square orange_color"></i> <span>Profesionales</span></a>
                      <ul class="collapse list-unstyled" id="apps">
+                        <li><a href="#especialidad">> <span>Especialidades</span></a></li>
                         <li><a href="email.html">> <span>Historial Médico</span></a></li>
                         <li><a href="calendar.html">> <span>Agregar Medicación</span></a></li>
                         <li><a href="media_gallery.html">> <span>Citas Médicas</span></a></li>
@@ -93,10 +94,10 @@
                      <a href="#element" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
                            class="fa fa-male purple_color"></i> <span>Residentes</span></a>
                      <ul class="collapse list-unstyled" id="element">
-                        <li><a href="general_elements.html">> <span>Historia Clínica</span></a></li>
+                        <li><a href="#residente.html">> <span>Historia Clínica</span></a></li>
                         <li><a href="media_gallery.html">> <span>Medicación</span></a></li>
                         <li><a href="icons.html">> <span>Rutinas Diarias</span></a></li>
-                        <li><a href="invoice.html">> <span>Obra Social</span></a></li>
+                        <li><a href="#obraSocial">> <span>Obra Social</span></a></li>
                         <li><a href="media_gallery.html">> <span>Citas Médicas</span></a></li>
                      </ul>
                   </li>
@@ -203,7 +204,7 @@
    <!-- jQuery -->
    <script src="js/jquery.min.js"></script>
    <script src="js/popper.min.js"></script>
-   <script src="js/bootstrap.min.js"></script>
+  
    <!-- wow animation -->
    <script src="js/animate.js"></script>
    <!-- select country -->
@@ -224,20 +225,28 @@
     <script src="Js_Funciones/config.js"></script>
    <script src="js/custom.js"></script>
    <script src="js/chart_custom_style2.js"></script>
-   <script src="Js_Funciones/index.js"></script>   
+   <script src="Js_Funciones/index.js"></script> 
+   <script src="./Js_Funciones/especialidad.js"></script>  
    
    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
       integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+       <script src="js/bootstrap.min.js"></script>
    <!-- Sweet Alert -->
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
    
    <script src="Js_Funciones/Empleados.js"></script>
+   <script src="./Js_Funciones/profesional.js"></script>
+   <script src="./Js_Funciones/obraSocial.js"></script>
    <script src="Js_Funciones/common/ObtenerPersonasDropdown.js"></script>
+   <script src="./Js_Funciones/common/ObtenerEspecialidadesDrop.js"></script>
    <script src="Js_Funciones/main.js"></script>
    <script type="text/javascript">
       window.onload = function () {
          ObtenerPersonas();
-         ObtenerPersonasDropdown();
+         ObtenerEmpleados();
+         ObtenerEspecialidades();
+         ObtenerProfesionales();
+         GetObrasSociales();
       };
    </script>
 </body>

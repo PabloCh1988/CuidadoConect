@@ -300,7 +300,7 @@ a.btn {
 }
 
 .padding_infor_info {
-    padding: 35px 35px;
+    padding: 35px 15px;
     float: left;
     width: 100%;
 }
@@ -350,7 +350,7 @@ h3 {
 
 h4 {
     font-size: 18px;
-    color: #000;
+    color: #fcfbfb;
     line-height: 21px;
     font-weight: 600;
     text-transform: none;
@@ -1682,7 +1682,7 @@ a[data-toggle="collapse"] {
     font-weight: normal;
     height: auto;
     border-radius: 5px 5px 0 0;
-    padding: 22px 40px 8px;
+    padding: 15px 40px 8px;
     background-size: cover;
     background-color: #214162;
     position: relative;
@@ -2263,14 +2263,14 @@ i.icon {
 /**-- model bt --**/
 
 .model_bt {
-    padding: 11px 20px 10px;
-    background: rgb(0, 165, 232);
+    /* padding: 11px 20px 10px; */
+    /* background: rgb(0, 165, 232); */
     border-radius: 5px;
     color: #fff;
-    margin-right: 9px;
+    /* margin-right: 9px; */
 }
 .model_bt:hover {
-    background-color: rgb(0, 86, 154); 
+    background-color: rgb(0, 165, 232); 
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease;

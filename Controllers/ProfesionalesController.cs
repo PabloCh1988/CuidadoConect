@@ -24,7 +24,8 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Profesional>>> GetProfesional()
         {
-            return await _context.Profesional.ToListAsync();
+            var profesionales = await _context.Profesional.Include(p => p.Persona).Include(p => p.Especialidad).ToListAsync();// Incluir datos relacionados de Persona y Especialidad
+            return Ok(profesionales);
         }
 
         // GET: api/Profesionales/5
@@ -78,10 +79,18 @@ namespace CuidadoConect.Controllers
         public async Task<ActionResult<Profesional>> PostProfesional(Profesional profesional)
         {
             _context.Profesional.Add(profesional);
+
+            var persona = await _context.Persona.FindAsync(profesional.PersonaId); // Buscar la persona y asignar rol
+            if (persona != null)
+            {
+                persona.Rol = "Profesional"; // Guardar rol en Persona
+            }
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProfesional", new { id = profesional.Id }, profesional);
         }
+
 
         // DELETE: api/Profesionales/5
         [HttpDelete("{id}")]
