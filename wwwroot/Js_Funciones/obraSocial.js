@@ -1,46 +1,31 @@
-API_ObraSocial = "https://localhost:7233/api/obrasociales";
+// API_ObraSocial = "https://localhost:7233/api/obrasociales";
 
-function GetObrasSociales() {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    }); // Configurar los headers de autenticación
-    fetch(API_ObraSocial, { headers: authHeaders() })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al obtener las obras sociales");
-            }
-            return response.json();
-        })
-        .then(data => {
-            MostrarObrasSociales(data); // Llamar a la función para mostrar las obras sociales
-        })
-        .catch(error => {
-            console.error("Error al obtener las obras sociales:", error);
-            alert("Error al obtener las obras sociales: " + error.message);
+async function ObtenerObrasSociales() {
+    try {
+        const data = await authFetch("obrasociales");
+        $("#todosLasObras").empty(); // Limpiar la tabla antes de mostrar los datos
+        $.each(data, function (index, obraSocial) {
+            $("#todosLasObras").append(
+                "<tr>" +
+                "<td>" + obraSocial.nombre + "</td>" +
+                "<td>" + obraSocial.plan + "</td>" +
+                "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarObraSocial(" + obraSocial.id + ")'></button></td>" +
+                "</tr>"
+            );
         });
+    } catch (err) {
+        console.error("Error en ObtenerObrasSociales:", err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al obtener obras sociales',
+            text: err.message,
+            background: '#1295c9',
+            color: '#f1f1f1'
+        });
+    }
 }
 
-function MostrarObrasSociales(data) {
-    $("#todosLasObras").empty(); // Limpiar la tabla antes de mostrar los datos
-    $.each(data, function (index, obraSocial) {
-        $("#todosLasObras").append(
-            "<tr>" +
-            "<td>" + obraSocial.nombre + "</td>" +
-            "<td>" + obraSocial.plan + "</td>" +
-            "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarObraSocial(" + obraSocial.id + ")'></button></td>" +
-            "</tr>"
-        );
-    });
-}
-
-function CrearObraSocial() {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    }); // Configurar los headers de autenticación
+async function CrearObraSocial() {
     const nombre = document.getElementById("NombreObraSocial").value;
     const plan = document.getElementById("PlanObraSocial").value;
     if (!nombre || !plan) {
@@ -51,38 +36,33 @@ function CrearObraSocial() {
         nombre: nombre,
         plan: plan
     };
-    fetch(API_ObraSocial, {
-        method: "POST",
-        headers: authHeaders(),
-        body: JSON.stringify(obraSocial)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al crear la obra social");
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Obra social creada:", data);
-            document.getElementById("NombreObraSocial").value = ""; // Limpiar el campo de nombre
-            document.getElementById("PlanObraSocial").value = ""; // Limpiar el campo de plan
-            $("#modalAgregarObraSocial").modal('hide'); // Cerrar el modal
-            $("#errorObraSocial").empty(); // Limpiar mensajes de error
-            GetObrasSociales(); // Actualizar la lista de obras sociales
-        })
-        .catch(error => {
-            console.error("Error al crear la obra social:", error);
-            alert("Error al crear la obra social: " + error.message);
+    try {
+        const data = await authFetch("obrasociales", {
+            method: "POST",
+            body: JSON.stringify(obraSocial)
         });
+
+        $("#modalAgregarObraSocial").modal("hide");
+        ObtenerObrasSociales();
+        document.getElementById("NombreObraSocial").value = "";
+        document.getElementById("PlanObraSocial").value = "";
+        $("#errorObraSocial").empty();
+        Swal.fire({
+            icon: 'success',
+            title: 'Obra Social creada correctamente',
+            background: '#1295c9',
+            color: '#f1f1f1',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    } catch (err) {
+        console.error("Error al crear la Obra Social:", err);
+        mensajesError('#errorObraSocial', null, `Error al crear: ${err.message}`);
+    }
 }
 
-function EliminarObraSocial(id) {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    });
 
+function EliminarObraSocial(id) {
     Swal.fire({
         title: "¿Estás seguro de eliminar esta Obra Social?",
         text: "¡No podrás revertir esto!",
@@ -93,42 +73,26 @@ function EliminarObraSocial(id) {
         confirmButtonColor: '#0005d1',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Sí, eliminarla'
-    }).then((result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
-            EliminarObraSi(id);
+            await EliminarObraSi(id);
         }
     });
-
-    function EliminarObraSi(id) {
-        fetch(`${API_ObraSocial}/${id}`, {
-            method: "DELETE",
-            headers: authHeaders()
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Error al eliminar la Obra Social");
-                }
-                // ✅ Manejar si no hay contenido
-                if (response.status === 204) {
-                    return null;
-                }
-                return response.json().catch(() => null);
-            })
-            .then(data => {
-                GetObrasSociales(); // Refrescar lista
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Obra Social eliminada correctamente',
-                    background: '#1295c9',
-                    color: '#f1f1f1',
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            })
-            .catch(error => {
-                console.error("Error al eliminar la Obra Social:", error);
-                alert("Error al eliminar la Obra Social: " + error.message);
-            });
-    }
 }
 
+async function EliminarObraSi(id) {
+    authFetch(`obrasociales/${id}`, { method: "DELETE" })
+        .then(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Obra Social eliminada correctamente',
+                background: '#1295c9',
+                color: '#f1f1f1',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            ObtenerObrasSociales();
+        })
+        .catch(async (error) =>
+            console.error("Error al eliminar la Obra Social:", error));
+}

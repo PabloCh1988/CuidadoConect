@@ -29,9 +29,9 @@ namespace CuidadoConect.Controllers
 
         // GET: api/RutinasDiarias/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RutinaDiaria>> GetRutinaDiaria(int id)
+        public async Task<ActionResult<RutinaDiaria>> GetRutinaDiaria(int RutinaId)
         {
-            var rutinaDiaria = await _context.RutinaDiaria.FindAsync(id);
+            var rutinaDiaria = await _context.RutinaDiaria.FindAsync(RutinaId);
 
             if (rutinaDiaria == null)
             {
@@ -46,7 +46,7 @@ namespace CuidadoConect.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRutinaDiaria(int id, RutinaDiaria rutinaDiaria)
         {
-            if (id != rutinaDiaria.Id)
+            if (id != rutinaDiaria.RutinaId)
             {
                 return BadRequest();
             }
@@ -77,10 +77,11 @@ namespace CuidadoConect.Controllers
         [HttpPost]
         public async Task<ActionResult<RutinaDiaria>> PostRutinaDiaria(RutinaDiaria rutinaDiaria)
         {
+           
             _context.RutinaDiaria.Add(rutinaDiaria);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRutinaDiaria", new { id = rutinaDiaria.Id }, rutinaDiaria);
+            return CreatedAtAction("GetRutinaDiaria", new { id = rutinaDiaria.RutinaId }, rutinaDiaria);
         }
 
         // DELETE: api/RutinasDiarias/5
@@ -101,7 +102,7 @@ namespace CuidadoConect.Controllers
 
         private bool RutinaDiariaExists(int id)
         {
-            return _context.RutinaDiaria.Any(e => e.Id == id);
+            return _context.RutinaDiaria.Any(e => e.RutinaId == id);
         }
     }
 }

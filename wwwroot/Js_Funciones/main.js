@@ -19,7 +19,10 @@ function cargarVista(view) {
                 ObtenerEmpleados();
             }
             else if (view === 'obraSocial') {
-                GetObrasSociales();
+                ObtenerObrasSociales();
+            }
+            else if (view === 'rutinasDiarias') {
+                ObtenerRutinas();
             }
 
             // Ejecutar scripts de la vista si los hay

@@ -8,12 +8,12 @@ public class Empleado
     public string? TareasAsignadas { get; set; }
     public int PersonaId { get; set; }
     public virtual Persona? Persona { get; set; }
-    public virtual ICollection<RutinaDiaria>? RutinasDiarias { get; set; }
+    public virtual ICollection<RutinasPorEmpleado>? RutinasPorEmpleados { get; set; }
 }
 
 public enum TurnoEmpleado
 {
-    Mañana  = 1,
+    Mañana = 1,
     Tarde,
     Noche
 }

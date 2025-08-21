@@ -17,18 +17,24 @@ using System.Text;
 [ApiController]
 public class AuthController : ControllerBase
 {
+    private readonly Context _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
 
     public AuthController(
+        Context context,
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager,
         IConfiguration configuration)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _configuration = configuration;
+        _context = context; // Contexto de la base de datos
+        _userManager = userManager;// Gestor de usuarios de Identity
+        _signInManager = signInManager;// Gestor de inicio de sesión de Identity
+        _roleManager = roleManager;// Gestor de roles de Identity
+        _configuration = configuration;// Configuración de la aplicación (appsettings.json)
     }
 
     [HttpPost("register")]
@@ -83,12 +89,17 @@ public class AuthController : ControllerBase
             // GENERAMOS EL REFRESH TOKEN
             var refreshToken = GenerarRefreshToken();
             //GUARDAMOS EN BASE DE DATOS EL REFRESH TOKEN
-            await _userManager.SetAuthenticationTokenAsync(user, "MyApp", "RefreshToken", refreshToken);
+            var setTokenResult = await _userManager.SetAuthenticationTokenAsync(user, "MyApp", "RefreshToken", refreshToken);
+            if (!setTokenResult.Succeeded)
+            {
+                return StatusCode(500, "No se pudo guardar el refresh token");
+            }
 
             return Ok(new
             {
                 token = jwt,
-                refreshToken = refreshToken
+                refreshToken = refreshToken,
+                nombreCompleto = user.NombreCompleto,
             });
         }
 
@@ -113,6 +124,8 @@ public class AuthController : ControllerBase
 
         //BUSCAMOS EL TOKENREFRESH GUARDADO
         var savedToken = await _userManager.GetAuthenticationTokenAsync(user, "MyApp", "RefreshToken");
+        if (string.IsNullOrEmpty(savedToken))
+            return Unauthorized("No hay refresh token guardado para este usuario");
 
         //COMPARAMOS EL REFRESH TOKEN DE BD CON EL GUARDADO EN EL DISPOSITIVO DEL USUARIO PARA UNA MAYOR SEGURIDAD
         if (savedToken != model.RefreshToken)
@@ -141,7 +154,11 @@ public class AuthController : ControllerBase
         //GENERAMOS UN NUEVO REFRESH TOCKEN
         var newRefreshToken = GenerarRefreshToken();
         //VOLVEMOS A GUARDAR ESE REGISTRO
-        await _userManager.SetAuthenticationTokenAsync(user, "MyApp", "RefreshToken", newRefreshToken);
+        var setTokenResult = await _userManager.SetAuthenticationTokenAsync(user, "MyApp", "RefreshToken", newRefreshToken);
+        if (!setTokenResult.Succeeded)
+        {
+            return StatusCode(500, "No se pudo guardar el nuevo refresh token");
+        }
 
         return Ok(new
         {

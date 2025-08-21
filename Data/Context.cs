@@ -32,21 +32,12 @@ public class Context : IdentityDbContext<ApplicationUser>
     public DbSet<CuidadoConect.Models.CitaMedica> CitaMedica { get; set; } = default!;
 
     public DbSet<CuidadoConect.Models.HistorialMedico> HistorialMedico { get; set; } = default!;
+    public DbSet<CuidadoConect.Models.RutinasPorEmpleado> RutinasPorEmpleado { get; set; } = default!;
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) // Configuración de las relaciones para evitar la eliminacion en cascada
     {
-        modelBuilder.Entity<Residente>()
-            .HasOne(r => r.RutinaDiaria) // Relación con RutinaDiaria
-            .WithMany(rd => rd.Residentes) // Especifica la colección inversa
-            .HasForeignKey(r => r.RutinaDiariaId) // Asegúrate de que RutinaDiariaId es la clave foránea en Residente
-            .OnDelete(DeleteBehavior.Restrict); // <- Esto evita el ciclo
-
-        modelBuilder.Entity<Residente>()
-            .HasOne(r => r.ObraSocial)
-            .WithMany(os => os.Residentes) // Especifica la colección inversa
-            .HasForeignKey(r => r.ObraSocialId)
-            .OnDelete(DeleteBehavior.Restrict);
+        base.OnModelCreating(modelBuilder); // Llama al método base para aplicar las configuraciones predeterminadas
 
         modelBuilder.Entity<CitaMedica>()
             .HasOne(cm => cm.Residente)// Relación con Residente
@@ -57,10 +48,36 @@ public class Context : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<HistorialMedico>() // Relación con Residente
         .HasOne(hm => hm.Residente) // Especifica la colección inversa
         .WithMany(r => r.HistorialMedicos) // especifica la colección inversa
-        .HasForeignKey(hm => hm.ResidenteId) 
+        .HasForeignKey(hm => hm.ResidenteId)
         .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<RutinasPorEmpleado>()
+                .HasKey(er => er.RutinasPorEmpleadoId); // PK de la tabla intermedia
 
+        modelBuilder.Entity<RutinasPorEmpleado>()
+            .HasOne(er => er.Empleado)
+            .WithMany(e => e.RutinasPorEmpleados)
+            .HasForeignKey(er => er.EmpleadoId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        base.OnModelCreating(modelBuilder); // Llama al método base para aplicar las configuraciones predeterminadas
+        modelBuilder.Entity<RutinasPorEmpleado>()
+            .HasOne(er => er.RutinaDiaria)
+            .WithMany(r => r.RutinasPorEmpleados)
+            .HasForeignKey(er => er.RutinaId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Relaciones existentes para Residente
+        modelBuilder.Entity<Residente>()
+            .HasOne(r => r.RutinaDiaria)
+            .WithMany(rd => rd.Residentes)
+            .HasForeignKey(r => r.RutinaDiariaId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Residente>()
+            .HasOne(r => r.ObraSocial)
+            .WithMany(os => os.Residentes)
+            .HasForeignKey(r => r.ObraSocialId)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
 }

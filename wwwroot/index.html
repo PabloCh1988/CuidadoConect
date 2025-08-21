@@ -87,7 +87,6 @@
                         <li><a href="email.html">> <span>Historial Médico</span></a></li>
                         <li><a href="calendar.html">> <span>Agregar Medicación</span></a></li>
                         <li><a href="media_gallery.html">> <span>Citas Médicas</span></a></li>
-                        <li><a href="media_gallery.html">> <span>Rutinas Diarias</span></a></li>
                      </ul>
                   </li>
                   <li>
@@ -96,7 +95,7 @@
                      <ul class="collapse list-unstyled" id="element">
                         <li><a href="#residente.html">> <span>Historia Clínica</span></a></li>
                         <li><a href="media_gallery.html">> <span>Medicación</span></a></li>
-                        <li><a href="icons.html">> <span>Rutinas Diarias</span></a></li>
+                        <li><a href="#rutinasDiarias">> <span>Rutinas Diarias</span></a></li>
                         <li><a href="#obraSocial">> <span>Obra Social</span></a></li>
                         <li><a href="media_gallery.html">> <span>Citas Médicas</span></a></li>
                      </ul>
@@ -204,6 +203,8 @@
    <!-- jQuery -->
    <script src="js/jquery.min.js"></script>
    <script src="js/popper.min.js"></script>
+   <!-- config -->
+   <script src="Js_Funciones/config.js"></script>
   
    <!-- wow animation -->
    <script src="js/animate.js"></script>
@@ -222,7 +223,7 @@
       var ps = new PerfectScrollbar('#sidebar');
    </script>
    <!-- custom js -->
-    <script src="Js_Funciones/config.js"></script>
+    
    <script src="js/custom.js"></script>
    <script src="js/chart_custom_style2.js"></script>
    <script src="Js_Funciones/index.js"></script> 
@@ -237,6 +238,7 @@
    <script src="Js_Funciones/Empleados.js"></script>
    <script src="./Js_Funciones/profesional.js"></script>
    <script src="./Js_Funciones/obraSocial.js"></script>
+   <script src="./Js_Funciones/rutinasDiarias.js"></script>
    <script src="Js_Funciones/common/ObtenerPersonasDropdown.js"></script>
    <script src="./Js_Funciones/common/ObtenerEspecialidadesDrop.js"></script>
    <script src="Js_Funciones/main.js"></script>
@@ -246,7 +248,8 @@
          ObtenerEmpleados();
          ObtenerEspecialidades();
          ObtenerProfesionales();
-         GetObrasSociales();
+         ObtenerObrasSociales();
+         ObtenerRutinas();
       };
    </script>
 </body>

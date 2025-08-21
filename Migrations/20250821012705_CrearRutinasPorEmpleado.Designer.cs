@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CuidadoConect.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250702225222_nuevamigracion")]
-    partial class nuevamigracion
+    [Migration("20250821012705_CrearRutinasPorEmpleado")]
+    partial class CrearRutinasPorEmpleado
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -274,6 +274,9 @@ namespace CuidadoConect.Migrations
                     b.Property<string>("NombreyApellido")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Rol")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Sexo")
                         .HasColumnType("int");
 
@@ -355,29 +358,50 @@ namespace CuidadoConect.Migrations
 
             modelBuilder.Entity("CuidadoConect.Models.RutinaDiaria", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("RutinaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RutinaId"));
 
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("EmpleadoId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Estado")
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RutinaId");
+
+                    b.ToTable("RutinaDiaria");
+                });
+
+            modelBuilder.Entity("CuidadoConect.Models.RutinasPorEmpleado", b =>
+                {
+                    b.Property<int>("RutinasPorEmpleadoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RutinasPorEmpleadoId"));
+
+                    b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("FechaAsignacion")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RutinaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RutinasPorEmpleadoId");
 
                     b.HasIndex("EmpleadoId");
 
-                    b.ToTable("RutinaDiaria");
+                    b.HasIndex("RutinaId");
+
+                    b.ToTable("RutinasPorEmpleado");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -623,15 +647,23 @@ namespace CuidadoConect.Migrations
                     b.Navigation("RutinaDiaria");
                 });
 
-            modelBuilder.Entity("CuidadoConect.Models.RutinaDiaria", b =>
+            modelBuilder.Entity("CuidadoConect.Models.RutinasPorEmpleado", b =>
                 {
                     b.HasOne("CuidadoConect.Models.Empleado", "Empleado")
-                        .WithMany("RutinasDiarias")
+                        .WithMany("RutinasPorEmpleados")
                         .HasForeignKey("EmpleadoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CuidadoConect.Models.RutinaDiaria", "RutinaDiaria")
+                        .WithMany("RutinasPorEmpleados")
+                        .HasForeignKey("RutinaId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Empleado");
+
+                    b.Navigation("RutinaDiaria");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -687,7 +719,7 @@ namespace CuidadoConect.Migrations
 
             modelBuilder.Entity("CuidadoConect.Models.Empleado", b =>
                 {
-                    b.Navigation("RutinasDiarias");
+                    b.Navigation("RutinasPorEmpleados");
                 });
 
             modelBuilder.Entity("CuidadoConect.Models.Especialidad", b =>
@@ -730,6 +762,8 @@ namespace CuidadoConect.Migrations
             modelBuilder.Entity("CuidadoConect.Models.RutinaDiaria", b =>
                 {
                     b.Navigation("Residentes");
+
+                    b.Navigation("RutinasPorEmpleados");
                 });
 #pragma warning restore 612, 618
         }

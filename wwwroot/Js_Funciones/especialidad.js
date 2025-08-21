@@ -1,46 +1,31 @@
-API_Especialidad = "https://localhost:7233/api/especialidades";
+// API_Especialidad = "https://localhost:7233/api/especialidades";
 
-function ObtenerEspecialidades() {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    }); // Configurar los headers de autenticación
-    fetch(API_Especialidad, { headers: authHeaders() })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al obtener las especialidades");
-            }
-            return response.json();
-        })
-        .then(data => {
-            MostrarEspecialidades(data); // Llamar a la función para mostrar las especialidades
-        })
-        .catch(error => {
-            console.error("Error al obtener las especialidades:", error);
-            alert("Error al obtener las especialidades: " + error.message);
+async function ObtenerEspecialidades() {
+    try {
+        const data = await authFetch("especialidades");
+        $("#todosLasEpecialidades").empty(); // Limpiar la tabla antes de mostrar los datos
+        $.each(data, function (index, especialidad) {
+            $("#todosLasEpecialidades").append(
+                "<tr>" +
+                "<td>" + especialidad.nombreEspecialidad + "</td>" +
+                "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarEspecialidad(" + especialidad.id + ")'></button></td>" +
+                "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarEspecialidad(" + especialidad.id + ")'></button></td>" +
+                "</tr>"
+            );
         });
+    } catch (err) {
+        console.error("Error en ObtenerEspecialidades:", err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error al obtener especialidades',
+            text: err.message,
+            background: '#1295c9',
+            color: '#f1f1f1'
+        });
+    }
 }
 
-function MostrarEspecialidades(data) {
-    $("#todosLasEpecialidades").empty(); // Limpiar la tabla antes de mostrar los datos
-    $.each(data, function (index, especialidad) {
-        $("#todosLasEpecialidades").append(
-            "<tr>" +
-            "<td>" + especialidad.nombreEspecialidad + "</td>" +
-            "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarEspecialidad(" + especialidad.id + ")'></button></td>" +
-            "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarEspecialidad(" + especialidad.id + ")'></button></td>" +
-            "</tr>"
-        );
-    });
-}
-
-function GuardarEspecialidad() {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    }); // Configurar los headers de autenticación
+async function GuardarEspecialidad() {
     const nombre = document.getElementById("NombreEspecialidad").value;
     if (!nombre) {
         mensajesError('#errorCrear', null, "El nombre de la especialidad es obligatorio");
@@ -49,33 +34,29 @@ function GuardarEspecialidad() {
     const especialidad = {
         nombreEspecialidad: nombre
     };
-    fetch(API_Especialidad, {
-        method: "POST",
-        headers: authHeaders(),
-        body: JSON.stringify(especialidad)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al crear la especialidad");
-            }
-            return response.json();
-        })
-        .then(data => {
-            $("#ModalCrearEspecialidadess").modal("hide"); // Cerrar el modal
-            ObtenerEspecialidades(); // Actualizar la lista de especialidades
-        })
-        .catch(error => {
-            console.error("Error al crear la especialidad:", error);
-            alert("Error al crear la especialidad: " + error.message);
+    try {
+        const data = await authFetch("especialidades", {
+            method: "POST",
+            body: JSON.stringify(especialidad)
         });
+        $("#ModalCrearEspecialidadess").modal("hide"); // Cerrar el modal
+        ObtenerEspecialidades(); // Actualizar la lista de especialidades
+        document.getElementById("NombreEspecialidad").value = ""; // Limpiar el campo
+        Swal.fire({
+            icon: "success",
+            title: "Especialidad creada correctamente",
+            background: '#1295c9',
+            color: '#f1f1f1',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    } catch (err) {
+        console.error("Error al crear la especialidad:", err);
+        mensajesError('#errorCrearEspecialidad', null, `Error al crear: ${err.message}`);
+    }
 }
 
 function EliminarEspecialidad(id) {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    }); // Configurar los headers de autenticación
     Swal.fire({
         title: "Estas seguro de eliminar esta especialidad?",
         text: "¡No podrás revertir esto!",
@@ -87,25 +68,15 @@ function EliminarEspecialidad(id) {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Sí, eliminarla'
 
-    }).then((result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
-            EliminarEspecialidadSi(id);
+            await EliminarEspecialidadSi(id);
         }
     });
 
-    function EliminarEspecialidadSi(id) {
-        fetch(`${API_Especialidad}/${id}`, {
-            method: "DELETE",
-            headers: authHeaders()
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Error al eliminar la especialidad");
-                }
-                return response.json();
-            })
-            .then(data => {
-                ObtenerEspecialidades(); // Actualizar la lista de especialidades
+    async function EliminarEspecialidadSi(id) {
+        authFetch(`especialidades/${id}`, { method: "DELETE", })
+            .then(() => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Especialidad eliminada correctamente',
@@ -114,27 +85,14 @@ function EliminarEspecialidad(id) {
                     showConfirmButton: false,
                     timer: 1500
                 });
+                ObtenerEspecialidades(); // Actualizar la lista de especialidades
             })
-            .catch(error => {
-                console.error("Error al eliminar la especialidad:", error);
-                alert("Error al eliminar la especialidad: " + error.message);
-            });
+            .catch(async (error) => console.error("Error al eliminar la especialidad:", error));
     }
 }
 
 function EditarEspecialidad(id) {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    }); // Configurar los headers de autenticación
-    fetch(`${API_Especialidad}/${id}`, { headers: authHeaders(), method: "GET", })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al obtener la especialidad");
-            }
-            return response.json();
-        })
+    authFetch(`especialidades/${id}`, { method: "GET" })
         .then(data => {
             document.getElementById("NombreEspecialidadEditar").value = data.nombreEspecialidad;
             document.getElementById("EspecialidadIdEditar").value = data.id;
@@ -147,12 +105,7 @@ function EditarEspecialidad(id) {
         });
 }
 
-function ActualizarEspecialidad() {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    }); // Configurar los headers de autenticación
+async function ActualizarEspecialidad() {
     const especialidadId = document.getElementById("EspecialidadIdEditar").value;
     const nombre = document.getElementById("NombreEspecialidadEditar").value;
     if (!nombre) {
@@ -163,33 +116,23 @@ function ActualizarEspecialidad() {
         id: especialidadId,
         nombreEspecialidad: nombre
     };
-    console.log("Datos a actualizar:", especialidad);
-    fetch(`${API_Especialidad}/${especialidadId}`, {
-        method: "PUT",
-        headers: authHeaders(),
-        body: JSON.stringify(especialidad)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Error al actualizar la especialidad");
-            }
-            return response.json();
-        })
-        .then(data => {
-            $("#ModalEditarEspecialidad").modal("hide"); // Cerrar el modal
-            ObtenerEspecialidades(); // Actualizar la lista de especialidades
-            Swal.fire({
-                icon: "success",
-                title: "Especialidad actualizada correctamente",
-                background: '#1295c9',
-                color: '#f1f1f1',
-                showConfirmButton: false,
-                timer: 1500
-            });
-        })
-        .catch(error => {
-            console.error("Error al actualizar la especialidad:", error);
-            alert("Error al actualizar la especialidad: " + error.message);
+    try {
+        await authFetch(`especialidades/${especialidadId}`, {
+            method: "PUT",
+            body: JSON.stringify(especialidad)
         });
-    $('#formEditarEspecialidad').removeData('EspecialidadId'); // Limpiar el ID del formulario
+        $("#ModalEditarEspecialidad").modal("hide"); // Cerrar el modal
+        ObtenerEspecialidades(); // Actualizar la lista de especialidades
+        Swal.fire({
+            icon: "success",
+            title: "Especialidad actualizada correctamente",
+            background: '#1295c9',
+            color: '#f1f1f1',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    } catch (error) {
+        console.error("Error al actualizar la especialidad:", error);
+        mensajesError('#errorEditarEspecialidad', null, `Error al actualizar: ${error.message}`);
+    }
 }

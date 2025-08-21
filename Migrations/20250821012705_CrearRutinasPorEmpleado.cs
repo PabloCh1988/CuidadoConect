@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CuidadoConect.Migrations
 {
     /// <inheritdoc />
-    public partial class nuevamigracion : Migration
+    public partial class CrearRutinasPorEmpleado : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -88,11 +88,26 @@ namespace CuidadoConect.Migrations
                     FechaNacimiento = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Sexo = table.Column<int>(type: "int", nullable: false),
                     DNI = table.Column<int>(type: "int", nullable: false),
-                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Rol = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Persona", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RutinaDiaria",
+                columns: table => new
+                {
+                    RutinaId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RutinaDiaria", x => x.RutinaId);
                 });
 
             migrationBuilder.CreateTable(
@@ -249,25 +264,31 @@ namespace CuidadoConect.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RutinaDiaria",
+                name: "RutinasPorEmpleado",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    RutinasPorEmpleadoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmpleadoId = table.Column<int>(type: "int", nullable: false),
+                    RutinaId = table.Column<int>(type: "int", nullable: false),
                     FechaAsignacion = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EmpleadoId = table.Column<int>(type: "int", nullable: false)
+                    Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RutinaDiaria", x => x.Id);
+                    table.PrimaryKey("PK_RutinasPorEmpleado", x => x.RutinasPorEmpleadoId);
                     table.ForeignKey(
-                        name: "FK_RutinaDiaria_Empleado_EmpleadoId",
+                        name: "FK_RutinasPorEmpleado_Empleado_EmpleadoId",
                         column: x => x.EmpleadoId,
                         principalTable: "Empleado",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RutinasPorEmpleado_RutinaDiaria_RutinaId",
+                        column: x => x.RutinaId,
+                        principalTable: "RutinaDiaria",
+                        principalColumn: "RutinaId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -309,7 +330,7 @@ namespace CuidadoConect.Migrations
                         name: "FK_Residente_RutinaDiaria_RutinaDiariaId",
                         column: x => x.RutinaDiariaId,
                         principalTable: "RutinaDiaria",
-                        principalColumn: "Id",
+                        principalColumn: "RutinaId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -498,9 +519,14 @@ namespace CuidadoConect.Migrations
                 column: "RutinaDiariaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RutinaDiaria_EmpleadoId",
-                table: "RutinaDiaria",
+                name: "IX_RutinasPorEmpleado_EmpleadoId",
+                table: "RutinasPorEmpleado",
                 column: "EmpleadoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RutinasPorEmpleado_RutinaId",
+                table: "RutinasPorEmpleado",
+                column: "RutinaId");
         }
 
         /// <inheritdoc />
@@ -531,6 +557,9 @@ namespace CuidadoConect.Migrations
                 name: "Medicacion");
 
             migrationBuilder.DropTable(
+                name: "RutinasPorEmpleado");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -538,6 +567,9 @@ namespace CuidadoConect.Migrations
 
             migrationBuilder.DropTable(
                 name: "Residente");
+
+            migrationBuilder.DropTable(
+                name: "Empleado");
 
             migrationBuilder.DropTable(
                 name: "ObraSocial");
@@ -550,9 +582,6 @@ namespace CuidadoConect.Migrations
 
             migrationBuilder.DropTable(
                 name: "Especialidad");
-
-            migrationBuilder.DropTable(
-                name: "Empleado");
 
             migrationBuilder.DropTable(
                 name: "Persona");

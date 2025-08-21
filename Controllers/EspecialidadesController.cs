@@ -77,6 +77,12 @@ namespace CuidadoConect.Controllers
         [HttpPost]
         public async Task<ActionResult<Especialidad>> PostEspecialidad(Especialidad especialidad)
         {
+            var ExisteEspecialidad = _context.Especialidad
+                .FirstOrDefault(e => e.NombreEspecialidad == especialidad.NombreEspecialidad);
+            if (ExisteEspecialidad != null)
+            {
+                return BadRequest("Ya existe una especialidad con el mismo nombre.");
+            }
             _context.Especialidad.Add(especialidad);
             await _context.SaveChangesAsync();
 
