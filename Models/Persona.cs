@@ -1,8 +1,10 @@
 namespace CuidadoConect.Models;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 public class Persona
 {
+    [Key]
     public int Id { get; set; }
     public string? NombreyApellido { get; set; }
     public DateTime FechaNacimiento { get; set; }

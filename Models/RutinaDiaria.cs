@@ -9,8 +9,6 @@ public class RutinaDiaria
     [Key]
     public int RutinaId { get; set; }
     public string? Descripcion { get; set; }
+    public virtual ICollection<DetalleRutina>? DetallesRutinas { get; set; }
 
-    public string? Estado { get; set; }
-    public virtual ICollection<Residente>? Residentes { get; set; }
-    public virtual ICollection<RutinasPorEmpleado>? RutinasPorEmpleados { get; set; }
 }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CuidadoConect.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250821012705_CrearRutinasPorEmpleado")]
-    partial class CrearRutinasPorEmpleado
+    [Migration("20250826004547_MigrationsInitial")]
+    partial class MigrationsInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,6 +127,56 @@ namespace CuidadoConect.Migrations
                     b.ToTable("CitaMedica");
                 });
 
+            modelBuilder.Entity("CuidadoConect.Models.DetalleRutina", b =>
+                {
+                    b.Property<int>("DetalleRutinaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetalleRutinaId"));
+
+                    b.Property<bool>("Domingo")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeOnly>("Hora")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("Jueves")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Lunes")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Martes")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Miercoles")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Observaciones")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ResidenteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RutinaId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Sabado")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Viernes")
+                        .HasColumnType("bit");
+
+                    b.HasKey("DetalleRutinaId");
+
+                    b.HasIndex("ResidenteId");
+
+                    b.HasIndex("RutinaId");
+
+                    b.ToTable("DetalleRutina");
+                });
+
             modelBuilder.Entity("CuidadoConect.Models.Empleado", b =>
                 {
                     b.Property<int>("Id")
@@ -200,6 +250,35 @@ namespace CuidadoConect.Migrations
                     b.HasIndex("ResidenteId");
 
                     b.ToTable("HistorialMedico");
+                });
+
+            modelBuilder.Entity("CuidadoConect.Models.HistorialRutina", b =>
+                {
+                    b.Property<int>("HistorialId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HistorialId"));
+
+                    b.Property<bool>("Completado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("DetalleRutinaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmpleadoId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("FechaHora")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistorialId");
+
+                    b.HasIndex("DetalleRutinaId");
+
+                    b.HasIndex("EmpleadoId");
+
+                    b.ToTable("HistorialRutina");
                 });
 
             modelBuilder.Entity("CuidadoConect.Models.Medicacion", b =>
@@ -337,10 +416,10 @@ namespace CuidadoConect.Migrations
                     b.Property<int>("PersonaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProfesionalId")
+                    b.Property<int?>("PersonaId1")
                         .HasColumnType("int");
 
-                    b.Property<int>("RutinaDiariaId")
+                    b.Property<int?>("ProfesionalId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -349,9 +428,9 @@ namespace CuidadoConect.Migrations
 
                     b.HasIndex("PersonaId");
 
-                    b.HasIndex("ProfesionalId");
+                    b.HasIndex("PersonaId1");
 
-                    b.HasIndex("RutinaDiariaId");
+                    b.HasIndex("ProfesionalId");
 
                     b.ToTable("Residente");
                 });
@@ -367,41 +446,9 @@ namespace CuidadoConect.Migrations
                     b.Property<string>("Descripcion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Estado")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("RutinaId");
 
                     b.ToTable("RutinaDiaria");
-                });
-
-            modelBuilder.Entity("CuidadoConect.Models.RutinasPorEmpleado", b =>
-                {
-                    b.Property<int>("RutinasPorEmpleadoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RutinasPorEmpleadoId"));
-
-                    b.Property<int>("EmpleadoId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("FechaAsignacion")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Observaciones")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RutinaId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RutinasPorEmpleadoId");
-
-                    b.HasIndex("EmpleadoId");
-
-                    b.HasIndex("RutinaId");
-
-                    b.ToTable("RutinasPorEmpleado");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -556,6 +603,25 @@ namespace CuidadoConect.Migrations
                     b.Navigation("Residente");
                 });
 
+            modelBuilder.Entity("CuidadoConect.Models.DetalleRutina", b =>
+                {
+                    b.HasOne("CuidadoConect.Models.Residente", "Residente")
+                        .WithMany("DetallesRutinas")
+                        .HasForeignKey("ResidenteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CuidadoConect.Models.RutinaDiaria", "RutinaDiaria")
+                        .WithMany("DetallesRutinas")
+                        .HasForeignKey("RutinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Residente");
+
+                    b.Navigation("RutinaDiaria");
+                });
+
             modelBuilder.Entity("CuidadoConect.Models.Empleado", b =>
                 {
                     b.HasOne("CuidadoConect.Models.Persona", "Persona")
@@ -584,6 +650,25 @@ namespace CuidadoConect.Migrations
                     b.Navigation("Profesional");
 
                     b.Navigation("Residente");
+                });
+
+            modelBuilder.Entity("CuidadoConect.Models.HistorialRutina", b =>
+                {
+                    b.HasOne("CuidadoConect.Models.DetalleRutina", "DetalleRutina")
+                        .WithMany("Historiales")
+                        .HasForeignKey("DetalleRutinaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CuidadoConect.Models.Empleado", "Empleado")
+                        .WithMany()
+                        .HasForeignKey("EmpleadoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DetalleRutina");
+
+                    b.Navigation("Empleado");
                 });
 
             modelBuilder.Entity("CuidadoConect.Models.Medicacion", b =>
@@ -625,45 +710,22 @@ namespace CuidadoConect.Migrations
                         .IsRequired();
 
                     b.HasOne("CuidadoConect.Models.Persona", "Persona")
-                        .WithMany("Residentes")
+                        .WithMany()
                         .HasForeignKey("PersonaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("CuidadoConect.Models.Persona", null)
+                        .WithMany("Residentes")
+                        .HasForeignKey("PersonaId1");
 
                     b.HasOne("CuidadoConect.Models.Profesional", null)
                         .WithMany("Residentes")
                         .HasForeignKey("ProfesionalId");
 
-                    b.HasOne("CuidadoConect.Models.RutinaDiaria", "RutinaDiaria")
-                        .WithMany("Residentes")
-                        .HasForeignKey("RutinaDiariaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("ObraSocial");
 
                     b.Navigation("Persona");
-
-                    b.Navigation("RutinaDiaria");
-                });
-
-            modelBuilder.Entity("CuidadoConect.Models.RutinasPorEmpleado", b =>
-                {
-                    b.HasOne("CuidadoConect.Models.Empleado", "Empleado")
-                        .WithMany("RutinasPorEmpleados")
-                        .HasForeignKey("EmpleadoId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("CuidadoConect.Models.RutinaDiaria", "RutinaDiaria")
-                        .WithMany("RutinasPorEmpleados")
-                        .HasForeignKey("RutinaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Empleado");
-
-                    b.Navigation("RutinaDiaria");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -717,9 +779,9 @@ namespace CuidadoConect.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CuidadoConect.Models.Empleado", b =>
+            modelBuilder.Entity("CuidadoConect.Models.DetalleRutina", b =>
                 {
-                    b.Navigation("RutinasPorEmpleados");
+                    b.Navigation("Historiales");
                 });
 
             modelBuilder.Entity("CuidadoConect.Models.Especialidad", b =>
@@ -754,6 +816,8 @@ namespace CuidadoConect.Migrations
                 {
                     b.Navigation("CitasMedicas");
 
+                    b.Navigation("DetallesRutinas");
+
                     b.Navigation("HistorialMedicos");
 
                     b.Navigation("Medicaciones");
@@ -761,9 +825,7 @@ namespace CuidadoConect.Migrations
 
             modelBuilder.Entity("CuidadoConect.Models.RutinaDiaria", b =>
                 {
-                    b.Navigation("Residentes");
-
-                    b.Navigation("RutinasPorEmpleados");
+                    b.Navigation("DetallesRutinas");
                 });
 #pragma warning restore 612, 618
         }

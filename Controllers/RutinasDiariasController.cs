@@ -29,9 +29,9 @@ namespace CuidadoConect.Controllers
 
         // GET: api/RutinasDiarias/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RutinaDiaria>> GetRutinaDiaria(int RutinaId)
+        public async Task<ActionResult<RutinaDiaria>> GetRutinaDiaria(int id)
         {
-            var rutinaDiaria = await _context.RutinaDiaria.FindAsync(RutinaId);
+            var rutinaDiaria = await _context.RutinaDiaria.FindAsync(id);
 
             if (rutinaDiaria == null)
             {
@@ -77,7 +77,6 @@ namespace CuidadoConect.Controllers
         [HttpPost]
         public async Task<ActionResult<RutinaDiaria>> PostRutinaDiaria(RutinaDiaria rutinaDiaria)
         {
-           
             _context.RutinaDiaria.Add(rutinaDiaria);
             await _context.SaveChangesAsync();
 
