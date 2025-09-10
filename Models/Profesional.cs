@@ -7,7 +7,7 @@ public class Profesional
     public virtual Persona? Persona { get; set; }
     public int EspecialidadId { get; set; }
     public virtual Especialidad? Especialidad { get; set; }
-    public virtual ICollection<HistorialMedico>? HistorialMedico { get; set; }
-    public virtual ICollection<Residente>? Residentes { get; set; }
-    public virtual ICollection<CitaMedica>? CitasMedicas { get; set; }
+    public virtual ICollection<HistorialMedico> HistorialMedico { get; set; } = [];
+    public virtual ICollection<Residente> Residentes { get; set; } = [];
+    public virtual ICollection<CitaMedica> CitasMedicas { get; set; } = [];
 }

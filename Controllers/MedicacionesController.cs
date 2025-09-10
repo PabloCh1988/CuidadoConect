@@ -20,11 +20,17 @@ namespace CuidadoConect.Controllers
             _context = context;
         }
 
-        // GET: api/Medicaciones
+        // GET: api/Medicaciones?residenteId=5
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Medicacion>>> GetMedicacion()
+        public async Task<ActionResult<IEnumerable<Medicacion>>> GetMedicaciones([FromQuery] int? residenteId)
         {
-            return await _context.Medicacion.ToListAsync();
+            IQueryable<Medicacion> query = _context.Medicacion;
+
+            if (residenteId.HasValue)
+                query = query.Where(m => m.ResidenteId == residenteId.Value);
+
+            var list = await query.ToListAsync();
+            return Ok(list);
         }
 
         // GET: api/Medicaciones/5

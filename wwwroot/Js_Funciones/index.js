@@ -87,12 +87,40 @@ function abrirModal(personaId, rol) {
     }
     else if (rol === 'Residente') {
         $('#modalResidente').modal('show');
-        console.log("Rol recibido:", rol);
+        $('#formResidente')
+            .data('PersonaId', personaId)
 
-        // Guarda el ID de la persona en el modal para usarlo al guardar
-        $('#formResidente').data('PersonaId', personaId);
-    }
-}
+        console.log("Rol recibido:", rol);
+        $('#modalResidente').on('shown.bs.modal', function () {
+            // Cada vez que se abra el modal, me aseguro de re-ligar el change
+            $('#FotoResidente').off('change.preview').on('change.preview', function () {
+                const archivo = this.files[0];
+                const preview = $('#previewFoto');
+                // PARA CARGAR Y MOSTRAR LA IMAGEN ANTES DE GUARDAR EL RESIDENTE
+                if (!archivo) {
+                    preview.attr('src', '').hide();
+                    return;
+                }
+
+                const tiposPermitidos = ["image/jpeg", "image/png", "image/webp"];
+                if (!tiposPermitidos.includes(archivo.type)) {
+                    mensajesError('#errorCrearResidente', null, "Formato de imagen no válido");
+                    preview.hide();
+                    return;
+                }
+
+                if (archivo.size > 2 * 1024 * 1024) {
+                    mensajesError('#errorCrearResidente', null, "La imagen no debe superar los 2MB");
+                    preview.hide();
+                    return;
+                }
+
+                const urlTemporal = URL.createObjectURL(archivo);
+                preview.attr('src', urlTemporal).hide().fadeIn(300);
+            });
+        });
+    };
+};
 
 async function guardarPersona() {
     const crearPersona = {
@@ -113,6 +141,8 @@ async function guardarPersona() {
             method: "POST",
             body: JSON.stringify(crearPersona)
         });
+        const telefono = crearPersona.telefono;
+        console.log("telefonoguardado", telefono);
 
         $("#ModalCrearPersonas").modal("hide");
         ObtenerPersonas();

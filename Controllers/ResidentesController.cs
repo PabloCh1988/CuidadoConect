@@ -24,21 +24,64 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Residente>>> GetResidente()
         {
-            return await _context.Residente.ToListAsync();
+            var residentes = await _context.Residente
+            .Include(r => r.Persona)
+            .Include(r => r.ObraSocial) // ← si ObraSocial es una navegación a Persona
+            .Select(r => new ResidenteDto
+            {
+                ResidenteId = r.Id,
+                NombreResidente = r.Persona.NombreyApellido,
+                Edad = CalcularEdad(r.Persona.FechaNacimiento),
+                FechaIngreso = r.FechaIngreso,
+                Observaciones = r.Observaciones,
+                ContactoEmergencia = r.Persona.Telefono,
+                EmailFamiliar = r.EmailFamiliar,
+                FotoBase64 = r.FotoBase64,
+                NombreObraSocial = r.ObraSocial.Nombre
+            }).ToListAsync();
+
+            return Ok(residentes);
+        }
+        public static int CalcularEdad(DateTime fechaNacimiento)
+        {
+            var hoy = DateTime.Today;
+            var edad = hoy.Year - fechaNacimiento.Year;
+
+            // Si aún no cumplió años este año, se resta uno
+            if (fechaNacimiento.Date > hoy.AddYears(-edad)) edad--;
+
+            return edad;
         }
 
         // GET: api/Residentes/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Residente>> GetResidente(int id)
+        public async Task<ActionResult<ResidenteDto>> GetResidente(int id)
         {
-            var residente = await _context.Residente.FindAsync(id);
+            var residente = await _context.Residente
+                .Include(r => r.Persona)
+                .Include(r => r.ObraSocial)
+                .Where(r => r.Id == id)
+                .Select(r => new ResidenteDto
+                {
+                    ResidenteId = r.Id,
+                    NombreResidente = r.Persona.NombreyApellido,
+                    Edad = CalcularEdad(r.Persona.FechaNacimiento),
+                    FechaIngreso = r.FechaIngreso,
+                    Observaciones = r.Observaciones,
+                    ContactoEmergencia = r.Persona.Telefono,
+                    EmailFamiliar = r.EmailFamiliar,
+                    FotoBase64 = r.FotoBase64,
+                    NombreObraSocial = r.ObraSocial.Nombre,
+                    
+                })
+                .FirstOrDefaultAsync();
 
             if (residente == null)
             {
                 return NotFound();
             }
 
-            return residente;
+            return Ok(residente);
         }
 
         // PUT: api/Residentes/5
@@ -88,6 +131,25 @@ namespace CuidadoConect.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetResidente", new { id = residente.Id }, residente);
+        }
+        //POST PARAA SUBIR IMAGENES
+        [HttpPost("{id}/foto")]
+        public async Task<IActionResult> SubirFotoBase64(int id, IFormFile foto)
+        {
+            var residente = await _context.Residente.FindAsync(id);
+            if (residente == null) return NotFound();
+
+            using var ms = new MemoryStream();
+            await foto.CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            var base64 = Convert.ToBase64String(bytes);
+
+            // Detectar tipo MIME (opcional)
+            var mimeType = foto.ContentType; // ej: "image/jpeg"
+            residente.FotoBase64 = $"data:{mimeType};base64,{base64}";
+
+            await _context.SaveChangesAsync();
+            return Ok(new { residente.FotoBase64 });
         }
 
 

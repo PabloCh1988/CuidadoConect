@@ -1,26 +1,4 @@
-// API_Profesional = "https://localhost:7233/api/profesionales";
 
-// function ObtenerProfesionales() {
-//     const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-//     const authHeaders = () => ({
-//         "Content-Type": "application/json",
-//         "Authorization": `Bearer ${getToken()}`
-//     }); // Configurar los headers de autenticación
-//     fetch(API_Profesional, { headers: authHeaders() })
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error("Error al obtener los profesionales");
-//             }
-//             return response.json();
-//         })
-//         .then(data => {
-//             MostrarProfesionales(data); // Llamar a la función para mostrar los profesionales
-//         })
-//         .catch(error => {
-//             console.error("Error al obtener los profesionales:", error);
-//             alert("Error al obtener los profesionales: " + error.message);
-//         });
-// }
 async function ObtenerProfesionales() {
     try {
         const data = await authFetch("profesionales"); // 👈 ya devuelve JSON

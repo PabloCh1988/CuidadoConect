@@ -19,5 +19,5 @@ public class DetalleRutina
 
     public TimeOnly Hora { get; set; }
 
-    public ICollection<HistorialRutina>? Historiales { get; set; }
+    public ICollection<HistorialRutina> Historiales { get; set; } = [];
 }

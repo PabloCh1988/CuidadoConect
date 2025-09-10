@@ -46,7 +46,8 @@ function authFetch(url, options, retry) {
     options = options || {}; // Asegurarse de que options esté definido
     options.headers = options.headers || {}; // Asegurarse de que headers esté definido
     options.headers["Authorization"] = "Bearer " + getToken();// Agregar el token al encabezado de autorización
-    options.headers["Content-Type"] = "application/json";// Asegurar el tipo de contenido
+    if (!(options.body instanceof FormData)) {
+        options.headers["Content-Type"] = "application/json"; } // Asegurar el tipo de contenido
 
     return fetch(Base_API_URL + url, options).then(async function (response) {
         if (response.status === 401 && retry) {

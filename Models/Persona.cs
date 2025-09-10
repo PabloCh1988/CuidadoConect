@@ -13,9 +13,9 @@ public class Persona
     public string? Telefono { get; set; }
     public string? Rol { get; set; }
 
-    public virtual ICollection<Empleado>? Empleados { get; set; }
-    public virtual ICollection<Profesional>? Profesionales { get; set; }
-    public virtual ICollection<Residente>? Residentes { get; set; }
+    public virtual ICollection<Empleado> Empleados { get; set; } = [];
+    public virtual ICollection<Profesional> Profesionales { get; set; } = [];
+    public virtual ICollection<Residente> Residentes { get; set; } = [];
 }
 
 public enum SexoPersona

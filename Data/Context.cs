@@ -36,6 +36,24 @@ public class Context : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder); // Llama al método base para aplicar las configuraciones predeterminadas
 
+            modelBuilder.Entity<Residente>()
+        .HasOne(r => r.Persona)
+        .WithMany(p => p.Residentes)
+        .HasForeignKey(r => r.PersonaId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    modelBuilder.Entity<Empleado>()
+        .HasOne(e => e.Persona)
+        .WithMany(p => p.Empleados)
+        .HasForeignKey(e => e.PersonaId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    modelBuilder.Entity<Profesional>()
+        .HasOne(pr => pr.Persona)
+        .WithMany(p => p.Profesionales)
+        .HasForeignKey(pr => pr.PersonaId)
+        .OnDelete(DeleteBehavior.Restrict);
+
         modelBuilder.Entity<CitaMedica>()
             .HasOne(cm => cm.Residente)// Relación con Residente
             .WithMany(r => r.CitasMedicas) // Especifica la colección inversa
@@ -53,22 +71,21 @@ public class Context : IdentityDbContext<ApplicationUser>
             .HasMany(r => r.DetallesRutinas)
             .WithOne(d => d.Residente)
             .HasForeignKey(d => d.ResidenteId)
-            .OnDelete(DeleteBehavior.Cascade);
-
+            .OnDelete(DeleteBehavior.Restrict);
 
         // RutinaDiaria → DetalleRutina (1:N)
         modelBuilder.Entity<RutinaDiaria>()
             .HasMany(r => r.DetallesRutinas)
             .WithOne(d => d.RutinaDiaria)
             .HasForeignKey(d => d.RutinaId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         // DetalleRutina → HistorialRutina (1:N)
         modelBuilder.Entity<DetalleRutina>()
             .HasMany(d => d.Historiales)
             .WithOne(h => h.DetalleRutina)
             .HasForeignKey(h => h.DetalleRutinaId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Empleado → HistorialRutina (1:N)
         modelBuilder.Entity<Empleado>()
@@ -77,20 +94,11 @@ public class Context : IdentityDbContext<ApplicationUser>
             .HasForeignKey(h => h.EmpleadoId)
             .OnDelete(DeleteBehavior.Restrict); // Para evitar borrado en cascada de empleados
 
-modelBuilder.Entity<Residente>()
-    .HasOne(r => r.Persona)
-    .WithMany(p => p.Residentes) // 👈 ahora sí coincide con tu modelo
-    .HasForeignKey(r => r.PersonaId)
-    .OnDelete(DeleteBehavior.Restrict);
-
-
-
         modelBuilder.Entity<Residente>()
-            .HasOne(r => r.ObraSocial)
-            .WithMany(os => os.Residentes)
-            .HasForeignKey(r => r.ObraSocialId)
-            .OnDelete(DeleteBehavior.Restrict);
-
+        .HasOne(r => r.ObraSocial)
+        .WithMany(os => os.Residentes)
+        .HasForeignKey(r => r.ObraSocialId)
+        .OnDelete(DeleteBehavior.Restrict);
     }
 
     public DbSet<CuidadoConect.Models.HistorialRutina> HistorialRutina { get; set; } = default!;

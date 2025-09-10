@@ -1,63 +1,45 @@
- <!-- table section Rutinas Diarias -->
-    <div class="col-md-12 margin_top_30">
-        <div class="white_shd full margin_bottom_30">
-            <div class="dash_head d-flex justify-content-between align-items-center">
-                <h3>Rutinas Diarias</h3>
-                <button type="button" class="model_bt btn btn-success fa fa-plus" data-toggle="modal"
-                    data-target="#ModalCrearRutinasDiarias" aria-hidden="true"></button>
-            </div>
-            <div class="table_section padding_infor_info">
-                <div class="table-responsive-sm">
-                    <table id="Rutinas" class="table table-hover">
-                        <thead>
-                            <tr class="table-primary">
-                                <th>Descripcion</th>
-                                <th>Estado</th>
-                                <th></th>
-                                <th></th>
+<!-- table section Rutinas Diarias -->
+<div class="row column1">
+  <div class="col-md-12 margin_top_30">
+    <div class="white_shd full margin_bottom_30">
+      <div class="dash_head d-flex justify-content-between align-items-center">
+        <h3>Rutinas Diarias</h3>
+        <!-- <button type="button" class="model_bt btn btn-success fa fa-plus" data-toggle="modal"
+          data-target="#ModalCrearRutinasDiarias" aria-hidden="true"></button> -->
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <h4 class="modal-title padding-bottom_1 pad-1">Agregar Rutina</h4>
+        <div class="row">
+          <div class="modal-footer col-md-10">
+            <input type="hidden" id="editarRutinaId" disabled placeholder="0" />
+            <!-- <label for="Descripcion" class="form-label">Descripción</label> -->
+            <input type="text" class="form-control" id="Descripcion" placeholder="Descripción de la rutina" />
+            <span id="errorCrearRutina" class="text-danger"></span>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="guardarRutina()">
+              Guardar
+            </button>
+          </div>
 
-                            </tr>
-                        </thead>
-                        <tbody id="todasLasRutinas"></tbody>
-                    </table>
-                </div>
-            </div>
         </div>
-    </div>
-</div>
-<!-- The Modal -->
-<div id="ModalCrearRutinasDiarias" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header dash_head">
-                <h4 class="modal-title">Agregar Rutina Diaria</h4>
-            </div>
-            <!-- Modal body -->
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <label for="Descripcion" class="form-label">Descripción</label>
-                        <input type="text" class="form-control" id="Descripcion" placeholder="Descripción de la rutina">
-                    </div>
-                    <div class="col-md-12">
-                        <label for="Estado" class="form-label"></label>
-                        <select id="Estado" class="form-control">
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="En Progreso">En Progreso</option>
-                            <option value="Completada">Completada</option>
-                            <option value="Cancelada">Cancelada</option>
-                        </select>
-                    </div>
+      </div>
 
-                    <span id="errorCrearRutina" class="text-danger"></span>
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="guardarRutina()">Guardar</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal"|>Cancelar</button>
-            </div>
+      <div class="table_section padding_infor_info2">
+        <div class="table-responsive-sm">
+          <table id="Rutinas" class="table table-hover">
+            <thead>
+              <tr class="table-primary">
+                <th>Descripcion</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="todasLasRutinas"></tbody>
+          </table>
         </div>
+      </div>
     </div>
+  </div>
 </div>
