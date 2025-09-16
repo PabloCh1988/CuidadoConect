@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuidadoConect.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CuidadoConect.Controllers
 {
@@ -15,9 +17,12 @@ namespace CuidadoConect.Controllers
     {
         private readonly Context _context;
 
-        public ResidentesController(Context context)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public ResidentesController(Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Residentes
@@ -72,7 +77,7 @@ namespace CuidadoConect.Controllers
                     EmailFamiliar = r.EmailFamiliar,
                     FotoBase64 = r.FotoBase64,
                     NombreObraSocial = r.ObraSocial.Nombre,
-                    
+
                 })
                 .FirstOrDefaultAsync();
 
@@ -130,9 +135,26 @@ namespace CuidadoConect.Controllers
 
             await _context.SaveChangesAsync();
 
+            var user = new ApplicationUser
+            {
+                UserName = residente.EmailFamiliar,
+                Email = residente.EmailFamiliar,
+                NombreCompleto = persona.NombreyApellido
+            };
+
+            var result = await _userManager.CreateAsync(user, "Familiar2025."); // Contraseña por defecto
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "FAMILIAR"); // Asignar rol de Identity
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
+
             return CreatedAtAction("GetResidente", new { id = residente.Id }, residente);
         }
-        //POST PARAA SUBIR IMAGENES
+        //POST PARA SUBIR IMAGENES
         [HttpPost("{id}/foto")]
         public async Task<IActionResult> SubirFotoBase64(int id, IFormFile foto)
         {

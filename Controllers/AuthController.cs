@@ -40,6 +40,28 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
+        //CREAR ROLES SI NO EXISTEN
+        var nombreRolCrearExiste = _context.Roles.Where(r => r.Name == "ADMINISTRADOR").SingleOrDefault(); //UNO O NULO
+        if (nombreRolCrearExiste == null)
+        {
+            var roleResult = await _roleManager.CreateAsync(new IdentityRole("ADMINISTRADOR")); //CREAMOS EL ROL SI NO EXISTE
+        }
+        var EmpleadoRolCrearExiste = _context.Roles.Where(r => r.Name == "EMPLEADO").SingleOrDefault();
+        if (EmpleadoRolCrearExiste == null)
+        {
+            var roleResult = await _roleManager.CreateAsync(new IdentityRole("EMPLEADO"));//CREAMOS EL ROL SI NO EXISTE
+        }
+
+        var ProfesionalRolCrearExiste = _context.Roles.Where(r => r.Name == "PROFESIONAL").SingleOrDefault();
+        if (ProfesionalRolCrearExiste == null)
+        {
+            var roleResult = await _roleManager.CreateAsync(new IdentityRole("PROFESIONAL"));//CREAMOS EL ROL SI NO EXISTE
+        }
+        var familiarRolCrearExiste = _context.Roles.Where(r => r.Name == "FAMILIAR").SingleOrDefault();
+        if (familiarRolCrearExiste == null)
+        {
+            var roleResult = await _roleManager.CreateAsync(new IdentityRole("FAMILIAR")); //CREAMOS EL ROL SI NO EXISTE
+        }
         //ARMAMOS EL OBJETO COMPLETANDO LOS ATRIBUTOS COMPLETADOS POR EL USUARIO
         var user = new ApplicationUser
         {
@@ -51,8 +73,11 @@ public class AuthController : ControllerBase
         //HACEMOS USO DEL MÉTODO REGISTRAR USUARIO
         var result = await _userManager.CreateAsync(user, model.Password);
 
-        if (result.Succeeded)
+        if (result.Succeeded) //SI SE REGISTRA CORRECTAMENTE
+        {
+            await _userManager.AddToRoleAsync(user, "ADMINISTRADOR"); // ASIGNAMOS UN ROL POR DEFECTO AL USUARIO
             return Ok("Usuario registrado");
+        }
 
         return BadRequest(result.Errors);
     }
@@ -64,118 +89,42 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
+            string rolNombre = "EMPLEADO";
+            //BUSCAR ROL QUE TIENE
+            var rolUsuario = _context.UserRoles.Where(r => r.UserId == user.Id).SingleOrDefault();
+            if (rolUsuario != null) //SI TIENE UN ROL ASIGNADO
+            {
+                var rol = _context.Roles.Where(r => r.Id == rolUsuario.RoleId).SingleOrDefault(); //BUSCAMOS EL ROL EN LA TABLA ROLES
+                rolNombre = rol.Name; // OBTENEMOS EL NOMBRE DEL ROL ASIGNADO AL USUARIO
+            }
             //SI EL USUARIO ES ENCONTRADO Y LA CONTRASEÑA ES CORRECTA
             var claims = new[]
             {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // ID DEL USUARIO
+            new Claim(ClaimTypes.Name, user.UserName), // USUARIO
+            new Claim("NombreCompleto", user.NombreCompleto),// NOMBRE COMPLETO DEL USUARIO
+            new Claim (ClaimTypes.Role, rolNombre), // ASIGNAMOS EL ROL AL USUARIO
             };
 
             //RECUPERAMOS LA KEY SETEADA EN EL APPSETTING
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            // var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            // var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            //ARMAMOS EL OBJETO CON LOS ATRIBUTOS PARA GENERAR EL TOKEN
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Issuer"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(15),
-                signingCredentials: creds
-            );
 
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            await _signInManager.SignInAsync(user, isPersistent: false); // 👈 esto inicia la sesión con cookie
 
-            // GENERAMOS EL REFRESH TOKEN
-            var refreshToken = GenerarRefreshToken();
-            //GUARDAMOS EN BASE DE DATOS EL REFRESH TOKEN
-            var setTokenResult = await _userManager.SetAuthenticationTokenAsync(user, "MyApp", "RefreshToken", refreshToken);
-            if (!setTokenResult.Succeeded)
-            {
-                return StatusCode(500, "No se pudo guardar el refresh token");
-            }
-
-            return Ok(new
-            {
-                token = jwt,
-                refreshToken = refreshToken,
-                nombreCompleto = user.NombreCompleto,
-            });
+            return Ok(new { mensaje = "Login exitoso" });
         }
 
         return Unauthorized("Credenciales inválidas");
-    }
 
-    private string GenerarRefreshToken()
-    {
-        var randomBytes = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomBytes);
-        return Convert.ToBase64String(randomBytes);
-    }
-
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest model)
-    {
-        //BUSCAMOS EL USUARIO POR EMAIL EN BASE DE DATOS
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null)
-            return Unauthorized();
-
-        //BUSCAMOS EL TOKENREFRESH GUARDADO
-        var savedToken = await _userManager.GetAuthenticationTokenAsync(user, "MyApp", "RefreshToken");
-        if (string.IsNullOrEmpty(savedToken))
-            return Unauthorized("No hay refresh token guardado para este usuario");
-
-        //COMPARAMOS EL REFRESH TOKEN DE BD CON EL GUARDADO EN EL DISPOSITIVO DEL USUARIO PARA UNA MAYOR SEGURIDAD
-        if (savedToken != model.RefreshToken)
-            return Unauthorized("Refresh token inválido");
-
-        //GENERAMOS EL NUEVO TOKEN DE ACCESO PRINCIPAL
-        var claims = new[]
-        {
-        new Claim(ClaimTypes.Name, user.UserName),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var newToken = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Issuer"],
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(15),
-            signingCredentials: creds
-        );
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(newToken);
-
-        //GENERAMOS UN NUEVO REFRESH TOCKEN
-        var newRefreshToken = GenerarRefreshToken();
-        //VOLVEMOS A GUARDAR ESE REGISTRO
-        var setTokenResult = await _userManager.SetAuthenticationTokenAsync(user, "MyApp", "RefreshToken", newRefreshToken);
-        if (!setTokenResult.Succeeded)
-        {
-            return StatusCode(500, "No se pudo guardar el nuevo refresh token");
-        }
-
-        return Ok(new
-        {
-            token = jwt,
-            refreshToken = newRefreshToken
-        });
     }
 
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout([FromBody] LogoutRequest model)
+    public async Task<IActionResult> Logout()
     {
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null)
-            return BadRequest();
-
-        await _userManager.RemoveAuthenticationTokenAsync(user, "MyApp", "RefreshToken");
-        return Ok("Sesión cerrada correctamente");
+        await _signInManager.SignOutAsync(); // 👈 elimina la cookie
+        return Ok(new { mensaje = "Sesión cerrada correctamente" }); // 👈 devuelve JSON válido
     }
 
 }

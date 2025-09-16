@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CuidadoConect") ?? throw new InvalidOperationException("Connection string 'CuidadoConect' not found.")));
 
-    // Configuración Identity
+// Configuración Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<Context>()
     .AddDefaultTokenProviders();
@@ -22,31 +22,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtIssuer,
-        ValidAudience = jwtIssuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-    };
-});
-
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+});
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -65,15 +46,25 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("https://localhost:7233") // tu frontend
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // 👈 esto es clave para cookie
         });
 });
+
+builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/api/auth/login";
+        options.LogoutPath = "/api/auth/logout";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+    });
 
 builder.Services.AddControllers();
 var app = builder.Build();
 
-// Usar CORS
-app.UseCors("AllowFrontend");
+
 
 
 app.UseSwagger();
@@ -89,12 +80,14 @@ app.UseDefaultFiles(new DefaultFilesOptions
 {
     DefaultFileNames = new List<string> { "login.html" }
 });
-app.UseStaticFiles();
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+// Usar CORS
+app.UseCors("AllowFrontend");
 
-app.UseCors("AllowAll");
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

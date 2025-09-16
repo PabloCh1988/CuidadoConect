@@ -8,6 +8,7 @@ async function ObtenerProfesionales() {
                 "<tr>" +
                 "<td>" + profesional.persona.nombreyApellido + "</td>" +
                 "<td>" + profesional.especialidad.nombreEspecialidad + "</td>" +
+                "<td>" + profesional.email + "</td>" +
                 "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarProfesional(" + profesional.id + ")'></button></td>" +
                 "</tr>"
             );
@@ -37,7 +38,8 @@ async function CrearProfesional() {
     }
     const profesional = {
         personaId: personaId,
-        especialidadId: especialidadId
+        especialidadId: especialidadId,
+        email: document.getElementById("EmailProfesional").value
     };
     try {
         const data = await authFetch("profesionales", {

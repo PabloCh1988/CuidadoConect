@@ -4,6 +4,7 @@ public class Profesional
 {
     public int Id { get; set; }
     public int PersonaId { get; set; }
+    public string? Email { get; set; }
     public virtual Persona? Persona { get; set; }
     public int EspecialidadId { get; set; }
     public virtual Especialidad? Especialidad { get; set; }

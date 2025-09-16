@@ -109,6 +109,9 @@
                         <option value="3">Noche</option>
                     </select>
 
+                    <label for="EmailEmpleado" class="form-label">Email</label>
+                    <input type="email" id="EmailEmpleado" class="form-control">
+
                     <!-- Área de error general -->
                     <span id="errorCrearEmpleado" class="text-danger"></span>
 
@@ -156,8 +159,11 @@
                     <select id="EspecialidadId" class="form-control">
                     </select>
 
+                    <label for="EmailProfesional" class="form-label">Email</label>
+                    <input type="email" id="EmailProfesional" class="form-control">
+
                     <!-- Área de error general -->
-                    <span id="errorCrearEmpleado" class="text-danger"></span>
+                    <span id="errorCrearProfesional" class="text-danger"></span>
 
                 </div>
             </div>
@@ -185,7 +191,7 @@
 
                     <!-- PersonaId llega desde otro flujo (hidden) -->
                     <input type="number" id="PersonaId" readonly hidden>
-                    
+
 
                     <!-- Turno (enum en backend) -->
                     <label for="FechaIngreso" class="form-label">Fecha de Ingreso</label>

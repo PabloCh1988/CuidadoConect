@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuidadoConect.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace CuidadoConect.Controllers
 {
@@ -15,9 +17,12 @@ namespace CuidadoConect.Controllers
     {
         private readonly Context _context;
 
-        public ProfesionalesController(Context context)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public ProfesionalesController(Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Profesionales
@@ -87,6 +92,23 @@ namespace CuidadoConect.Controllers
             }
 
             await _context.SaveChangesAsync();
+
+            var user = new ApplicationUser // Crear usuario en Identity
+            {
+                UserName = profesional.Email,
+                Email = profesional.Email,
+                NombreCompleto = persona?.NombreyApellido ?? ""
+            };
+
+            var result = await _userManager.CreateAsync(user, "Profesional2025."); // Contraseña por defecto
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "PROFESIONAL"); // Asignar rol de Identity
+            }
+            else
+            {
+                return BadRequest(result.Errors); // Manejar errores de creación de usuario
+            }
 
             return CreatedAtAction("GetProfesional", new { id = profesional.Id }, profesional);
         }

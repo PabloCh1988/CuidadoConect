@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuidadoConect.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CuidadoConect.Controllers
 {
@@ -15,9 +17,12 @@ namespace CuidadoConect.Controllers
     {
         private readonly Context _context;
 
-        public EmpleadosController(Context context)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public EmpleadosController(Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Empleados
@@ -88,6 +93,23 @@ namespace CuidadoConect.Controllers
                 persona.Rol = "Empleado";
             }
             await _context.SaveChangesAsync();
+
+            var user = new ApplicationUser
+            {
+                UserName = empleado.Email,
+                Email = empleado.Email,
+                NombreCompleto = persona?.NombreyApellido ?? ""
+            };
+
+            var result = await _userManager.CreateAsync(user, "Empleado2025."); // Contraseña por defecto
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "EMPLEADO"); // Asignar rol de Identity
+            }
+            else
+            {
+                return BadRequest(result.Errors);
+            }
 
             return CreatedAtAction("GetEmpleado", new { id = empleado.Id }, empleado);
         }
