@@ -148,7 +148,9 @@ function authFetch(url, options) {
         .then(async response => {
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText);
+                const error = new Error(errorText || "Error en la solicitud");
+                error.status = response.status; // 👈 Esto es clave
+                throw error;
             }
             return response.status === 204 ? null : response.json();
         });

@@ -61,7 +61,12 @@ async function CrearProfesional() {
         });
     } catch (err) {
         console.log("Error al crear el profesional:", err);
-        mensajesError('#errorCrear', null, `Error al crear: ${err.message}`);
+
+        if (err.status === 403) {
+            mensajesError('#errorCrearProfesional', null, "No tienes permisos para crear profesionales. Solo el administrador puede realizar esta acción.");
+        } else {
+            mensajesError('#errorCrearProfesional', null, `Error al crear: ${err.message}`);
+        }
     }
 }
 
@@ -97,5 +102,6 @@ async function EliminarProfesionalSi(id) {
             });
             ObtenerProfesionales();
         })
-        .catch(async (err) => console.error("Error al eliminar el profesional:", err));
+        .catch(async (err) =>
+            console.error("Error al eliminar el profesional:", err));
 }

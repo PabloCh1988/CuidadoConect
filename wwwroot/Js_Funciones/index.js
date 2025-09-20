@@ -145,7 +145,7 @@ async function guardarPersona() {
         console.log("telefonoguardado", telefono);
 
         $("#ModalCrearPersonas").modal("hide");
-        ObtenerPersonas();
+        // ObtenerPersonas();
         VaciarModal();
 
         console.log("Persona guardada:", data);
@@ -170,7 +170,23 @@ function VaciarModal() {
     document.getElementById("Sexo").value = "";
     document.getElementById("DNI").value = "";
     document.getElementById("Telefono").value = "";
+    document.getElementById("EmailProfesional").value = "";
+    document.getElementById("EspecialidadId").value = "";
+    document.getElementById("FechaIngreso").value = "";
+    document.getElementById("Email").value = "";
+    document.getElementById("Observaciones").value = "";
+    document.getElementById("ObraSocialId").value = "";
+    document.getElementById("NroAfiliado").value = "";
+    document.getElementById("FotoResidente").value = "";
+    document.getElementById("previewFoto").src = "";
+    document.getElementById("turno").value = "";
+    document.getElementById("EmailEmpleado").value = "";
+    document.getElementById("tareasAsignadas").value = "";
+    $('#errorCrearEmpleado').empty();
+    $('#errorCrearResidente').empty();
+    $('#errorCrearProfesional').empty();
     $("#errorCrear").empty();
+    ObtenerPersonas();
 }
 
 function EliminarPersona(id) {

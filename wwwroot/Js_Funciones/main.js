@@ -25,11 +25,12 @@ function cargarVista(view) {
       } else if (view === "rutinasDiarias") {
         ObtenerRutinas();
       } else if (view === "medicacion") {
-        ObtenerResidentesDrop();
         renderizarResidentesConBoton();
       } else if (view === "historialMedico") {
         // ObtenerResidentesDropdown();
         // CargarProfesional();
+      } else if (view === "agregarMedicacion") {
+        ObtenerResidentesDrop();
       }
 
       // Ejecutar scripts de la vista si los hay

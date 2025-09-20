@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CuidadoConect.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class ProfesionalesController : ControllerBase
@@ -49,6 +50,7 @@ namespace CuidadoConect.Controllers
 
         // PUT: api/Profesionales/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "ADMINISTRADOR")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProfesional(int id, Profesional profesional)
         {
@@ -80,6 +82,7 @@ namespace CuidadoConect.Controllers
 
         // POST: api/Profesionales
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "ADMINISTRADOR")]
         [HttpPost]
         public async Task<ActionResult<Profesional>> PostProfesional(Profesional profesional)
         {
@@ -115,6 +118,7 @@ namespace CuidadoConect.Controllers
 
 
         // DELETE: api/Profesionales/5
+        [Authorize(Roles = "ADMINISTRADOR")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProfesional(int id)
         {

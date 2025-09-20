@@ -1,19 +1,19 @@
-async function ObtenerResidentesDrop() {
-  try {
-    const data = await authFetch("residentes"); // endpoint correcto
-    const select = document.getElementById("residenteSelect");
-    select.innerHTML = '<option value="" selected disabled>Seleccione un residente</option>';
-    data.forEach(residente => {
-      select.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
-    });
-  } catch (err) {
-    console.error("Error al cargar residentes:", err);
-  }
-}
+// async function ObtenerResidentesDrop() {
+//   try {
+//     const data = await authFetch("residentes"); // endpoint correcto
+//     const select = document.getElementById("residenteSelect");
+//     select.innerHTML = '<option value="" selected disabled>Seleccione un residente</option>';
+//     data.forEach(residente => {
+//       select.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
+//     });
+//   } catch (err) {
+//     console.error("Error al cargar residentes:", err);
+//   }
+// }
 
-$('#ModalCrearMedicacion').on('shown.bs.modal', function () {
-  ObtenerResidentesDrop();
-});
+// $('#ModalCrearMedicacion').on('shown.bs.modal', function () {
+//   ObtenerResidentesDrop();
+// });
 
 async function guardarMedicamento() {
   try {
@@ -61,6 +61,16 @@ async function guardarMedicamento() {
     console.log("Error al crear el medicamento:", err);
     mensajesError('#errorCrearMedicamento', null, `Error al crear: ${err.message}`);
   }
+}
+
+async function VaciarFormularioMedicacion() {
+  document.getElementById("NombreMedicamento").value = "";
+  document.getElementById("Dosis").value = "";
+  document.getElementById("Frecuencia").value = "";
+  document.getElementById("ViaAdministracion").value = "";
+  document.getElementById("FechaInicio").value = "";
+  document.getElementById("FechaFin").value = "";
+  $('#errorCrearMedicamento').empty();
 }
 
 async function obtenerMedicamentosPorResidente(residenteId) {
@@ -130,7 +140,7 @@ function mostrarMedicamentosEnModal(html) {
 async function mostrarPerfilConMedicamentos(residente) {
 
   const medicamentos = await obtenerMedicamentosPorResidente(residente.residenteId);
-    const listaMedicamentos = medicamentos.map(med => `
+  const listaMedicamentos = medicamentos.map(med => `
     <div class="card mb-2 shadow-sm">
       <div class="card-body">
         <h5 class="card-title">${med.nombreMedicamento}</h5>
