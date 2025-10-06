@@ -24,13 +24,22 @@ function cargarVista(view) {
         ObtenerObrasSociales();
       } else if (view === "rutinasDiarias") {
         ObtenerRutinas();
+        ObtenerRutinasDrop();
+        ObtenerResidentesDrop();
+        // ObtenerTodasLasRutinas();
       } else if (view === "medicacion") {
-        renderizarResidentesConBoton();
+        ObtenerResidentesDrop();
       } else if (view === "historialMedico") {
         // ObtenerResidentesDropdown();
         // CargarProfesional();
       } else if (view === "agregarMedicacion") {
         ObtenerResidentesDrop();
+      } else if (view === "agregarCitaMedica") {
+        ObtenerResidentesDrop();
+        ObtenerProfesionalesDrop();
+      } else if (view === "historiaClinica") {
+        ObtenerResidentesDrop();
+        // CargarProfesional();
       }
 
       // Ejecutar scripts de la vista si los hay

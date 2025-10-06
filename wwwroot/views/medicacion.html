@@ -6,88 +6,30 @@
     <!-- table section Personas -->
     <div class="col-md-12 margin_top_30">
         <div class="white_shd full margin_bottom_30">
-            <div class="dash_head d-flex justify-content-between align-items-center">
-                <h3>Medicación por residente</h3>
+            <div class="dash_head dash_head2 d-flex flex-wrap justify-content-between align-items-center mb-3">
+                <h3 class="mb-2">Medicación por Residente</h3>
             </div>
-            <div class="table_section padding_infor_info">
-                <div class="full price_table padding_infor_info">
-                    <div id="cardsContainerMedicamentos" class="row">
 
-                    </div>
-                    <!-- <div id="cardsContainerMedicamentos" class="table-responsive-sm">
 
-                    </div> -->
-                </div>
+            <div class="col-md-12">
+                <label for="residenteSelect" class="form-label"></label>
+                <select id="residenteSelect" class="form-control"></select>
             </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalMedicamentos" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Medicaciones del residente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="modalMedicamentosBody">
-                    <!-- Aquí se inyecta el contenido -->
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- The Modal -->
-    <div id="ModalCrearMedicacion" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <!-- Modal Header -->
-                <div class="modal-header dash_head">
-                    <h4 class="modal-title">Agregar Medicación</h4>
-                </div>
-
-                <!-- Modal body -->
-                <div class="modal-body">
-                    <div class="row">
-                        <input type="hidden" id="PersonaId">
-                        <div class="col-md-12">
-                            <label for="residenteSelect" class="form-label">Residente</label>
-                            <select id="residenteSelect" class="form-control">
-                                <!-- <option value="">--Seleccione--</option> -->
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="NombreMedicamento" class="form-label">Medicamento</label>
-                            <input type="text" id="NombreMedicamento" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="Dosis" class="form-label">Dosis</label>
-                            <input type="text" id="Dosis" class="form-control">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="Frecuencia" class="form-label">Frecuencia</label>
-                            <input type="text" id="Frecuencia" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="ViaAdministracion" class="form-label">Vía</label>
-                            <input type="text" id="ViaAdministracion" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="FechaInicio" class="form-label">Fecha Inicio</label>
-                            <input type="date" id="FechaInicio" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="FechaFin" class="form-label">Fecha Fin</label>
-                            <input type="date" id="FechaFin" class="form-control">
-                        </div>
-                        <div class="col-md-12">
-                            <span id="errorCrearMedicamento" class="text-danger form-label"></span>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="guardarMedicamento()">Guardar</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+            <div class="table_section padding_infor_info2">
+                <div class="table-responsive-sm">
+                    <table id="tablaMedicacion" class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th>Medicamento</th>
+                                <th>Dosis</th>
+                                <th class="d-none d-sm-table-cell">Frecuencia</th>
+                                <th>Vía de Administración</th>
+                                <th>Fecha de Inicio</th>
+                                <th>Fecha de Fin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="medicacionPorResidente"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -97,3 +39,4 @@
     <!-- 3. LISTADO de prescripciones -->
     <div id="prescripcionesList" class="mt-4"></div>
     <script src="../Js_Funciones/medicacion.js"></script>
+    <script src="../Js_Funciones/common/ObtenerResidentesDrop.js"></script>

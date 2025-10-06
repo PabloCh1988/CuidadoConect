@@ -17,9 +17,9 @@
                         <thead>
                             <tr class="table-primary">
                                 <th>Nombre y Apellido</th>
-                                <th>Fecha de Nacimiento</th>
-                                <th>Sexo</th>
-                                <th>DNI</th>
+                                <th class="d-none d-sm-table-cell">Fecha de Nacimiento</th>
+                                <th class="d-none d-sm-table-cell">Sexo</th>
+                                <th class="d-none d-sm-table-cell">DNI</th>
                                 <th>Telefono</th>
                                 <th>Rol</th>
                                 <th></th>
@@ -46,8 +46,9 @@
                 <div class="row">
                     <input type="hidden" id="PersonaId">
                     <div class="col-md-12">
+                        <input type="text" class="form-control" id="Nombre" required>
                         <label for="Nombre" class="form-label">Nombre y Apellido</label>
-                        <input type="text" class="form-control" id="Nombre" placeholder="Nombre">
+                        
                     </div>
                     <div class="col-md-6">
                         <label for="Fecha" class="form-label">Fecha de Nacimiento</label>

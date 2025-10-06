@@ -42,7 +42,8 @@ namespace CuidadoConect.Controllers
                 ContactoEmergencia = r.Persona.Telefono,
                 EmailFamiliar = r.EmailFamiliar,
                 FotoBase64 = r.FotoBase64,
-                NombreObraSocial = r.ObraSocial.Nombre
+                NombreObraSocial = r.ObraSocial.Nombre,
+                planObraSocial = r.ObraSocial.Plan // Asegúrate de que 'Plan' es una propiedad de ObraSocial
             }).ToListAsync();
 
             return Ok(residentes);

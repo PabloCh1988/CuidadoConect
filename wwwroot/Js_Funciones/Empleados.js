@@ -32,6 +32,7 @@ async function CrearEmpleado() {
     const turno = parseInt(document.getElementById("turno").value);
     const tareasAsignadas = document.getElementById("tareasAsignadas").value;
     const personaId = $('#formEmpleado').data('PersonaId');
+    const emailempleado = document.getElementById("EmailEmpleado").value;
 
     if (isNaN(personaId)) {
         mensajesError('#errorCrear', null, "Debes seleccionar una persona válida");
@@ -39,7 +40,7 @@ async function CrearEmpleado() {
     }
 
     const empleado = {
-        email: document.getElementById("EmailEmpleado").value,
+        email: emailempleado,
         turno: turno,
         tareasAsignadas: tareasAsignadas,
         personaId: personaId,
@@ -55,6 +56,7 @@ async function CrearEmpleado() {
         ObtenerPersonas();
         document.getElementById("turno").value = "";
         document.getElementById("tareasAsignadas").value = "";
+        document.getElementById("EmailEmpleado").value = "";
         console.log("Empleado guardado:", data);
 
         // 🔥 Actualizar la tabla: quitar el select y mostrar "Empleado"

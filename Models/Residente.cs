@@ -29,4 +29,6 @@ public class ResidenteDto
     public string? EmailFamiliar { get; set; }
     public string? FotoBase64 { get; set; }
     public string? NombreObraSocial { get; set; }
+
+    public string? planObraSocial { get; set; }
 }

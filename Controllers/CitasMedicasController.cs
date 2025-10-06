@@ -27,6 +27,19 @@ namespace CuidadoConect.Controllers
             return await _context.CitaMedica.ToListAsync();
         }
 
+        [HttpGet("por-residente")]
+        public async Task<IActionResult> ObtenerCitasMedicas(int residenteId)
+        {
+            var citas = await _context.CitaMedica
+                .Include(c => c.Profesional)
+                .ThenInclude(p => p.Persona)
+                .Where(c => c.ResidenteId == residenteId)
+                .ToListAsync();
+
+            return Ok(citas);
+        }
+
+
         // GET: api/CitasMedicas/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CitaMedica>> GetCitaMedica(int id)
@@ -82,6 +95,41 @@ namespace CuidadoConect.Controllers
 
             return CreatedAtAction("GetCitaMedica", new { id = citaMedica.Id }, citaMedica);
         }
+
+
+        [HttpPost("agendar")]
+        public async Task<IActionResult> AgendarCita([FromBody] CitaMedica cita)
+        {
+            try
+            {
+                // Estado inicial: Pendiente
+                cita.Estado = EstadoCitaMedica.Pendiente;
+
+                _context.CitaMedica.Add(cita);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { mensaje = "Cita médica agendada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = "Error al agendar la cita", detalle = ex.Message });
+            }
+        }
+
+        [HttpPut("{id}/estado")]
+        public async Task<IActionResult> CambiarEstado(int id, [FromBody] EstadoCitaMedica nuevoEstado)
+        {
+            var cita = await _context.CitaMedica.FindAsync(id);
+            if (cita == null)
+                return NotFound();
+
+            cita.Estado = nuevoEstado;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mensaje = "Estado actualizado" });
+        }
+
+
 
         // DELETE: api/CitasMedicas/5
         [HttpDelete("{id}")]

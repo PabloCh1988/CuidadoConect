@@ -1,20 +1,3 @@
-// async function ObtenerResidentesDrop() {
-//   try {
-//     const data = await authFetch("residentes"); // endpoint correcto
-//     const select = document.getElementById("residenteSelect");
-//     select.innerHTML = '<option value="" selected disabled>Seleccione un residente</option>';
-//     data.forEach(residente => {
-//       select.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
-//     });
-//   } catch (err) {
-//     console.error("Error al cargar residentes:", err);
-//   }
-// }
-
-// $('#ModalCrearMedicacion').on('shown.bs.modal', function () {
-//   ObtenerResidentesDrop();
-// });
-
 async function guardarMedicamento() {
   try {
     const residente = document.getElementById("residenteSelect").value;
@@ -73,101 +56,43 @@ async function VaciarFormularioMedicacion() {
   $('#errorCrearMedicamento').empty();
 }
 
+$(document).on("change", "#residenteSelect", function () {
+  const residenteId = this.value;
+  if (residenteId) {
+    obtenerMedicamentosPorResidente(residenteId);
+  } else {
+    $("#medicacionPorResidente").empty();
+  }
+});
+
 async function obtenerMedicamentosPorResidente(residenteId) {
   try {
-    const medicamentos = await authFetch(`medicaciones?residenteId=${residenteId}`);
-    return medicamentos;
-  } catch (err) {
-    console.error("Error al obtener medicamentos:", err);
-    return [];
-  }
-}
+    console.log("Llamando API con residenteId:", residenteId);
+    const data = await authFetch(`medicaciones?residenteId=${residenteId}`);
+    console.log("Respuesta API:", data);
 
-// const medicamentos = await authFetch(`residentes/${residenteId}/medicaciones`);
-function obtenerBadgeVia(via) {
-  const clases = {
-    "Oral": "badge-success",
-    "Intravenosa": "badge-danger",
-    "Tópica": "badge-warning text-dark"
-  };
-  return `<span class="${clases[via] || 'badge bg-secondary'}">${via}</span>`;
-}
+    $("#medicacionPorResidente").empty();
 
-async function renderizarResidentesConBoton() {
-  try {
-    const residentes = await authFetch("residentes");
-    const container = document.getElementById("cardsContainerMedicamentos");
-    container.innerHTML = "";
+    if (!data || data.length === 0) {
+      $("#medicacionPorResidente").append("<tr><td colspan='4'>No hay Medicamentos Asignados</td></tr>");
+      return;
+    }
 
-    residentes.forEach(residente => {
-      const card = document.createElement("div");
-      card.className = "card mb-3 shadow-sm";
-      card.classList.add("col-lg-4", "col-md-6", "col-sm-6", "col-xs-12", "profile_details", "margin_bottom_20");
-
-      card.innerHTML = `
-        <div class="row g-0 align-items-center">
-          <div class="col-md-6 text-center">
-            <img src="${residente.fotoBase64}" alt="Foto de ${residente.nombreResidente}" class="img-fluid rounded-circle m-2" width="100">
-          </div>
-          <div class="col-md-6">
-            <div class="card-body">
-              <h5 class="card-title">${residente.nombreResidente}</h5>
-            </div>
-          </div>
-          <div class="col-md-3 text-center">
-            <button class="btn btn-info m-2" onclick='mostrarPerfilConMedicamentos(${JSON.stringify(residente)})'>
-              Ver Medicación
-            </button>
-          </div>
-        </div>
-      `;
-      container.appendChild(card);
+    // Título del residente
+    $.each(data, function (index, medicamento) {
+      $("#medicacionPorResidente").append(
+        `<tr id="fila-${medicamento.id}">
+     <td>${medicamento.nombreMedicamento}</td>
+     <td>${medicamento.dosis}</td>
+     <td class="d-none d-sm-table-cell">${medicamento.frecuencia}</td>
+     <td>${medicamento.viaAdministracion}</td>
+     <td>${formatearFecha(medicamento.fechaInicio)}</td>
+     <td>${formatearFecha(medicamento.fechaFin)}</td>
+    </tr>`
+      );
     });
-
   } catch (err) {
-    console.error("Error al cargar residentes:", err);
-    document.getElementById("cardsContainerMedicamentos").innerHTML = `
-      <div class="alert alert-danger">No se pudieron cargar los residentes.</div>
-    `;
+    console.error("Error en ObtenerMedicacionPorResidente:", err);
+    Swal.fire("Error al obtener la medicacion", err.message, "error");
   }
 }
-
-function mostrarMedicamentosEnModal(html) {
-  document.getElementById("modalMedicamentosBody").innerHTML = html;
-  $("#modalMedicamentos").modal("show");
-}
-
-async function mostrarPerfilConMedicamentos(residente) {
-
-  const medicamentos = await obtenerMedicamentosPorResidente(residente.residenteId);
-  const listaMedicamentos = medicamentos.map(med => `
-    <div class="card mb-2 shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title">${med.nombreMedicamento}</h5>
-        <p class="card-text">
-          <strong>Dosis:</strong> ${med.dosis}<br>
-          <strong>Frecuencia:</strong> ${med.frecuencia}<br>
-          <strong>Vía:</strong> ${obtenerBadgeVia(med.viaAdministracion)}
-          <strong>Inicio:</strong> ${med.fechaInicio}<br>
-          <strong>Fin:</strong> ${med.fechaFin}
-        </p>
-      </div>
-    </div>
-  `).join("");
-
-  const contenido = `
-    <div class="dis_flex center_text">
-      
-      <div class="profile_contant">
-        <h3>${residente.nombreResidente}</h3>
-
-        <hr>
-        ${listaMedicamentos || "<p class='text-muted'>No hay medicamentos registrados.</p>"}
-      </div>
-    </div>
-  `;
-  mostrarMedicamentosEnModal(contenido);
-
-}
-
-

@@ -41,6 +41,18 @@ namespace CuidadoConect.Controllers
             return historialMedico;
         }
 
+        [HttpGet("por-residente")]
+        public async Task<ActionResult<IEnumerable<HistorialMedico>>> ObtenerHistoriaClinicaPorResidente([FromQuery] int residenteId)
+        {
+            var historial = await _context.HistorialMedico
+                .Include(h => h.Profesional)
+                .ThenInclude(p => p.Persona)
+                .Where(h => h.ResidenteId == residenteId)
+                .ToListAsync();
+
+            return Ok(historial);
+        }
+
         // PUT: api/HistorialesMedicos/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

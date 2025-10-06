@@ -26,6 +26,15 @@ async function CargarProfesional() {
   }
 }
 
+$(document).on("change", "#residenteSelect", function () {
+  const residenteId = this.value;
+  if (residenteId) {
+    obtenerHistoriaClinicaPorResidente(residenteId);
+  } else {
+    $("#historiasClinicas").empty();
+  }
+});
+
 async function guardarHistorial() {
   try {
     const residente = document.getElementById("seleccioneResidente").value;
@@ -72,3 +81,36 @@ async function guardarHistorial() {
 
 ObtenerResidentesDropdown();
 CargarProfesional();
+
+
+async function obtenerHistoriaClinicaPorResidente(residenteId) {
+  try {
+    console.log("Llamando API con residenteId:", residenteId);
+    // const data = await authFetch(`historialesmedicos?residenteId=${residenteId}`);
+    const data = await authFetch(`historialesmedicos/por-residente?residenteId=${residenteId}`);
+    console.log("Respuesta API:", data);
+
+    $("#historiasClinicas").empty();
+
+    if (!data || data.length === 0) {
+      $("#historiasClinicas").append("<tr><td colspan='4'>No hay Historia Clinica Asignada</td></tr>");
+      return;
+    }
+
+    // Título del residente
+    $.each(data, function (index, historia) {
+      $("#historiasClinicas").append(
+        `<tr id="fila-${historia.id}">
+     <td>${formatearFecha(historia.fechaConsulta)}</td>
+     <td>${historia.diagnostico}</td>
+     <td class='d-none d-sm-table-cell'>${historia.patologias}</td>
+     <td class='d-none d-sm-table-cell'>${historia.observaciones}</td>
+     <td>${historia.profesional.persona?.nombreyApellido}</td>
+    </tr>`
+      );
+    });
+  } catch (err) {
+    console.error("Error en ObtenerHistoriaClinicaPorResidente:", err);
+    Swal.fire("Error al obtener la Historia Clínica", err.message, "error");
+  }
+}

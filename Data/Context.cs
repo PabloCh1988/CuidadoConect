@@ -31,6 +31,12 @@ public class Context : IdentityDbContext<ApplicationUser>
 
     public DbSet<CuidadoConect.Models.HistorialMedico> HistorialMedico { get; set; } = default!;
 
+    public DbSet<CuidadoConect.Models.HistorialRutina> HistorialRutina { get; set; } = default!;
+
+    public DbSet<CuidadoConect.Models.RutinaDiaria> RutinaDiaria { get; set; } = default!;
+
+    public DbSet<CuidadoConect.Models.DetalleRutina> DetalleRutina { get; set; } = default!;
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) // Configuración de las relaciones para evitar la eliminacion en cascada
     {
@@ -101,9 +107,4 @@ public class Context : IdentityDbContext<ApplicationUser>
         .OnDelete(DeleteBehavior.Restrict);
     }
 
-    public DbSet<CuidadoConect.Models.HistorialRutina> HistorialRutina { get; set; } = default!;
-
-    public DbSet<CuidadoConect.Models.RutinaDiaria> RutinaDiaria { get; set; } = default!;
-
-    public DbSet<CuidadoConect.Models.DetalleRutina> DetalleRutina { get; set; } = default!;
 }

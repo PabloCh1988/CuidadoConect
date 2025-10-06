@@ -33,8 +33,7 @@ function renderCards(personas) {
             <h3>${residente.nombreResidente}</h3>
             <p><strong>Edad: </strong>${obtenerBadgeEdad(residente.edad)}</p>
             <p><strong>Fecha de Ingreso: </strong>${fecha}</p>
-            <p><strong>Observaciones: </strong>${residente.observaciones}</p>
-            <p><strong>Obra Social: </strong>${residente.nombreObraSocial}</p>
+            <p><strong>Obra Social: </strong>${residente.nombreObraSocial} - ${residente.planObraSocial}</p>
             <ul class="list-unstyled">
               <li><i class="fa fa-envelope-o"></i> : ${residente.emailFamiliar}</li>
               <li><i class="fa fa-phone"></i> : ${residente.contactoEmergencia}</li>
@@ -84,7 +83,20 @@ async function CrearResidente() {
   const obraSocial = document.getElementById("ObraSocialId").value;
   const nroAfil = document.getElementById("NroAfiliado").value;
   if (isNaN(personaId)) {
-    mensajesError('#errorCrear', null, "Debes seleccionar una persona válida");
+    mensajesError('#errorCrearResidente', null, "Debes seleccionar una persona válida");
+    return;
+  }
+  if (!fechaIngr || email.trim() === "") {
+    mensajesError('#errorCrearResidente', null, "La fecha de ingreso y el email son obligatorios");
+    return;
+  }
+
+  const fechaIngreso = new Date(fechaIngr);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  if (fechaIngreso > hoy) {
+    mensajesError('#errorCrearResidente', null, "La fecha de ingreso no puede ser mayor al día de hoy");
     return;
   }
 

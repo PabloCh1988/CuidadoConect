@@ -2,30 +2,96 @@
 <div class="row column1">
   <div class="col-md-12 margin_top_30">
     <div class="white_shd full margin_bottom_30">
-      <div class="dash_head d-flex justify-content-between align-items-center">
-        <h3>Rutinas Diarias</h3>
-        <!-- <button type="button" class="model_bt btn btn-success fa fa-plus" data-toggle="modal"
-          data-target="#ModalCrearRutinasDiarias" aria-hidden="true"></button> -->
-      </div>
-      <!-- Modal body -->
-      <div class="modal-body">
-        <h4 class="modal-title padding-bottom_1 pad-1">Agregar Rutina</h4>
-        <div class="row">
-          <div class="modal-footer col-md-10">
-            <input type="hidden" id="editarRutinaId" disabled placeholder="0" />
-            <!-- <label for="Descripcion" class="form-label">Descripción</label> -->
-            <input type="text" class="form-control" id="Descripcion" placeholder="Descripción de la rutina" />
-            <span id="errorCrearRutina" class="text-danger"></span>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" onclick="guardarRutina()">
-              Guardar
-            </button>
-          </div>
+      <div class="dash_head dash_head2 d-flex flex-wrap justify-content-between align-items-center mb-3">
+        <h3 class="mb-2">Rutinas Diarias</h3>
 
+        <div class="d-flex botones-rutina">
+          <button type="button" class="btn btn-success" title="Agregar Rutina" data-toggle="modal"
+            data-target="#ModalAgregarRutinas">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+          </button>
+
+          <button type="button" class="btn btn-success" title="Asignar Rutina a Residente" data-toggle="modal"
+            data-target="#ModalAsignarRutinaAResidente">
+            Asignar Rutina a Residente
+          </button>
         </div>
       </div>
 
+
+      <div class="col-md-12">
+        <label for="residenteSelect2" class="form-label"></label>
+        <select id="residenteSelect2" class="form-control"></select>
+      </div>
+      <div class="table_section padding_infor_info2">
+        <div class="table-responsive-sm">
+          <table id="tablaRutinas" class="table table-hover">
+            <thead>
+              <tr class="table-primary">
+                <th>Rutina</th>
+                <th>Hora</th>
+                <th class="d-none d-sm-table-cell">Observaciones</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="rutinasResidente2"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="col-md-12 margin_top_30">
+    <div class="white_shd full margin_bottom_30">
+      <div class="dash_head d-flex justify-content-between align-items-center">
+        <h3>Buscar Rutinas Completadas</h3>
+      </div>
+      <div class="col-md-12">
+        <label for="residenteSelect" class="form-label"></label>
+        <select id="residenteSelect" class="form-control"></select>
+      </div>      
+      <div class="table_section padding_infor_info2">
+        <div class="table-responsive-sm">
+          <table id="tablaHistorial" class="table table-hover">
+            <thead>
+              <tr class="table-primary">
+                <!-- <th>Residente</th> -->
+                <th>Rutina</th>
+                <th>Realizada por:</th>
+                <th>Fecha y Hora</th>
+              </tr>
+            </thead>
+            <tbody id="rutinasResidente"></tbody>
+          </table>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Modal Rutinas Diarias -->
+<div id="ModalAgregarRutinas" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-body">
+        <h4 class="modal-title padding-bottom_1 pad-1">Agregar Rutina</h4>
+        <div class="row">
+          <div class="col-md-12">
+            <input type="hidden" id="editarRutinaId" disabled placeholder="0" />
+            <input type="text" class="form-control" id="Descripcion" placeholder="Descripción de la rutina" />
+            <span id="errorCrearRutina" class="text-danger"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="guardarRutina()">Guardar</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+        </div>
+
+      </div>
       <div class="table_section padding_infor_info2">
         <div class="table-responsive-sm">
           <table id="Rutinas" class="table table-hover">
@@ -39,7 +105,71 @@
             <tbody id="todasLasRutinas"></tbody>
           </table>
         </div>
+
       </div>
     </div>
   </div>
 </div>
+
+<!-- Modal para asignar Rutinas a Residentes -->
+<div id="ModalAsignarRutinaAResidente" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header dash_head">
+        <h4 class="modal-title text-light">Agregar Rutina a Residente</h4>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <label for="rutinaSelect" class="form-label">Rutina Diaria</label>
+            <select id="rutinaSelect" class="form-control"></select>
+            <span id="errorSelectRutina" class="text-danger form-label"></span>
+          </div>
+          <div class="col-md-8">
+            <label for="residenteSelectRutina" class="form-label">Residente</label>
+            <select id="residenteSelectRutina" class="form-control"></select>
+            <span id="errorSelectResidente" class="text-danger form-label"></span>
+          </div>
+          <div class="col-md-4">
+            <label for="horaRutina" class="form-label">Horario</label>
+            <input type="time" class="form-control" id="horaRutina" required>
+            <span id="errorTimeRutina" class="text-danger form-label"></span>
+          </div>
+
+          <div class="col-md-12">
+            <label for="observacionesRutina" class="form-label">Observaciones</label>
+            <input type="text" class="form-control" id="observacionesRutina" required>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label"> Días de la semana</label>
+            <div class="form-control">
+              <div>
+                <div class="col-sm"><input type="checkbox" id="chkLunes"> Lunes</div>
+                <div class="col-sm"><input type="checkbox" id="chkMartes"> Martes</div>
+                <div class="col-sm"><input type="checkbox" id="chkMiercoles"> Miércoles</div>
+                <div class="col-sm"><input type="checkbox" id="chkJueves"> Jueves</div>
+                <div class="col-sm"><input type="checkbox" id="chkViernes"> Viernes</div>
+                <div class="col-sm"><input type="checkbox" id="chkSabado"> Sábado</div>
+                <div class="col-sm"><input type="checkbox" id="chkDomingo"> Domingo</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <span id="errorCrearAsigancionRutina" class="text-danger form-label"></span>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="AsignarRutinaAResidente()">Guardar</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../Js_Funciones/common/ObtenerRutinasDrop.js"></script>
+<script src="../Js_Funciones/rutinasDiarias.js"></script>
+<script src="../Js_Funciones/common/ObtenerResidentesDrop.js"></script>
