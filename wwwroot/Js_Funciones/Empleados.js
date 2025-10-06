@@ -8,6 +8,7 @@ async function ObtenerEmpleados() {
             $("#todosLosEmpleados").append(
                 "<tr>" +
                 "<td>" + empleado.persona.nombreyApellido + "</td>" +
+                "<td>" + empleado.email + "</td>" +
                 "<td>" + empleado.turno + "</td>" +
                 "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarTurno(" + empleado.id + ")'></button></td>" +
                 "<td>" + empleado.tareasAsignadas + "</td>" +
@@ -31,6 +32,7 @@ async function CrearEmpleado() {
     const turno = parseInt(document.getElementById("turno").value);
     const tareasAsignadas = document.getElementById("tareasAsignadas").value;
     const personaId = $('#formEmpleado').data('PersonaId');
+    const emailempleado = document.getElementById("EmailEmpleado").value;
 
     if (isNaN(personaId)) {
         mensajesError('#errorCrear', null, "Debes seleccionar una persona válida");
@@ -38,6 +40,7 @@ async function CrearEmpleado() {
     }
 
     const empleado = {
+        email: emailempleado,
         turno: turno,
         tareasAsignadas: tareasAsignadas,
         personaId: personaId,
@@ -53,6 +56,7 @@ async function CrearEmpleado() {
         ObtenerPersonas();
         document.getElementById("turno").value = "";
         document.getElementById("tareasAsignadas").value = "";
+        document.getElementById("EmailEmpleado").value = "";
         console.log("Empleado guardado:", data);
 
         // 🔥 Actualizar la tabla: quitar el select y mostrar "Empleado"
@@ -116,20 +120,20 @@ function EditarTurno(id) {
     authFetch(`empleados/${id}`, {
         method: "GET",
     })
-    .then(data => {
-        // Rellenar los campos del modal con los datos del empleado
-        $('#EmpleadoId').val(data.id);
-        $('#PersonaId').val(data.personaId);
-        $('#turnoEditar').val(data.turno);
-        $('#tareasAsignadasEditar').val(data.tareasAsignadas);
-        // Mostrar el modal
-        $('#modalEditarTurno').modal('show');
-    }).catch(error => {
-        console.error("Error al obtener el empleado:", error);
-        alert("Error al obtener el empleado: " + error.message);
-    }); 
+        .then(data => {
+            // Rellenar los campos del modal con los datos del empleado
+            $('#EmpleadoId').val(data.id);
+            $('#PersonaId').val(data.personaId);
+            $('#turnoEditar').val(data.turno);
+            $('#tareasAsignadasEditar').val(data.tareasAsignadas);
+            // Mostrar el modal
+            $('#modalEditarTurno').modal('show');
+        }).catch(error => {
+            console.error("Error al obtener el empleado:", error);
+            alert("Error al obtener el empleado: " + error.message);
+        });
 }
- 
+
 async function EditarTurnoSI() {
     const empleadoId = $('#EmpleadoId').val();
     const turno = document.getElementById("turnoEditar").value;
@@ -145,22 +149,22 @@ async function EditarTurnoSI() {
         tareasAsignadas: tareasAsignadas,
         personaId: personaId,
     };
-try {
+    try {
         await authFetch(`empleados/${empleadoId}`, {
             method: "PUT",
             body: JSON.stringify(empleado)
         });
-            $('#modalEditarTurno').modal('hide');
-            ObtenerEmpleados(); // Actualizar la lista de empleados
-            Swal.fire({
-                icon: "success",
-                title: "Empleado editado correctamente",
-                background: '#1295c9',
-                color: '#f1f1f1',
-                showConfirmButton: false,
-                timer: 1500
-            });
-        } catch (error) {
+        $('#modalEditarTurno').modal('hide');
+        ObtenerEmpleados(); // Actualizar la lista de empleados
+        Swal.fire({
+            icon: "success",
+            title: "Empleado editado correctamente",
+            background: '#1295c9',
+            color: '#f1f1f1',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    } catch (error) {
         console.error("Error al editar el empleado:", error);
         mensajesError('#errorEditar', null, `Error al editar: ${error.message}`);
     }

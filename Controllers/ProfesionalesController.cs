@@ -6,18 +6,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuidadoConect.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace CuidadoConect.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class ProfesionalesController : ControllerBase
     {
         private readonly Context _context;
 
-        public ProfesionalesController(Context context)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public ProfesionalesController(Context context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Profesionales
@@ -44,6 +50,7 @@ namespace CuidadoConect.Controllers
 
         // PUT: api/Profesionales/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "ADMINISTRADOR")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProfesional(int id, Profesional profesional)
         {
@@ -75,6 +82,7 @@ namespace CuidadoConect.Controllers
 
         // POST: api/Profesionales
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "ADMINISTRADOR")]
         [HttpPost]
         public async Task<ActionResult<Profesional>> PostProfesional(Profesional profesional)
         {
@@ -88,11 +96,29 @@ namespace CuidadoConect.Controllers
 
             await _context.SaveChangesAsync();
 
+            var user = new ApplicationUser // Crear usuario en Identity
+            {
+                UserName = profesional.Email,
+                Email = profesional.Email,
+                NombreCompleto = persona?.NombreyApellido ?? ""
+            };
+
+            var result = await _userManager.CreateAsync(user, "Profesional2025."); // Contraseña por defecto
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "PROFESIONAL"); // Asignar rol de Identity
+            }
+            else
+            {
+                return BadRequest(result.Errors); // Manejar errores de creación de usuario
+            }
+
             return CreatedAtAction("GetProfesional", new { id = profesional.Id }, profesional);
         }
 
 
         // DELETE: api/Profesionales/5
+        [Authorize(Roles = "ADMINISTRADOR")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProfesional(int id)
         {

@@ -24,6 +24,15 @@
           "-ms-text-size-adjust"
         ]
       }
-    ]
+    ],
+    "axe/text-alternatives": [
+      "default",
+      {
+        "image-alt": "off"
+      }
+    ],
+    "no-inline-styles": "off",
+    "meta-viewport": "off",
+    "button-type": "off"
   }
 }

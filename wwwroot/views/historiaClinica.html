@@ -1,0 +1,33 @@
+<div class="row column_title">
+    <div class="col-md-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="dash_head d-flex justify-content-between align-items-center">
+                <h3 class="mb-2">Historia Clinica por Residente</h3>
+            </div>
+
+        </div>
+        <div class="col-md-12">
+            <label for="residenteSelect" class="form-label"></label>
+            <select id="residenteSelect" class="form-control"></select>
+        </div>
+        <div class="table_section padding_infor_info2">
+            <div class="table-responsive-sm">
+                <table id="tablaHistoriaClinica" class="table table-hover">
+                    <thead>
+                        <tr class="table-primary">
+                            <th>Fecha</th>
+                            <th>Diagnostico</th>
+                            <th class="d-none d-sm-table-cell">Patologías</th>
+                            <th class="d-none d-sm-table-cell">Observaciones</th>
+                            <th>Profesional</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historiasClinicas"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../Js_Funciones/historial.js"></script>
+<script src="../Js_Funciones/common/ObtenerResidentesDrop.js"></script>

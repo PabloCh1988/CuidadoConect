@@ -8,10 +8,10 @@ async function ObtenerEspecialidades() {
             $("#todosLasEpecialidades").append(
                 "<tr>" +
                 "<td>" + especialidad.nombreEspecialidad + "</td>" +
-                "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarEspecialidad(" + especialidad.id + ")'></button></td>" +
-                "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarEspecialidad(" + especialidad.id + ")'></button></td>" +
+                "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarEspecialidad(" + especialidad.id + ")'></button> <button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarEspecialidad(" + especialidad.id + ")'></button></td>" +
                 "</tr>"
             );
+
         });
     } catch (err) {
         console.error("Error en ObtenerEspecialidades:", err);

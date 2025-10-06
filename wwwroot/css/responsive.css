@@ -291,9 +291,9 @@
     .progress_bar {
         padding: 15px 25px 50px 25px;
     }
-    .dash_head {
+    /* .dash_head {
         padding: 30px 30px 25px;
-    }
+    } */
     .task_list li {
         padding: 20px 30px;
     }
@@ -414,10 +414,10 @@
 }
 
 @media (max-width: 420px) {
-    .model_bt {
+    /* .model_bt {
         padding: 11px 0 10px;
         width: 100%;
-    }
+    } */
     .fw_icon {
         width: 100%;
     }

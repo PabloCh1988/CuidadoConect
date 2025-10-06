@@ -1,0 +1,59 @@
+<!-- table section Rutinas Diarias -->
+<div class="row column1">
+    <div class="col-md-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="dash_head d-flex justify-content-between align-items-center">
+                <h3>Historiales Médicos</h3>
+
+            </div>
+            <div class="table_section padding_infor_info">
+                <div>
+                    <div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="hidden" id="editarRutinaId" disabled placeholder="0" />
+                                <label for="Diagnostico" class="form-label">Diagnóstico</label>
+                                <input type="text" class="form-control" id="Diagnostico"
+                                    placeholder="Diagnostico Medico" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="Patologias" class="form-label">Patologías</label>
+                                <input type="text" class="form-control" id="Patologias"
+                                    placeholder="Patologias Previas" />
+                            </div>
+                            <div class="col-md-12">
+                                <label for="Observaciones" class="form-label">Observaciones</label>
+                                <textarea type="text" class="form-control" id="Observaciones" />
+                                </textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="FechaConsulta" class="form-label">Fecha de Consulta</label>
+                                <input type="date" class="form-control" id="FechaConsulta" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="seleccioneResidente" class="form-label">Residente</label>
+                                <select id="seleccioneResidente" class="form-control">
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="seleccioneProfesional" class="form-label">Profesional</label>
+                                <select id="seleccioneProfesional" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="right_topbar">
+                            <button type="button" class="btn btn-primary" onclick="guardarHistorial()">Guardar</button>
+                            <span id="errorCrearHistorial" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../Js_Funciones/historial.js"></script>
+<script type="text/javascript">
+    window.onload = ObtenerResidentesDropdown();
+    window.onload = CargarProfesional();
+</script>

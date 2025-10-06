@@ -1,26 +1,12 @@
 async function ObtenerEspecialidadesDrop() {
-    const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-    const authHeaders = () => ({
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken()}`
-    }); // Configurar los headers de autenticación
-
-    const res = await fetch('https://localhost:7233/api/especialidades', { headers: authHeaders() });
-    const especialidades = await res.json();
-    CompletarDropdown(especialidades);
-}
-function CompletarDropdown(data) {
-    $("#EspecialidadId").empty();
-    $.each(data, function(index, item) {
-        $('#EspecialidadId').append(
-            "<option value='" + item.id + "'>" + item.nombreEspecialidad + "</option>"
-        )
-    });
-
-    $("#EspecialidadIdEditar").empty();
-    $.each(data, function(index, item) {
-        $('#EspecialidadIdEditar').append(
-            "<option value='" + item.id + "'>" + item.nombreEspecialidad + "</option>"
-        )
-    });
+    try {
+        const data = await authFetch("especialidades"); // endpoint correcto
+        const select = document.getElementById("EspecialidadId");
+        select.innerHTML = '<option value="" selected disabled>Seleccione una especialidad</option>';
+        data.forEach(especialidad => {
+            select.innerHTML += `<option value="${especialidad.id}">${especialidad.nombreEspecialidad}</option>`;
+        });
+    } catch (err) {
+        console.error("Error al cargar especialidades:", err);
+    }
 }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CuidadoConect.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250826004547_MigrationsInitial")]
-    partial class MigrationsInitial
+    [Migration("20251006161153_CambioEstadoCitaMedica")]
+    partial class CambioEstadoCitaMedica
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,8 +100,8 @@ namespace CuidadoConect.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Estado")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
@@ -185,6 +185,9 @@ namespace CuidadoConect.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PersonaId")
                         .HasColumnType("int");
 
@@ -265,6 +268,10 @@ namespace CuidadoConect.Migrations
 
                     b.Property<int>("DetalleRutinaId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Dia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EmpleadoId")
                         .HasColumnType("int");
@@ -375,6 +382,9 @@ namespace CuidadoConect.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("EspecialidadId")
                         .HasColumnType("int");
 
@@ -398,11 +408,14 @@ namespace CuidadoConect.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ContactoEmergencia")
+                    b.Property<string>("EmailFamiliar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("FechaIngreso")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("FotoBase64")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NroAfiliado")
                         .HasColumnType("int");
@@ -416,9 +429,6 @@ namespace CuidadoConect.Migrations
                     b.Property<int>("PersonaId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PersonaId1")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ProfesionalId")
                         .HasColumnType("int");
 
@@ -427,8 +437,6 @@ namespace CuidadoConect.Migrations
                     b.HasIndex("ObraSocialId");
 
                     b.HasIndex("PersonaId");
-
-                    b.HasIndex("PersonaId1");
 
                     b.HasIndex("ProfesionalId");
 
@@ -608,13 +616,13 @@ namespace CuidadoConect.Migrations
                     b.HasOne("CuidadoConect.Models.Residente", "Residente")
                         .WithMany("DetallesRutinas")
                         .HasForeignKey("ResidenteId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CuidadoConect.Models.RutinaDiaria", "RutinaDiaria")
                         .WithMany("DetallesRutinas")
                         .HasForeignKey("RutinaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Residente");
@@ -627,7 +635,7 @@ namespace CuidadoConect.Migrations
                     b.HasOne("CuidadoConect.Models.Persona", "Persona")
                         .WithMany("Empleados")
                         .HasForeignKey("PersonaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Persona");
@@ -657,7 +665,7 @@ namespace CuidadoConect.Migrations
                     b.HasOne("CuidadoConect.Models.DetalleRutina", "DetalleRutina")
                         .WithMany("Historiales")
                         .HasForeignKey("DetalleRutinaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CuidadoConect.Models.Empleado", "Empleado")
@@ -693,7 +701,7 @@ namespace CuidadoConect.Migrations
                     b.HasOne("CuidadoConect.Models.Persona", "Persona")
                         .WithMany("Profesionales")
                         .HasForeignKey("PersonaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Especialidad");
@@ -710,14 +718,10 @@ namespace CuidadoConect.Migrations
                         .IsRequired();
 
                     b.HasOne("CuidadoConect.Models.Persona", "Persona")
-                        .WithMany()
-                        .HasForeignKey("PersonaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CuidadoConect.Models.Persona", null)
                         .WithMany("Residentes")
-                        .HasForeignKey("PersonaId1");
+                        .HasForeignKey("PersonaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("CuidadoConect.Models.Profesional", null)
                         .WithMany("Residentes")

@@ -1,26 +1,4 @@
-// API_Profesional = "https://localhost:7233/api/profesionales";
 
-// function ObtenerProfesionales() {
-//     const getToken = () => localStorage.getItem("token"); // Obtener el token del localStorage
-//     const authHeaders = () => ({
-//         "Content-Type": "application/json",
-//         "Authorization": `Bearer ${getToken()}`
-//     }); // Configurar los headers de autenticación
-//     fetch(API_Profesional, { headers: authHeaders() })
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error("Error al obtener los profesionales");
-//             }
-//             return response.json();
-//         })
-//         .then(data => {
-//             MostrarProfesionales(data); // Llamar a la función para mostrar los profesionales
-//         })
-//         .catch(error => {
-//             console.error("Error al obtener los profesionales:", error);
-//             alert("Error al obtener los profesionales: " + error.message);
-//         });
-// }
 async function ObtenerProfesionales() {
     try {
         const data = await authFetch("profesionales"); // 👈 ya devuelve JSON
@@ -30,6 +8,7 @@ async function ObtenerProfesionales() {
                 "<tr>" +
                 "<td>" + profesional.persona.nombreyApellido + "</td>" +
                 "<td>" + profesional.especialidad.nombreEspecialidad + "</td>" +
+                "<td>" + profesional.email + "</td>" +
                 "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarProfesional(" + profesional.id + ")'></button></td>" +
                 "</tr>"
             );
@@ -59,7 +38,8 @@ async function CrearProfesional() {
     }
     const profesional = {
         personaId: personaId,
-        especialidadId: especialidadId
+        especialidadId: especialidadId,
+        email: document.getElementById("EmailProfesional").value
     };
     try {
         const data = await authFetch("profesionales", {
@@ -81,7 +61,12 @@ async function CrearProfesional() {
         });
     } catch (err) {
         console.log("Error al crear el profesional:", err);
-        mensajesError('#errorCrear', null, `Error al crear: ${err.message}`);
+
+        if (err.status === 403) {
+            mensajesError('#errorCrearProfesional', null, "No tienes permisos para crear profesionales. Solo el administrador puede realizar esta acción.");
+        } else {
+            mensajesError('#errorCrearProfesional', null, `Error al crear: ${err.message}`);
+        }
     }
 }
 
@@ -117,5 +102,6 @@ async function EliminarProfesionalSi(id) {
             });
             ObtenerProfesionales();
         })
-        .catch(async (err) => console.error("Error al eliminar el profesional:", err));
+        .catch(async (err) =>
+            console.error("Error al eliminar el profesional:", err));
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CuidadoConect.Migrations
 {
     /// <inheritdoc />
-    public partial class MigrationsInitial : Migration
+    public partial class MigracionInicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -233,7 +233,7 @@ namespace CuidadoConect.Migrations
                         column: x => x.PersonaId,
                         principalTable: "Persona",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -259,7 +259,7 @@ namespace CuidadoConect.Migrations
                         column: x => x.PersonaId,
                         principalTable: "Persona",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -271,10 +271,10 @@ namespace CuidadoConect.Migrations
                     PersonaId = table.Column<int>(type: "int", nullable: false),
                     FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Observaciones = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ContactoEmergencia = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailFamiliar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ObraSocialId = table.Column<int>(type: "int", nullable: false),
                     NroAfiliado = table.Column<int>(type: "int", nullable: false),
-                    PersonaId1 = table.Column<int>(type: "int", nullable: true),
+                    FotoBase64 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProfesionalId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -291,12 +291,7 @@ namespace CuidadoConect.Migrations
                         column: x => x.PersonaId,
                         principalTable: "Persona",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Residente_Persona_PersonaId1",
-                        column: x => x.PersonaId1,
-                        principalTable: "Persona",
-                        principalColumn: "Id");
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Residente_Profesional_ProfesionalId",
                         column: x => x.ProfesionalId,
@@ -360,13 +355,13 @@ namespace CuidadoConect.Migrations
                         column: x => x.ResidenteId,
                         principalTable: "Residente",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_DetalleRutina_RutinaDiaria_RutinaId",
                         column: x => x.RutinaId,
                         principalTable: "RutinaDiaria",
                         principalColumn: "RutinaId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -443,7 +438,7 @@ namespace CuidadoConect.Migrations
                         column: x => x.DetalleRutinaId,
                         principalTable: "DetalleRutina",
                         principalColumn: "DetalleRutinaId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_HistorialRutina_Empleado_EmpleadoId",
                         column: x => x.EmpleadoId,
@@ -560,11 +555,6 @@ namespace CuidadoConect.Migrations
                 name: "IX_Residente_PersonaId",
                 table: "Residente",
                 column: "PersonaId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Residente_PersonaId1",
-                table: "Residente",
-                column: "PersonaId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Residente_ProfesionalId",

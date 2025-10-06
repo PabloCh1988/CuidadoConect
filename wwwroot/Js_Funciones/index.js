@@ -21,9 +21,9 @@ async function ObtenerPersonas() {
             $("#todasLasPersonas").append(
                 "<tr>" +
                 "<td>" + persona.nombreyApellido + "</td>" +
-                "<td>" + formatearFecha(persona.fechaNacimiento) + "</td>" +
-                "<td>" + persona.sexo + "</td>" +
-                "<td>" + persona.dni + "</td>" +
+                "<td class='d-none d-sm-table-cell'>" + formatearFecha(persona.fechaNacimiento) + "</td>" +
+                "<td class='d-none d-sm-table-cell'>" + persona.sexo + "</td>" +
+                "<td class='d-none d-sm-table-cell'>" + persona.dni + "</td>" +
                 "<td>" + persona.telefono + "</td>" +
                 "<td>" + rolHtml + "</td>" +
                 "<td><button class='btn btn-outline-danger fa fa-times' onclick='EliminarPersona(" + persona.id + ")'></button></td>" +
@@ -50,28 +50,6 @@ function formatearFecha(fecha) {
     return `${dia}/${mes}/${anio}`;
 }
 
-
-// function guardarDatos(rol) {
-//     // Obtén el ID de la persona desde el formulario
-//     var personaId = $('#formEmpleado').data('PersonaId');
-
-//     // Aquí puedes obtener los datos del formulario
-//     var campo1 = $('#campo1').val();
-
-//     // Lógica para guardar los datos (puedes hacer una llamada AJAX aquí)
-
-//     // Una vez guardados los datos, actualiza la tabla
-//     $('#todasLasPersonas tr').each(function () {
-//         var row = $(this);
-//         if (row.find('td:first').text() == personaId) {
-//             row.find('select').remove(); // Elimina el select
-//             row.find('td:nth-child(7)').append(rol); // Muestra el rol asignado
-//         }
-//     });
-//     // Cierra el modal
-//     $('#modalEmpleado').modal('hide');
-// }
-
 function abrirModal(personaId, rol) {
     // Abre el modal correspondiente según el rol seleccionado
     if (rol === 'Empleado') {
@@ -87,21 +65,62 @@ function abrirModal(personaId, rol) {
     }
     else if (rol === 'Residente') {
         $('#modalResidente').modal('show');
-        console.log("Rol recibido:", rol);
+        $('#formResidente')
+            .data('PersonaId', personaId)
 
-        // Guarda el ID de la persona en el modal para usarlo al guardar
-        $('#formResidente').data('PersonaId', personaId);
-    }
-}
+        console.log("Rol recibido:", rol);
+        $('#modalResidente').on('shown.bs.modal', function () {
+            // Cada vez que se abra el modal, me aseguro de re-ligar el change
+            $('#FotoResidente').off('change.preview').on('change.preview', function () {
+                const archivo = this.files[0];
+                const preview = $('#previewFoto');
+                // PARA CARGAR Y MOSTRAR LA IMAGEN ANTES DE GUARDAR EL RESIDENTE
+                if (!archivo) {
+                    preview.attr('src', '').hide();
+                    return;
+                }
+
+                const tiposPermitidos = ["image/jpeg", "image/png", "image/webp"];
+                if (!tiposPermitidos.includes(archivo.type)) {
+                    mensajesError('#errorCrearResidente', null, "Formato de imagen no válido");
+                    preview.hide();
+                    return;
+                }
+
+                if (archivo.size > 2 * 1024 * 1024) {
+                    mensajesError('#errorCrearResidente', null, "La imagen no debe superar los 2MB");
+                    preview.hide();
+                    return;
+                }
+
+                const urlTemporal = URL.createObjectURL(archivo);
+                preview.attr('src', urlTemporal).hide().fadeIn(300);
+            });
+        });
+    };
+};
 
 async function guardarPersona() {
     const crearPersona = {
-        nombreyApellido: document.getElementById("Nombre").value,
+        nombreyApellido: document.getElementById("Nombre").value.trim(),
         fechaNacimiento: document.getElementById("Fecha").value,
         sexo: document.getElementById("Sexo").value,
         dni: document.getElementById("DNI").value,
         telefono: document.getElementById("Telefono").value,
     };
+
+    if (!crearPersona.nombreyApellido || !crearPersona.fechaNacimiento || !crearPersona.sexo) {
+        mensajesError('#errorCrear', null, "El nombre, la fecha de nacimiento y el sexo son obligatorios");
+        return;
+    }
+    const fechaNacimiento = new Date(crearPersona.fechaNacimiento);
+    const fechaLimite = new Date("2010-12-31");
+
+    // Validación: la fecha de nacimiento no puede ser posterior al 31/12/2024
+    if (fechaNacimiento > fechaLimite) {
+        mensajesError('#errorCrear', null, "La fecha de nacimiento no puede ser posterior al 31/12/2010");
+        return;
+    }
 
     if (crearPersona.dni.length <= 6) {
         mensajesError('#errorCrear', null, "El DNI debe tener más de 6 caracteres");
@@ -113,9 +132,11 @@ async function guardarPersona() {
             method: "POST",
             body: JSON.stringify(crearPersona)
         });
+        const telefono = crearPersona.telefono;
+        console.log("telefonoguardado", telefono);
 
         $("#ModalCrearPersonas").modal("hide");
-        ObtenerPersonas();
+        // ObtenerPersonas();
         VaciarModal();
 
         console.log("Persona guardada:", data);
@@ -129,7 +150,12 @@ async function guardarPersona() {
         });
     } catch (err) {
         console.log("Error al crear la persona:", err);
-        mensajesError('#errorCrear', null, `Error al crear: ${err.message}`);
+        // Si el error tiene un objeto 'errors', pásalo a mensajesError
+        if (err.errors) {
+            mensajesError('#errorCrear', err, null);
+        } else {
+            mensajesError('#errorCrear', null, `Error al crear: ${err.message}`);
+        }
     }
 }
 
@@ -140,7 +166,23 @@ function VaciarModal() {
     document.getElementById("Sexo").value = "";
     document.getElementById("DNI").value = "";
     document.getElementById("Telefono").value = "";
+    document.getElementById("EmailProfesional").value = "";
+    document.getElementById("EspecialidadId").value = "";
+    document.getElementById("FechaIngreso").value = "";
+    document.getElementById("Email").value = "";
+    document.getElementById("Observaciones").value = "";
+    document.getElementById("ObraSocialId").value = "";
+    document.getElementById("NroAfiliado").value = "";
+    document.getElementById("FotoResidente").value = "";
+    document.getElementById("previewFoto").src = "";
+    document.getElementById("turno").value = "";
+    document.getElementById("EmailEmpleado").value = "";
+    document.getElementById("tareasAsignadas").value = "";
+    $('#errorCrearEmpleado').empty();
+    $('#errorCrearResidente').empty();
+    $('#errorCrearProfesional').empty();
     $("#errorCrear").empty();
+    ObtenerPersonas();
 }
 
 function EliminarPersona(id) {
@@ -180,23 +222,23 @@ function EliminarPersonaSi(id) {
         .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
 }
 
-// function mensajesError(id, data, mensaje) {
-//     $(id).empty();
-//     if (data != null) {
-//         $.each(data.errors, function (index, item) {
-//             $(id).append(
-//                 "<ol>",
-//                 "<li>" + item + "</li>",
-//                 "</ol>"
-//             )
-//         })
-//     }
-//     else {
-//         $(id).append(
-//             "<ol>",
-//             "<li>" + mensaje + "</li>",
-//             "</ol>"
-//         )
-//     }
-//     $(id).attr("hidden", false);
-// }
+function mensajesError(id, data, mensaje) {
+    const contenedor = $(id);
+    contenedor.empty();
+
+    let listaErrores = "<ol class='sinPunto'>";
+
+    if (data && data.errors) {
+        $.each(data.errors, function (key, items) {
+            $.each(items, function (_, item) {
+                listaErrores += `<li>${item}</li>`;
+            });
+        });
+    } else if (mensaje) {
+        listaErrores += `<li>${mensaje}</li>`;
+    }
+
+    listaErrores += "</ol>";
+    contenedor.append(listaErrores);
+    contenedor.attr("hidden", false);
+}

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuidadoConect.Models;
+using System.Security.Claims;
 
 namespace CuidadoConect.Controllers
 {
@@ -70,6 +71,85 @@ namespace CuidadoConect.Controllers
             }
 
             return NoContent();
+        }
+
+        // 👉 3. Registrar historial cuando un empleado marca la rutina
+        [HttpPost("historial")]
+        public async Task<IActionResult> RegistrarHistorial([FromBody] RegistrarHistorialDto dto)
+        {
+            // Rol para validar permisos
+            var rol = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            // Email del usuario logueado
+            var empleadoEmail = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+
+            // Buscar empleado asociado al email
+            var empleadoId = await _context.Empleado
+                .Where(e => e.Email == empleadoEmail)
+                .Select(e => e.Id) // 👈 ahora devuelve int
+                .FirstOrDefaultAsync();
+
+            if (empleadoId == 0) // porque FirstOrDefault devuelve 0 en int si no encuentra
+                return BadRequest("No se encontró empleado asociado al usuario.");
+
+            // Buscar el detalle de rutina
+            var detalle = await _context.DetalleRutina
+                .Include(d => d.RutinaDiaria)
+                .FirstOrDefaultAsync(d => d.DetalleRutinaId == dto.DetalleRutinaId);
+
+            if (detalle == null)
+                return NotFound("Detalle de rutina no encontrado.");
+
+            // Crear historial
+            var historial = new HistorialRutina
+            {
+                DetalleRutinaId = dto.DetalleRutinaId,
+                EmpleadoId = empleadoId,
+                FechaHora = DateTime.Now,
+                Completado = dto.Completado,
+                Dia = dto.Dia.ToLower()
+            };
+
+            _context.HistorialRutina.Add(historial);
+            await _context.SaveChangesAsync();
+
+            var historialDto = new HistorialDto
+            {
+                HistorialId = historial.HistorialId,
+                FechaHora = historial.FechaHora,
+                Completado = historial.Completado,
+                Empleado = empleadoEmail, // podés mostrar el email o después mapear Nombre
+                Rutina = detalle.RutinaDiaria?.Descripcion ?? ""
+            };
+            return Ok(historialDto);
+        }
+
+        [HttpGet("historial/{residenteId}")]
+        public async Task<IActionResult> ObtenerHistorialPorResidente(int residenteId)
+        {
+            var historial = await _context.HistorialRutina
+                .Include(h => h.DetalleRutina)
+                    .ThenInclude(d => d.RutinaDiaria)
+                .Include(h => h.DetalleRutina)
+                    .ThenInclude(d => d.Residente)
+                        .ThenInclude(r => r.Persona)
+                .Include(h => h.Empleado)
+                    .ThenInclude(e => e.Persona) // 🔹 Incluimos Persona del Empleado
+                .Where(h => h.DetalleRutina.ResidenteId == residenteId && h.Completado)
+                .OrderByDescending(h => h.FechaHora)
+                .Select(h => new
+                {
+                    ResidenteId = h.DetalleRutina.ResidenteId,
+                    ResidenteNombre = h.DetalleRutina.Residente.Persona.NombreyApellido,
+                    RutinaDescripcion = h.DetalleRutina.RutinaDiaria.Descripcion,
+                    EmpleadoNombre = h.Empleado != null && h.Empleado.Persona != null
+                        ? h.Empleado.Persona.NombreyApellido
+                        : "Desconocido", // Nombre completo del empleado
+                    FechaHora = h.FechaHora
+                })
+                .ToListAsync();
+
+            return Ok(historial);
         }
 
         // POST: api/HistorialRutinas
