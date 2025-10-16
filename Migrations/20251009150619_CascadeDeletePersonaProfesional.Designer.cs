@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CuidadoConect.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20251009150619_CascadeDeletePersonaProfesional")]
+    partial class CascadeDeletePersonaProfesional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -417,7 +420,7 @@ namespace CuidadoConect.Migrations
                     b.Property<int>("NroAfiliado")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ObraSocialId")
+                    b.Property<int>("ObraSocialId")
                         .HasColumnType("int");
 
                     b.Property<string>("Observaciones")
@@ -711,7 +714,8 @@ namespace CuidadoConect.Migrations
                     b.HasOne("CuidadoConect.Models.ObraSocial", "ObraSocial")
                         .WithMany("Residentes")
                         .HasForeignKey("ObraSocialId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("CuidadoConect.Models.Persona", "Persona")
                         .WithMany("Residentes")

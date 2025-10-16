@@ -1,17 +1,22 @@
-// API_Especialidad = "https://localhost:7233/api/especialidades";
-
 async function ObtenerEspecialidades() {
     try {
         const data = await authFetch("especialidades");
-        $("#todosLasEpecialidades").empty(); // Limpiar la tabla antes de mostrar los datos
+        $("#todosLasEpecialidades").empty();
+
         $.each(data, function (index, especialidad) {
             $("#todosLasEpecialidades").append(
-                "<tr>" +
-                "<td>" + especialidad.nombreEspecialidad + "</td>" +
-                "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarEspecialidad(" + especialidad.id + ")'></button> <button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarEspecialidad(" + especialidad.id + ")'></button></td>" +
-                "</tr>"
+                `<tr id="fila-${especialidad.id}">
+          <td id="desc-${especialidad.id}">${especialidad.nombreEspecialidad}</td>
+          <td>
+            <button class='btn btn-outline-success fa fa-pencil' 
+                    title='Editar' 
+                    onclick='activarEdicionEspecialidad(${especialidad.id}, "${especialidad.nombreEspecialidad}")'></button>
+            <button class='btn btn-outline-danger fa fa-times' 
+                    title='Eliminar' 
+                    onclick='EliminarEspecialidad(${especialidad.id})'></button>
+          </td>
+        </tr>`
             );
-
         });
     } catch (err) {
         console.error("Error en ObtenerEspecialidades:", err);
@@ -25,10 +30,118 @@ async function ObtenerEspecialidades() {
     }
 }
 
+function activarEdicionEspecialidad(id, descripcionActual) {
+    const celda = document.getElementById(`desc-${id}`);
+    if (celda.querySelector("input")) return;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = descripcionActual;
+    input.className = "form-control";
+    input.id = `input-${id}`;
+    input.style.width = "100%";
+
+    const btnGuardar = document.createElement("button");
+    btnGuardar.className = "btn btn-primary btn-sm me-1 mt-2";
+    btnGuardar.innerHTML = '<i class="fa fa-check"></i>';
+    btnGuardar.onclick = function () {
+        const nuevoValor = input.value.trim(); // elimina espacios
+        if (nuevoValor === "") {
+            Swal.fire({
+                icon: "warning",
+                title: "Campo vacío",
+                text: "El nombre de la especialidad no puede estar vacío.",
+                background: "#1295c9",
+                color: "#f1f1f1"
+            });
+            input.focus();
+            return; // evita seguir
+        }
+        guardarEdicionEspecialidad(id);
+    };
+
+    const btnCancelar = document.createElement("button");
+    btnCancelar.className = "btn btn-danger btn-sm mt-2";
+    btnCancelar.innerHTML = '<i class="fa fa-times"></i>';
+    btnCancelar.onclick = function () {
+        cancelarEdicionEspecialidad(id, descripcionActual);
+    };
+
+    celda.innerHTML = "";
+    celda.appendChild(input);
+    celda.appendChild(btnGuardar);
+    celda.appendChild(btnCancelar);
+
+    input.focus();
+}
+
+
+// function activarEdicionEspecialidad(id, descripcionActual) {
+//     const celda = document.getElementById(`desc-${id}`);
+//     if (celda.querySelector("input")) return;
+
+//     const input = document.createElement("input");
+//     input.type = "text";
+//     input.value = descripcionActual;
+//     input.className = "form-control";
+//     input.id = `input-${id}`;
+//     input.style.width = "100%";
+
+//     const btnGuardar = document.createElement("button");
+//     btnGuardar.className = "btn btn-primary btn-sm me-1 mt-2";
+//     btnGuardar.innerHTML = '<i class="fa fa-check"></i>';
+//     btnGuardar.onclick = function () {
+//         guardarEdicionEspecialidad(id);
+//     };
+
+//     const btnCancelar = document.createElement("button");
+//     btnCancelar.className = "btn btn-danger btn-sm mt-2";
+//     btnCancelar.innerHTML = '<i class="fa fa-times"></i>';
+//     btnCancelar.onclick = function () {
+//         cancelarEdicionEspecialidad(id, descripcionActual);
+//     };
+
+//     celda.innerHTML = "";
+//     celda.appendChild(input);
+//     celda.appendChild(btnGuardar);
+//     celda.appendChild(btnCancelar);
+
+//     input.focus();
+// }
+
+async function guardarEdicionEspecialidad(id) {
+    const nuevaDescripcion = document.getElementById(`input-${id}`).value;
+
+    try {
+        await authFetch(`especialidades/${id}`, {
+            method: "PUT",
+            body: JSON.stringify({ id: id, nombreEspecialidad: nuevaDescripcion }),
+        });
+
+        Swal.fire({
+            icon: "success",
+            title: "Especialidad actualizada",
+            background: "#1295c9",
+            color: "#f1f1f1",
+            showConfirmButton: false,
+            timer: 1200,
+        });
+
+        document.getElementById(`desc-${id}`).innerText = nuevaDescripcion;
+    } catch (err) {
+        Swal.fire("Error al editar especialidad", err.message, "error");
+    }
+}
+
+function cancelarEdicionEspecialidad(id, descripcionOriginal) {
+    document.getElementById(`desc-${id}`).innerText = descripcionOriginal;
+}
+
+
 async function GuardarEspecialidad() {
     const nombre = document.getElementById("NombreEspecialidad").value;
     if (!nombre) {
-        mensajesError('#errorCrear', null, "El nombre de la especialidad es obligatorio");
+        mensajesError('#errorCrearEspecialidad', null, "El nombre de la especialidad es obligatorio");
         return;
     }
     const especialidad = {
@@ -54,6 +167,11 @@ async function GuardarEspecialidad() {
         console.error("Error al crear la especialidad:", err);
         mensajesError('#errorCrearEspecialidad', null, `Error al crear: ${err.message}`);
     }
+}
+
+function LimpiarModalEspecilialidad() {
+    document.getElementById("NombreEspecialidad").value = "";
+    $('#errorCrearEspecialidad').empty();
 }
 
 function EliminarEspecialidad(id) {

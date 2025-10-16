@@ -1,20 +1,69 @@
 // let API_Empleados = "https://localhost:7233/api/empleados";
 
+// async function ObtenerEmpleados() {
+//     try {
+//         const data = await authFetch("empleados"); //  ya devuelve JSON
+//         $("#todosLosEmpleados").empty();
+//         $.each(data, function (index, empleado) {
+//             $("#todosLosEmpleados").append(
+//                 "<tr>" +
+//                 "<td>" + empleado.persona.nombreyApellido + "</td>" +
+//                 "<td>" + empleado.email + "</td>" +
+//                 "<td>" + empleado.turno + "</td>" +
+//                 "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarTurno(" + empleado.id + ")'></button></td>" +
+//                 "<td>" + empleado.tareasAsignadas + "</td>" +
+//                 "<td><button class='btn btn-outline-danger fa fa-times' onclick='EliminarEmpleado(" + empleado.id + ")'></button></td>" +
+//                 "</tr>"
+//             );
+//         });
+//     } catch (err) {
+//         console.error("Error en ObtenerEmpleados:", err);
+//         Swal.fire({
+//             icon: 'error',
+//             title: 'Error al obtener empleados',
+//             text: err.message,
+//             background: '#1295c9',
+//             color: '#f1f1f1'
+//         });
+//     }
+// }
+
 async function ObtenerEmpleados() {
     try {
-        const data = await authFetch("empleados"); // 👈 ya devuelve JSON
+        const data = await authFetch("empleados");
+
+        // Limpio ambas vistas
         $("#todosLosEmpleados").empty();
+        $("#cardsContainerEmpleados").empty();
+
         $.each(data, function (index, empleado) {
-            $("#todosLosEmpleados").append(
-                "<tr>" +
-                "<td>" + empleado.persona.nombreyApellido + "</td>" +
-                "<td>" + empleado.email + "</td>" +
-                "<td>" + empleado.turno + "</td>" +
-                "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarTurno(" + empleado.id + ")'></button></td>" +
-                "<td>" + empleado.tareasAsignadas + "</td>" +
-                "<td><button class='btn btn-outline-danger fa fa-times' onclick='EliminarEmpleado(" + empleado.id + ")'></button></td>" +
-                "</tr>"
-            );
+            // --- Fila de la tabla ---
+            $("#todosLosEmpleados").append(`
+                <tr>
+                    <td>${empleado.persona.nombreyApellido}</td>
+                    <td>${empleado.email}</td>
+                    <td>${empleado.turno}</td>
+                    <td><button class="btn btn-outline-success fa fa-pencil" title="Editar" onclick="EditarTurno(${empleado.id})"></button></td>
+                    <td>${empleado.tareasAsignadas}</td>
+                    <td><button class="btn btn-outline-danger fa fa-times" onclick="EliminarEmpleado(${empleado.id})"></button></td>
+                </tr>
+            `);
+
+            // --- Card para móvil ---
+            $("#cardsContainerEmpleados").append(`
+                <div class="col-12">
+                    <div class="card shadow-sm p-3 mb-2">
+                        <h5 class="card-title mb-1">${empleado.persona.nombreyApellido}</h5>
+                        <p class="mb-1"><strong>Email:</strong> ${empleado.email}</p>
+                        <p class="mb-1"><strong>Turno:</strong> ${empleado.turno}</p>
+                        <p class="mb-1"><strong>Tareas:</strong> ${empleado.tareasAsignadas}</p>
+                        <div class="mt-2 d-flex justify-content-between">
+                            <button class="btn btn-outline-success fa fa-pencil" title="Editar" onclick="EditarTurno(${empleado.id})"></button>
+                            <button class="btn btn-outline-danger fa fa-times" title="Eliminar" onclick="EliminarEmpleado(${empleado.id})"></button>
+                        </div>
+                    </div>
+                </div>
+            `);
         });
     } catch (err) {
         console.error("Error en ObtenerEmpleados:", err);
@@ -28,6 +77,7 @@ async function ObtenerEmpleados() {
     }
 }
 
+
 async function CrearEmpleado() {
     const turno = parseInt(document.getElementById("turno").value);
     const tareasAsignadas = document.getElementById("tareasAsignadas").value;
@@ -35,7 +85,15 @@ async function CrearEmpleado() {
     const emailempleado = document.getElementById("EmailEmpleado").value;
 
     if (isNaN(personaId)) {
-        mensajesError('#errorCrear', null, "Debes seleccionar una persona válida");
+        mensajesError('#errorCrearEmpleado', null, "Debes seleccionar una persona válida");
+        return;
+    }
+    if (!emailempleado || emailempleado.trim() === "" || !emailempleado.includes("@")) {
+        mensajesError('#errorCrearEmpleado', null, "El email es obligatorio");
+        return;
+    }
+    if (!turno || !tareasAsignadas) {
+        mensajesError('#errorCrearEmpleado', null, "Todos los campos son obligatorios");
         return;
     }
 
@@ -168,27 +226,6 @@ async function EditarTurnoSI() {
         console.error("Error al editar el empleado:", error);
         mensajesError('#errorEditar', null, `Error al editar: ${error.message}`);
     }
-}
-
-function mensajesError(id, data, mensaje) {
-    $(id).empty();
-    if (data != null) {
-        $.each(data.errors, function (index, item) {
-            $(id).append(
-                "<ol>",
-                "<li>" + item + "</li>",
-                "</ol>"
-            )
-        })
-    }
-    else {
-        $(id).append(
-            "<ol>",
-            "<li>" + mensaje + "</li>",
-            "</ol>"
-        )
-    }
-    $(id).attr("hidden", false);
 }
 
 ObtenerEmpleados();

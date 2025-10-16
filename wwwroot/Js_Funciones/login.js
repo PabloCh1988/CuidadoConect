@@ -55,17 +55,22 @@ if (registerForm) {
                 body: JSON.stringify(data)
             }); // Enviar la solicitud POST a la API
 
+
             if (response.ok) {
                 const result = await response.json(); // Obtener la respuesta de la API        
 
                 localStorage.setItem("token", result.token); // Guardar el token en el almacenamiento local
+                localStorage.setItem("NombreCompleto", result.nombreCompleto);
+                localStorage.setItem("email", data.email);
+                // Carga el nombre del usuario en el menú dentro del index.html
+                document.getElementById("regNombre").textContent = localStorage.getItem("NombreCompleto") || "Usuario"
                 // Mensaje de éxito para el usuario logueado
                 Swal.fire({
                     title: 'Usuario logueado',
-                    text: 'Bienvenido ' + data.email,
+                    text: 'Bienvenido ' + result.nombreCompleto,
                     icon: 'success',
                     background: '#f1f1f1',
-                    color:  '#000000',
+                    color: '#000000',
                     confirmButtonColor: '#2512cf',
                     confirmButtonText: 'Aceptar'
                 })

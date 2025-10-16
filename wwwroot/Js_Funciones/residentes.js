@@ -5,6 +5,15 @@ $(document).on("click", ".ver-perfil", async function () {
   await BuscarResidenteId(id);
 });
 
+$(document).on("click", ".editar-residente", async function () {
+  const id = $(this).data("id");
+  console.log("ID clickeado para editar:", id);
+
+  // Esperar a que se carguen todos los datos ANTES de mostrar el modal
+  await CargarModalEditarResidente(id);
+  $('#modalEditarResidente').modal('show');
+});
+
 // Función para renderizar las cards
 function renderCards(personas) {
   const container = document.getElementById("cardsContainer");
@@ -34,7 +43,7 @@ function renderCards(personas) {
             <p><strong>Edad: </strong>${obtenerBadgeEdad(residente.edad)}</p>
             <p><strong>Fecha de Ingreso: </strong>${fecha}</p>
             <p><strong>Obra Social: </strong>${residente.nombreObraSocial} - ${residente.planObraSocial}</p>
-            <ul class="list-unstyled">
+            <ul class="list-unstyled lista-centrada">
               <li><i class="fa fa-envelope-o"></i> : ${residente.emailFamiliar}</li>
               <li><i class="fa fa-phone"></i> : ${residente.contactoEmergencia}</li>
             </ul>
@@ -46,8 +55,8 @@ function renderCards(personas) {
           </div>
           <div class="bottom_list">
             <div class="right_button">
-              <button type="button" class="btn btn-success btn-xs">
-                <i class="fa fa-user"></i> <i class="fa fa-comments-o"></i>
+              <button type="button" class="btn btn-success btn-xs editar-residente" data-id="${residente.residenteId}">
+                <i class="fa fa-user"></i> Editar
               </button>
               <button type="button" class="btn btn-primary btn-xs ver-perfil" data-id="${residente.residenteId}">
                 <i class="fa fa-user"></i> Ver Perfil
@@ -63,11 +72,11 @@ function renderCards(personas) {
 }
 
 
-// Ejemplo de fetch GET
+
 async function ObtenerResidentes() {
   try {
-    const data = await authFetch("residentes"); // ← tu función personalizada
-    renderCards(data); // ← asumiendo que es un array de residentes
+    const data = await authFetch("residentes");
+    renderCards(data); // es un array de residentes
   } catch (error) {
     console.error("Error al cargar personas:", error);
     document.getElementById("cardsContainer").innerHTML =
@@ -124,16 +133,16 @@ async function CrearResidente() {
 
     const archivoFoto = document.getElementById("FotoResidente").files[0];
     //Validacion para no superar los 2MB
-    // if (archivoFoto && archivoFoto.size > 2 * 1024 * 1024) {
-    //   mensajesError('#errorCrearResidente', null, "La imagen no debe superar los 2MB");
-    //   return;
-    // }
-    // if (archivoFoto && archivoFoto.size <= 2 * 1024 * 1024) {
-    //   const preview = document.getElementById("previewFoto");
-    //   const urlTemporal = URL.createObjectURL(archivoFoto);
-    //   preview.src = urlTemporal;
-    //   $(preview).hide().fadeIn(300);
-    // }
+    if (archivoFoto && archivoFoto.size > 2 * 1024 * 1024) {
+      mensajesError('#errorCrearResidente', null, "La imagen no debe superar los 2MB");
+      return;
+    }
+    if (archivoFoto && archivoFoto.size <= 2 * 1024 * 1024) {
+      const preview = document.getElementById("previewFoto");
+      const urlTemporal = URL.createObjectURL(archivoFoto);
+      preview.src = urlTemporal;
+      $(preview).hide().fadeIn(300);
+    }
     if (archivoFoto) {
       const formData = new FormData();
       formData.append("foto", archivoFoto);
@@ -186,15 +195,16 @@ async function BuscarResidenteId(id) {
     const contenido = `
     <div class="dis_flex center_text">
       <div class="profile_img">
-        <img width="180" class="rounded-circle" src="${residente.fotoBase64}" alt="Foto de ${residente.nombreResidente}" />
+        <img class="profile-photo" src="${residente.fotoBase64}" alt="Foto de ${residente.nombreResidente}" />
       </div>
       <div class="profile_contant">
         <h3>${residente.nombreResidente}</h3>
         <p><strong>Edad:</strong> ${obtenerBadgeEdad(residente.edad)}</p>
         <p><strong>Fecha de Ingreso:</strong> ${fecha}</p>
         <p><strong>Observaciones:</strong> ${residente.observaciones}</p>
-        <p><strong>Obra Social:</strong> ${residente.nombreObraSocial}</p>
-        <ul class="list-unstyled">
+        <p><strong>Obra Social:</strong> ${residente.nombreObraSocial} - ${residente.planObraSocial}</p>
+        <p><strong>Número de Afiliado:</strong> ${residente.nroAfiliado || 'No especificado'}</p>
+        <ul class="list-unstyled2">
           <li><i class="fa fa-envelope-o"></i> : ${residente.emailFamiliar}</li>
           <li><i class="fa fa-phone"></i> : ${residente.contactoEmergencia}</li>
         </ul>
@@ -208,6 +218,179 @@ async function BuscarResidenteId(id) {
     modal.show();
   } catch (error) {
     console.error("Error al obtener residente:", error);
-    // Podés mostrar un toast o alerta visual acá si querés
+  }
+}
+
+async function CargarModalEditarResidente(id) {
+  try {
+    const data = await authFetch(`residentes/ver-por-id/${id}`, { method: "GET" });
+
+    document.getElementById("ResidenteId").value = data.id;
+    document.getElementById("PersonaId").value = data.personaId;
+    document.getElementById("FechaIngresoEditar").value = data.fechaIngreso.split('T')[0];
+    document.getElementById("EmailEditar").value = data.emailFamiliar;
+    document.getElementById("ObservacionesEditar").value = data.observaciones;
+    document.getElementById("NroAfiliadoEditar").value = data.nroAfiliado;
+
+    // Mostrar obra social actual
+    const lblObra = document.getElementById("LabelObraSocialActual");
+    lblObra.textContent = data.obraSocial
+      ? `${data.obraSocial.nombre} - ${data.obraSocial.plan}`
+      : "Sin obra social";
+
+    if (data.obraSocial) {
+      $("#btnCambiarObraSocial").data("obra-id", data.obraSocial.id);
+    }
+
+
+    // Botón para cambiar obra social y contenedor del select
+    const btnCambiar = document.getElementById("btnCambiarObraSocial");
+    const contenedorCambio = document.getElementById("contenedorCambioObraSocial");
+
+    // Ocultar input al inicio
+    contenedorCambio.classList.remove("show");
+    btnCambiar.textContent = "Cambiar";
+    btnCambiar.classList.remove("btn-outline-danger");
+    btnCambiar.classList.add("btn-outline-success");
+
+    // Evento del botón
+    btnCambiar.onclick = async () => {
+      const isShown = contenedorCambio.classList.contains("show");
+      if (isShown) {
+        // Ocultar
+        contenedorCambio.classList.remove("show");
+        btnCambiar.textContent = "Cambiar";
+        btnCambiar.classList.remove("btn-outline-danger");
+        btnCambiar.classList.add("btn-outline-success");
+      } else {
+        // Mostrar
+        contenedorCambio.classList.add("show");
+        btnCambiar.textContent = "Cancelar cambio";
+        btnCambiar.classList.remove("btn-outline-success");
+        btnCambiar.classList.add("btn-outline-danger");
+
+        // Cargar dropdown solo cuando se muestra
+        await ObtenerObraSocialDropdown();
+        if (data.obraSocial) {
+          document.getElementById("ObraSocialId").value = data.obraSocial.id;
+        }
+      }
+    };
+
+    // Imagen del residente
+    if (data.fotoBase64) {
+      const preview = document.getElementById("previewFoto");
+      preview.src = data.fotoBase64;
+      preview.style.display = "block";
+    }
+    // MANEJA LA IMAGEN EN EL PREVIEW DEL MODAL
+    const inputFoto = document.getElementById("FotoResidenteEditar");
+    const preview = document.getElementById("previewFoto");
+
+    inputFoto.addEventListener("change", () => {
+      const archivo = inputFoto.files[0];
+
+      if (!archivo) return; // si no seleccionó nada, salir
+
+      // Validación de tamaño máximo 2MB
+      if (archivo.size > 2 * 1024 * 1024) {
+        document.getElementById("errorEditarResidente").textContent = "La imagen no debe superar los 2MB";
+        preview.style.display = "none";
+        inputFoto.value = ""; // limpiar input
+        return;
+      } else {
+        document.getElementById("errorEditarResidente").textContent = "";
+      }
+
+      // Mostrar preview
+      const urlTemporal = URL.createObjectURL(archivo);
+      preview.src = urlTemporal;
+      preview.style.display = "block";
+    });
+
+  } catch (error) {
+    console.error("Error al obtener el residente:", error);
+    alert("Error al obtener el residente: " + error.message);
+  }
+};
+
+
+async function EditarResidente() {
+  const residenteId = document.getElementById("ResidenteId").value;
+  const personaId = document.getElementById("PersonaId").value;
+  const fechaIngresoEdit = document.getElementById("FechaIngresoEditar").value;
+  const emailEditar = document.getElementById("EmailEditar").value;
+  const obser = document.getElementById("ObservacionesEditar").value;
+  const NroAfiliadoEditado = document.getElementById("NroAfiliadoEditar").value;
+  const obraSocialEditada = document.getElementById("ObraSocialId").value;
+  let obraSocialId;
+
+  if (obraSocialEditada && obraSocialEditada !== "") {
+    // el usuario eligió una nueva
+    obraSocialId = parseInt(obraSocialEditada);
+  } else {
+    // si no cambió, tomar la actual
+    const label = document.getElementById("LabelObraSocialActual").textContent;
+    const obraActualId = $("#btnCambiarObraSocial").data("obra-id"); // 👈 la guardamos antes (ver más abajo)
+    obraSocialId = obraActualId ?? 0; // si no hay nada, enviar 0 o null según lo que acepte tu backend
+  }
+  if (emailEditar.trim() === "" || fechaIngresoEdit.trim() === "") {
+    mensajesError('#errorEditarResidente', null, "La fecha de ingreso y el email son obligatorios");
+    return;
+  }
+
+  const residenteEditado = {
+    id: residenteId,
+    personaId: personaId,
+    fechaIngreso: fechaIngresoEdit,
+    emailFamiliar: emailEditar,
+    observaciones: obser,
+    obraSocialId: obraSocialId,
+    nroAfiliado: NroAfiliadoEditado
+  }
+  console.log("Body a enviar:", residenteEditado);
+  try {
+    await authFetch(`residentes/${residenteId}`, {
+      method: 'PUT',
+      body: JSON.stringify(residenteEditado)
+    });
+
+    const archivoFoto = document.getElementById("FotoResidenteEditar").files[0];
+    //Validacion para no superar los 2MB
+    if (archivoFoto && archivoFoto.size > 2 * 1024 * 1024) {
+      mensajesError('#errorEditarResidente', null, "La imagen no debe superar los 2MB");
+      return;
+    }
+    if (archivoFoto && archivoFoto.size <= 2 * 1024 * 1024) {
+      const preview = document.getElementById("previewFoto");
+      const urlTemporal = URL.createObjectURL(archivoFoto);
+      preview.src = urlTemporal;
+      $(preview).hide().fadeIn(300);
+    }
+    if (archivoFoto) {
+      const formData = new FormData();
+      formData.append("foto", archivoFoto);
+
+      await authFetch(`residentes/${residenteId}/foto`, {
+        method: "PUT",
+        body: formData
+      });
+    }
+
+    $("#modalEditarResidente").modal('hide'); 
+    $("#errorEditarResidente").empty();
+    Swal.fire({
+      icon: "success",
+      title: "Residente editado correctamente",
+      background: '#1295c9',
+      color: '#f1f1f1',
+      showConfirmButton: false,
+      timer: 1500
+    });
+    await ObtenerResidentes();
+    
+  } catch (error) {
+    console.error("Error al editar el residente:", error);
+    mensajesError('#errorEditarResidente', null, `Error al editar: ${error.message}`);
   }
 }

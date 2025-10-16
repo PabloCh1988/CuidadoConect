@@ -78,9 +78,26 @@ namespace CuidadoConect.Controllers
                     EmailFamiliar = r.EmailFamiliar,
                     FotoBase64 = r.FotoBase64,
                     NombreObraSocial = r.ObraSocial.Nombre,
-
+                    planObraSocial = r.ObraSocial.Plan,
+                    nroAfiliado = r.NroAfiliado,
                 })
                 .FirstOrDefaultAsync();
+
+            if (residente == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(residente);
+        }
+
+        [HttpGet("ver-por-id/{id}")]
+        public async Task<ActionResult<Residente>> GetResidenteById(int id)
+        {
+            var residente = await _context.Residente
+                .Include(r => r.Persona)
+                .Include(r => r.ObraSocial)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
             if (residente == null)
             {
@@ -95,6 +112,12 @@ namespace CuidadoConect.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutResidente(int id, Residente residente)
         {
+            var emailExiste = await _context.Residente.AnyAsync(r => r.EmailFamiliar == residente.EmailFamiliar && r.Id != id);
+            if (emailExiste)
+            {
+                return BadRequest("El email del familiar ya está en uso por otro residente.");
+            }
+
             if (id != residente.Id)
             {
                 return BadRequest();
@@ -174,6 +197,43 @@ namespace CuidadoConect.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { residente.FotoBase64 });
         }
+
+        // PUT: api/Residentes/{id}/foto
+        [HttpPut("{id}/foto")]
+        public async Task<IActionResult> ActualizarFotoBase64(int id, IFormFile foto)
+        {
+            var residente = await _context.Residente.FindAsync(id);
+            if (residente == null)
+                return NotFound("No se encontró el residente.");
+
+            if (foto == null || foto.Length == 0)
+                return BadRequest("No se recibió ninguna imagen válida.");
+
+            using var ms = new MemoryStream();
+            await foto.CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            var base64 = Convert.ToBase64String(bytes);
+
+            var mimeType = foto.ContentType; // ej: "image/jpeg"
+            residente.FotoBase64 = $"data:{mimeType};base64,{base64}";
+
+            _context.Entry(residente).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ResidenteExists(id))
+                    return NotFound("El residente ya no existe.");
+                else
+                    throw;
+            }
+
+            return Ok(new { message = "Foto actualizada correctamente.", residente.FotoBase64 });
+        }
+
 
 
         // DELETE: api/Residentes/5

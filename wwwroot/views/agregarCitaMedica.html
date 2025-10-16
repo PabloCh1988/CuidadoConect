@@ -56,7 +56,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" onclick="AgendarCitaMedica()">Guardar</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="LimpiarModalCita()">Cancelar</button>
                 </div>
 
                 <div class="col-md-12">
@@ -64,7 +64,8 @@
                     <select id="residenteSelect2" class="form-control"></select>
                 </div>
                 <div class="table_section">
-                    <div class="table-responsive-sm">
+                    <!-- d-none d-md-block SIRVE PARA PODER REEMPLAZAR LA TABLA POR CARDS EN FORMATO CELULAR  -->
+                    <div class="table-responsive-sm d-none d-md-block">
                         <table id="tablaCitasMedicas" class="table table-hover">
                             <thead>
                                 <tr class="table-primary">
@@ -78,6 +79,10 @@
                             <tbody id="citasPorResidente"></tbody>
                         </table>
                     </div>
+                </div>
+                <!-- Vista en cards para pantallas pequeñas -->
+                <div id="vistaCardsCitasMedicas" class="d-md-none">
+                    <div id="cardsContainerCitasMedicas" class="row g-2"></div>
                 </div>
             </div>
         </div>

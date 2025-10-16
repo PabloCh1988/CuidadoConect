@@ -3,6 +3,7 @@ async function ObtenerPersonas() {
         const data = await authFetch("personas"); // 👈 ya devuelve JSON
 
         $("#todasLasPersonas").empty();
+        $("#cardsContainerPersonas").empty();
         $.each(data, function (index, persona) {
             let rolHtml = "";
 
@@ -10,25 +11,43 @@ async function ObtenerPersonas() {
                 rolHtml = persona.rol;
             } else {
                 rolHtml =
-                    "<select class='form-select form-select-sm' onchange='abrirModal(" + persona.id + ", this.value)'>" +
+                    "<select class='form-select form-select-sm btn cur-p btn-outline-success dropdown-toggle' data-toggle='dropdown' onchange='abrirModal(" + persona.id + ", this.value)'>" +
                     "<option value='' selected disabled>Asignar Rol</option>" +
-                    "<option value='Profesional'>Profesional</option>" +
-                    "<option value='Residente'>Residente</option>" +
-                    "<option value='Empleado'>Empleado</option>" +
+                    "<option class='dropdown-item' value='Profesional'>Profesional</option>" +
+                    "<option class='dropdown-item' value='Residente'>Residente</option>" +
+                    "<option class='dropdown-item' value='Empleado'>Empleado</option>" +
                     "</select>";
             }
 
             $("#todasLasPersonas").append(
                 "<tr>" +
                 "<td>" + persona.nombreyApellido + "</td>" +
-                "<td class='d-none d-sm-table-cell'>" + formatearFecha(persona.fechaNacimiento) + "</td>" +
-                "<td class='d-none d-sm-table-cell'>" + persona.sexo + "</td>" +
-                "<td class='d-none d-sm-table-cell'>" + persona.dni + "</td>" +
+                "<td>" + formatearFecha(persona.fechaNacimiento) + "</td>" +
+                "<td>" + persona.sexo + "</td>" +
+                "<td>" + persona.dni + "</td>" +
                 "<td>" + persona.telefono + "</td>" +
                 "<td>" + rolHtml + "</td>" +
-                "<td><button class='btn btn-outline-danger fa fa-times' onclick='EliminarPersona(" + persona.id + ")'></button></td>" +
+                "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarPersona(" + persona.id + ")'></button></td>" +
+                "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarPersona(" + persona.id + ")'></button></td>" +
                 "</tr>"
             );
+
+            $("#cardsContainerPersonas").append(`
+                <div class="col-12">
+                    <div class="card shadow-sm p-3 mb-2">
+                        <h5 class="card-title mb-1">${persona.nombreyApellido}</h5>
+                        <p class="mb-1"><strong>Fecha de Nacimiento:</strong> ${formatearFecha(persona.fechaNacimiento)}</p>
+                        <p class="mb-1"><strong>Sexo:</strong> ${persona.sexo}</p>
+                        <p class="mb-1"><strong>D.N.I.:</strong> ${persona.dni}</p>
+                        <p class="mb-1"><strong>Teléfono:</strong> ${persona.telefono}</p>
+                        <div><p class="mb-1"><strong>Rol:</strong> ${rolHtml}</p></div>
+                        <div class="mt-2 d-flex justify-content-between">
+                            <button class="btn btn-outline-success fa fa-pencil" title="Editar" onclick="EditarPersona(${persona.id})"></button>
+                            <button class="btn btn-outline-danger fa fa-times" title="Eliminar" onclick="EliminarPersona(${persona.id})"></button>
+                        </div>
+                    </div>
+                </div>
+        `)
         });
     } catch (err) {
         console.error("Error en ObtenerPersonas:", err);
@@ -159,6 +178,104 @@ async function guardarPersona() {
     }
 }
 
+function EditarPersona(id) {
+    authFetch(`personas/${id}`, { method: 'GET' })
+        .then(data => {
+            document.getElementById("PersonaIdEditar").value = data.id;
+            document.getElementById("RolExistenteEditar").value = data.rol;
+            document.getElementById("NombreEditar").value = data.nombreyApellido;
+            if (data.fechaNacimiento) {
+                const fecha = new Date(data.fechaNacimiento);
+                const fechaFormateada = fecha.toISOString().split("T")[0]; // "YYYY-MM-DD"
+                document.getElementById("FechaEditar").value = fechaFormateada;
+            }
+            // document.getElementById("FechaEditar").value = data.fechaNacimiento;
+            document.getElementById("SexoEditar").value = data.sexo;
+            document.getElementById("DNIEditar").value = data.dni;
+            document.getElementById("TelefonoEditar").value = data.telefono;
+            $("#ModalEditarPersonas").modal('show');
+            console.log("Fecha original:", data.fechaNacimiento);
+        }).catch(error => {
+            console.error("Error al obtener la persona:", error);
+            alert("Error al obtener la persona: " + error.message);
+        });
+}
+
+async function guardarPersonaEditada() {
+    try {
+        const id = document.getElementById("PersonaIdEditar").value;
+        const personaEditada = {
+            id: id,
+            nombreyApellido: document.getElementById("NombreEditar").value,
+            fechaNacimiento: document.getElementById("FechaEditar").value,
+            sexo: document.getElementById("SexoEditar").value,
+            dni: document.getElementById("DNIEditar").value,
+            telefono: document.getElementById("TelefonoEditar").value,
+            rol: document.getElementById("RolExistenteEditar").value,
+        };
+
+        await authFetch(`personas/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(personaEditada)
+        });
+        ObtenerPersonas();
+        $("#ModalEditarPersonas").modal("hide");
+        Swal.fire({
+            icon: "success",
+            title: "Persona editada correctamente",
+            background: '#1295c9',
+            color: '#f1f1f1',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    } catch (error) {
+        console.error("Error al editar la persona:", error);
+        alert("Error al editar la persona: " + error.message);
+    }
+}
+
+
+// async function guardarPersonaEditada(id) {
+//     const personaEditadaId = document.getElementById("PersonaIdEditar").value;
+
+//     const editarPersona = {
+//         personaId: personaEditadaId,
+//         nombreyApellido: document.getElementById("NombreEditar").value,
+//         fechaNacimiento: document.getElementById("FechaEditar").value,
+//         sexo: document.getElementById("SexoEditar").value,
+//         dni: document.getElementById("DNIEditar").value,
+//         telefono: document.getElementById("TelefonoEditar").value,
+//     };
+//     try {
+//         await authFetch(`personas/${personaEditadaId}`, {
+//             method: 'PUT',
+//             body: JSON.stringify(editarPersona)
+//         });
+//         $("#ModalEditarPersonas").modal('hide');
+//         ObtenerPersonas();
+//         Swal.fire({
+//             icon: "success",
+//             title: "Persona editada correctamente",
+//             background: '#1295c9',
+//             color: '#f1f1f1',
+//             showConfirmButton: false,
+//             timer: 1500
+//         });
+//     } catch (error) {
+//         console.error("Error al editar la persona:", error);
+//         mensajesError('#errorEditarPersona', null, `Error al crear: ${err.message}`);
+//     }
+// }
+function vaciarModalEditar() {
+    document.getElementById("PersonaIdEditar").value = "";
+    document.getElementById("NombreEditar").value = "";
+    document.getElementById("FechaEditar").value = "";
+    document.getElementById("SexoEditar").value = "";
+    document.getElementById("DNIEditar").value = "";
+    document.getElementById("TelefonoEditar").value = "";
+    $("#errorEditarPersona").empty();
+}
+
 
 function VaciarModal() {
     document.getElementById("Nombre").value = "";
@@ -222,23 +339,47 @@ function EliminarPersonaSi(id) {
         .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
 }
 
+// function mensajesError(id, data, mensaje) {
+//     const contenedor = $(id);
+//     contenedor.empty();
+
+//     let listaErrores = "<ul class='sinPunto'>";
+
+//     if (data && data.errors) {
+//         $.each(data.errors, function (key, items) {
+//             $.each(items, function (_, item) {
+//                 listaErrores += `<li>${item}</li>`;
+//             });
+//         });
+//     } else if (mensaje) {
+//         listaErrores += `<li>${mensaje}</li>`;
+//     }
+
+//     listaErrores += "</ul>";
+//     contenedor.append(listaErrores);
+//     contenedor.attr("hidden", false);
+// }
+
 function mensajesError(id, data, mensaje) {
     const contenedor = $(id);
     contenedor.empty();
 
-    let listaErrores = "<ol class='sinPunto'>";
+    let htmlErrores = "<div>";
 
     if (data && data.errors) {
         $.each(data.errors, function (key, items) {
             $.each(items, function (_, item) {
-                listaErrores += `<li>${item}</li>`;
+                htmlErrores += `<div>• ${item}</div>`;
             });
         });
     } else if (mensaje) {
-        listaErrores += `<li>${mensaje}</li>`;
+        htmlErrores += `<div>${mensaje}</div>`;
     }
 
-    listaErrores += "</ol>";
-    contenedor.append(listaErrores);
-    contenedor.attr("hidden", false);
+    htmlErrores += "</div>";
+
+    contenedor.html(htmlErrores);
+
+    // 👇 Esto sí muestra correctamente (no deja el atributo hidden)
+    contenedor.removeAttr("hidden");
 }

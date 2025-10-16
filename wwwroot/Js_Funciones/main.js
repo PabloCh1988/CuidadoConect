@@ -1,9 +1,5 @@
 function cargarVista(view) {
   const getToken = localStorage.getItem("token");
-  const authHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken}`,
-  }); // Configurar los headers de autenticación
   fetch(`../views/${view}.html`)
     .then((res) => res.text())
     .then((html) => {
@@ -26,12 +22,11 @@ function cargarVista(view) {
         ObtenerRutinas();
         ObtenerRutinasDrop();
         ObtenerResidentesDrop();
-        // ObtenerTodasLasRutinas();
       } else if (view === "medicacion") {
         ObtenerResidentesDrop();
       } else if (view === "historialMedico") {
-        // ObtenerResidentesDropdown();
-        // CargarProfesional();
+        ObtenerResidentesDrop();
+        ObtenerProfesionalesDrop();
       } else if (view === "agregarMedicacion") {
         ObtenerResidentesDrop();
       } else if (view === "agregarCitaMedica") {
@@ -39,7 +34,11 @@ function cargarVista(view) {
         ObtenerProfesionalesDrop();
       } else if (view === "historiaClinica") {
         ObtenerResidentesDrop();
-        // CargarProfesional();
+      } else if (view === "verCitasMedicasProfesional") {
+        // obtenerCitasProfesional();
+        requestAnimationFrame(() => {
+          obtenerCitasProfesional();
+        });
       }
 
       // Ejecutar scripts de la vista si los hay

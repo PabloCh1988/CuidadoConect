@@ -61,6 +61,12 @@ async function CrearObraSocial() {
     }
 }
 
+function VaciarFormularioObraSocial() {
+    document.getElementById("NombreObraSocial").value = "";
+    document.getElementById("PlanObraSocial").value = "";
+    $("#errorObraSocial").empty();
+}
+
 
 function EliminarObraSocial(id) {
     Swal.fire({

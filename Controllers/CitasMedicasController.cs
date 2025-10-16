@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuidadoConect.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CuidadoConect.Controllers
 {
@@ -150,6 +151,44 @@ namespace CuidadoConect.Controllers
         private bool CitaMedicaExists(int id)
         {
             return _context.CitaMedica.Any(e => e.Id == id);
+        }
+
+        [Authorize(Roles = "PROFESIONAL")]
+        // Obtener citas del profesional logueado
+        [HttpGet("por-profesional")]
+        public async Task<IActionResult> ObtenerCitasPorProfesional()
+        {
+            var email = User.Identity?.Name; // correo del profesional logueado
+            if (email == null) return Unauthorized();
+
+            var profesional = await _context.Profesional
+                .Include(p => p.Persona)
+                .FirstOrDefaultAsync(p => p.Email == email);
+
+            if (profesional == null) return NotFound("Profesional no encontrado");
+
+            var citas = await _context.CitaMedica
+                .Include(c => c.Residente)
+                .ThenInclude(r => r.Persona)
+                .Where(c => c.ProfesionalId == profesional.Id)
+                .OrderBy(c => c.Fecha)
+                .ThenBy(c => c.Hora)
+                .ToListAsync();
+
+            return Ok(citas);
+        }
+
+        // Confirmar o cancelar una cita
+        [HttpPut("{id}/actualizar-estado")]
+        public async Task<IActionResult> ActualizarEstadoCita(int id, [FromBody] EstadoCitaMedica nuevoEstado)
+        {
+            var cita = await _context.CitaMedica.FindAsync(id);
+            if (cita == null) return NotFound("Cita no encontrada");
+
+            cita.Estado = nuevoEstado;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Cita actualizada a {nuevoEstado}" });
         }
     }
 }

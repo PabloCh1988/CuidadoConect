@@ -3,7 +3,7 @@
   <div class="col-md-12 margin_top_30">
     <div class="white_shd full margin_bottom_30">
       <div class="dash_head dash_head2 d-flex flex-wrap justify-content-between align-items-center mb-3">
-        <h3 class="mb-2">Rutinas Diarias</h3>
+        <h3 class="mb-2">Rutinas por Residente</h3>
 
         <div class="d-flex botones-rutina">
           <button type="button" class="btn btn-success" title="Agregar Rutina" data-toggle="modal"
@@ -17,8 +17,6 @@
           </button>
         </div>
       </div>
-
-
       <div class="col-md-12">
         <label for="residenteSelect2" class="form-label"></label>
         <select id="residenteSelect2" class="form-control"></select>
@@ -41,7 +39,61 @@
     </div>
   </div>
 
+  <!-- BUSCAR POR RUTINAS  -->
+  <div class="col-md-12 margin_top_30">
+    <div class="white_shd full margin_bottom_30">
+      <div class="dash_head d-flex justify-content-between align-items-center">
+        <h3>Buscar por Rutinas</h3>
+      </div>
+      <div class="col-md-12  padding_infor_info2">
+        <div class="row g-2 px-3">
+          <!-- Combo de Rutina -->
+          <div class="col-md-6">
+            <label for="rutinaSelect2" class="form-label fw-bold">Rutina</label>
+            <select id="rutinaSelect2" class="form-control"></select>
+          </div>
 
+          <!-- Combo de Día -->
+          <div class="col-md-4">
+            <label for="diaSelect2" class="form-label fw-bold">Día</label>
+            <select id="diaSelect2" class="form-control">
+              <option value="">Seleccione un día</option>
+              <option value="lunes">Lunes</option>
+              <option value="martes">Martes</option>
+              <option value="miercoles">Miércoles</option>
+              <option value="jueves">Jueves</option>
+              <option value="viernes">Viernes</option>
+              <option value="sabado">Sábado</option>
+              <option value="domingo">Domingo</option>
+            </select>
+          </div>
+
+          <!-- Botón Buscar -->
+          <div class="col-md-2 d-flex align-items-end">
+            <button id="btnBuscarRutina" class="btn btn-primary w-100">
+              Buscar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table_section padding_infor_info2 mt-3">
+        <div class="table-responsive-sm">
+          <table class="table table-hover">
+            <thead>
+              <tr class="table-primary">
+                <th>Residente</th>
+                <th>Hora</th>
+                <th class="d-none d-sm-table-cell">Observaciones</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="residentesPorRutina"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="col-md-12 margin_top_30">
     <div class="white_shd full margin_bottom_30">
@@ -51,7 +103,7 @@
       <div class="col-md-12">
         <label for="residenteSelect" class="form-label"></label>
         <select id="residenteSelect" class="form-control"></select>
-      </div>      
+      </div>
       <div class="table_section padding_infor_info2">
         <div class="table-responsive-sm">
           <table id="tablaHistorial" class="table table-hover">
@@ -67,7 +119,7 @@
           </table>
         </div>
       </div>
-      
+
     </div>
   </div>
 </div>

@@ -16,7 +16,7 @@
                 <select id="residenteSelect" class="form-control"></select>
             </div>
             <div class="table_section padding_infor_info2">
-                <div class="table-responsive-sm">
+                <div class="table-responsive-sm d-none d-md-block">
                     <table id="tablaMedicacion" class="table table-hover">
                         <thead>
                             <tr class="table-primary">
@@ -32,6 +32,10 @@
                     </table>
                 </div>
             </div>
+            <!-- Vista en cards para pantallas pequeñas -->
+        <div id="vistaCardsMedicacion" class="d-md-none">
+            <div id="cardsContainerMedicacion" class="row g-2"></div>
+        </div>
         </div>
     </div>
 

@@ -73,7 +73,7 @@ namespace CuidadoConect.Controllers
             return NoContent();
         }
 
-        // 👉 3. Registrar historial cuando un empleado marca la rutina
+        // Registrar historial cuando un empleado marca la rutina
         [HttpPost("historial")]
         public async Task<IActionResult> RegistrarHistorial([FromBody] RegistrarHistorialDto dto)
         {
@@ -86,7 +86,7 @@ namespace CuidadoConect.Controllers
             // Buscar empleado asociado al email
             var empleadoId = await _context.Empleado
                 .Where(e => e.Email == empleadoEmail)
-                .Select(e => e.Id) // 👈 ahora devuelve int
+                .Select(e => e.Id) // ahora devuelve int
                 .FirstOrDefaultAsync();
 
             if (empleadoId == 0) // porque FirstOrDefault devuelve 0 en int si no encuentra
@@ -116,7 +116,7 @@ namespace CuidadoConect.Controllers
             var historialDto = new HistorialDto
             {
                 HistorialId = historial.HistorialId,
-                FechaHora = historial.FechaHora,
+                FechaHora = historial.FechaHora.ToString("yyyy-MM-dd HH:mm"),
                 Completado = historial.Completado,
                 Empleado = empleadoEmail, // podés mostrar el email o después mapear Nombre
                 Rutina = detalle.RutinaDiaria?.Descripcion ?? ""
@@ -134,7 +134,7 @@ namespace CuidadoConect.Controllers
                     .ThenInclude(d => d.Residente)
                         .ThenInclude(r => r.Persona)
                 .Include(h => h.Empleado)
-                    .ThenInclude(e => e.Persona) // 🔹 Incluimos Persona del Empleado
+                    .ThenInclude(e => e.Persona) // Incluimos Persona del Empleado
                 .Where(h => h.DetalleRutina.ResidenteId == residenteId && h.Completado)
                 .OrderByDescending(h => h.FechaHora)
                 .Select(h => new
@@ -145,7 +145,7 @@ namespace CuidadoConect.Controllers
                     EmpleadoNombre = h.Empleado != null && h.Empleado.Persona != null
                         ? h.Empleado.Persona.NombreyApellido
                         : "Desconocido", // Nombre completo del empleado
-                    FechaHora = h.FechaHora
+                    FechaHora = h.FechaHora.ToString("dd/MM/yyyy HH:mm"), // formateo la fecha para que muestre en formato 24hs como lo guardamos
                 })
                 .ToListAsync();
 

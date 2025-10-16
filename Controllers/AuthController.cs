@@ -113,7 +113,12 @@ public class AuthController : ControllerBase
 
             await _signInManager.SignInAsync(user, isPersistent: false); // 👈 esto inicia la sesión con cookie
 
-            return Ok(new { mensaje = "Login exitoso" });
+            return Ok(new
+            {
+                mensaje = "Login exitoso",
+                nombreCompleto = user.NombreCompleto,
+                email = user.Email
+            });
         }
 
         return Unauthorized("Credenciales inválidas");

@@ -29,11 +29,11 @@ async function CrearProfesional() {
     const personaId = $('#formProfesional').data('PersonaId');
     const especialidadId = parseInt(document.getElementById("EspecialidadId").value);
     if (isNaN(personaId)) {
-        mensajesError('#errorCrear', null, "Debes seleccionar una persona válida");
+        mensajesError('#errorCrearProfesional', null, "Debes seleccionar una persona válida");
         return;
     }
-    if (isNaN(especialidadId)) {
-        mensajesError('#errorCrear', null, "Debes seleccionar una especialidad válida");
+    if (!especialidadId) {
+        mensajesError('#errorCrearProfesional', null, "Debes seleccionar una especialidad");
         return;
     }
     const profesional = {
@@ -41,6 +41,10 @@ async function CrearProfesional() {
         especialidadId: especialidadId,
         email: document.getElementById("EmailProfesional").value
     };
+    if (!profesional.email || profesional.email.trim() === "") {
+        mensajesError('#errorCrearProfesional', null, "El email es obligatorio");
+        return;
+    }
     try {
         const data = await authFetch("profesionales", {
             method: "POST",

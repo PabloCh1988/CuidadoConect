@@ -1,30 +1,30 @@
-async function ObtenerResidentesDropdown() {
-  try {
-    const data = await authFetch("residentes"); // endpoint correcto
-    const select = document.getElementById("seleccioneResidente");
-    select.innerHTML =
-      '<option value="" selected disabled>Seleccione un residente</option>';
-    data.forEach((residente) => {
-      select.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
-    });
-  } catch (err) {
-    console.error("Error al cargar residentes:", err);
-  }
-}
+// async function ObtenerResidentesDropdown() {
+//   try {
+//     const data = await authFetch("residentes"); // endpoint correcto
+//     const select = document.getElementById("seleccioneResidente");
+//     select.innerHTML =
+//       '<option value="" selected disabled>Seleccione un residente</option>';
+//     data.forEach((residente) => {
+//       select.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
+//     });
+//   } catch (err) {
+//     console.error("Error al cargar residentes:", err);
+//   }
+// }
 
-async function CargarProfesional() {
-  try {
-    const data = await authFetch("profesionales"); // endpoint correcto
-    const select = document.getElementById("seleccioneProfesional");
-    select.innerHTML =
-      '<option value="" selected disabled>Seleccione un profesional</option>';
-    data.forEach((prof) => {
-      select.innerHTML += `<option value="${prof.id}">${prof.persona.nombreyApellido}</option>`;
-    });
-  } catch (err) {
-    console.error("Error al cargar residentes:", err);
-  }
-}
+// async function CargarProfesional() {
+//   try {
+//     const data = await authFetch("profesionales"); // endpoint correcto
+//     const select = document.getElementById("seleccioneProfesional");
+//     select.innerHTML =
+//       '<option value="" selected disabled>Seleccione un profesional</option>';
+//     data.forEach((prof) => {
+//       select.innerHTML += `<option value="${prof.id}">${prof.persona.nombreyApellido}</option>`;
+//     });
+//   } catch (err) {
+//     console.error("Error al cargar residentes:", err);
+//   }
+// }
 
 $(document).on("change", "#residenteSelect", function () {
   const residenteId = this.value;
@@ -37,8 +37,16 @@ $(document).on("change", "#residenteSelect", function () {
 
 async function guardarHistorial() {
   try {
-    const residente = document.getElementById("seleccioneResidente").value;
-    const profesional = document.getElementById("seleccioneProfesional").value;
+    const residente = document.getElementById("residenteSelect2").value;
+    const profesional = document.getElementById("profesionalSelect").value;
+
+    // if (!residente || !profesional) {
+    //   mensajesError(
+    //     "#errorCrearHistorial", null,
+    //     "Por favor, seleccione un residente y un profesional."
+    //   );
+    //   return;
+    // }
 
     const historial = {
       diagnostico: document.getElementById("Diagnostico").value,
@@ -48,6 +56,14 @@ async function guardarHistorial() {
       residenteId: residente,
       profesionalId: profesional,
     };
+
+    if (!residente || !profesional || !historial.diagnostico || !historial.patologias || !historial.observaciones || !historial.fechaConsulta) {
+      mensajesError(
+        "#errorCrearHistorial", null,
+        "Por favor, complete todos los campos."
+      );
+      return;
+    }
 
     const data = await authFetch("historialesmedicos", {
       method: "POST",
@@ -66,8 +82,8 @@ async function guardarHistorial() {
     document.getElementById("Patologias").value = "";
     document.getElementById("Observaciones").value = "";
     document.getElementById("FechaConsulta").value = "";
-    document.getElementById("seleccioneResidente").value = "";
-    document.getElementById("seleccioneProfesional").value = "";
+    document.getElementById("residenteSelect2").value = "";
+    document.getElementById("profesionalSelect").value = "";
     console.log("Historial guardado", data);
   } catch (err) {
     console.log("Error al crear el Historial:", err);
@@ -78,10 +94,15 @@ async function guardarHistorial() {
     );
   }
 }
-
-ObtenerResidentesDropdown();
-CargarProfesional();
-
+function VaciarFormularioHistorial() {
+  document.getElementById("Diagnostico").value = "";
+  document.getElementById("Patologias").value = "";
+  document.getElementById("Observaciones").value = "";
+  document.getElementById("FechaConsulta").value = "";
+  document.getElementById("residenteSelect2").value = "";
+  document.getElementById("profesionalSelect").value = "";
+  $("#errorCrearHistorial").empty();
+}
 
 async function obtenerHistoriaClinicaPorResidente(residenteId) {
   try {
@@ -91,9 +112,11 @@ async function obtenerHistoriaClinicaPorResidente(residenteId) {
     console.log("Respuesta API:", data);
 
     $("#historiasClinicas").empty();
+    $("#cardsContainerHistorial").empty();
 
     if (!data || data.length === 0) {
-      $("#historiasClinicas").append("<tr><td colspan='4'>No hay Historia Clinica Asignada</td></tr>");
+      $("#historiasClinicas").append("<tr><td colspan='5'>No hay Historia Clinica Asignada</td></tr>");
+      $("#cardsContainerHistorial").append("<div class='col-12 text-center'><td colspan='5'>No hay Historia Clinica Asignada</td></div>");
       return;
     }
 
@@ -105,12 +128,29 @@ async function obtenerHistoriaClinicaPorResidente(residenteId) {
      <td>${historia.diagnostico}</td>
      <td class='d-none d-sm-table-cell'>${historia.patologias}</td>
      <td class='d-none d-sm-table-cell'>${historia.observaciones}</td>
-     <td>${historia.profesional.persona?.nombreyApellido}</td>
+     <td class='text-primary'>${historia.profesional.persona?.nombreyApellido}</td>
     </tr>`
       );
+
+      $("#cardsContainerHistorial").append(`
+                <div class="col-12">
+                    <div class="card shadow-sm p-3 mb-2">
+                        <h5 class="card-title mb-1">${historia.diagnostico}</h5>
+                        <p class="mb-1"><strong>Fecha:</strong> ${formatearFecha(historia.fechaConsulta)}</p>
+                        <p class="mb-1"><strong>Patologías:</strong> ${historia.patologias}</p>
+                        <p class="mb-1"><strong>Observaciones:</strong> ${historia.observaciones}</p>
+                        <h6 class="card-title mb-1"><strong>Profesional:</strong> ${historia.profesional.persona?.nombreyApellido}</h6>
+                    </div>
+                </div>
+        `)
     });
   } catch (err) {
     console.error("Error en ObtenerHistoriaClinicaPorResidente:", err);
     Swal.fire("Error al obtener la Historia Clínica", err.message, "error");
   }
 }
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   ObtenerResidentesDropdown();
+//   CargarProfesional();
+// });

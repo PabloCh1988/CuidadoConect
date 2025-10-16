@@ -8,6 +8,12 @@ async function guardarMedicamento() {
     const fechaIn = document.getElementById("FechaInicio").value;
     const fechaOut = document.getElementById("FechaFin").value;
 
+    if (!residente || !nombreMedicina || !dosisMedic || !frecuenciaMedic || !via || !fechaIn || !fechaOut) {
+      mensajesError(
+        "#errorCrearMedicamento", null, "Por favor, complete todos los campos.");
+      return;
+    }
+
     const medicamento = {
       nombreMedicamento: nombreMedicina,
       dosis: dosisMedic,
@@ -22,7 +28,7 @@ async function guardarMedicamento() {
       method: 'POST',
       body: JSON.stringify(medicamento)
     });
-    $("#ModalCrearMedicacion").modal('hide');
+    $("#errorCrearMedicamento").empty();
     document.getElementById("residenteSelect").value = "";
     document.getElementById("NombreMedicamento").value = "";
     document.getElementById("Dosis").value = "";
@@ -72,9 +78,11 @@ async function obtenerMedicamentosPorResidente(residenteId) {
     console.log("Respuesta API:", data);
 
     $("#medicacionPorResidente").empty();
+    $("#cardsContainerMedicacion").empty();
 
     if (!data || data.length === 0) {
       $("#medicacionPorResidente").append("<tr><td colspan='4'>No hay Medicamentos Asignados</td></tr>");
+      $("#cardsContainerMedicacion").append("<div class='col-12 text-center'><td colspan='4'>No hay Medicamentos Asignados</td></div>");
       return;
     }
 
@@ -82,14 +90,27 @@ async function obtenerMedicamentosPorResidente(residenteId) {
     $.each(data, function (index, medicamento) {
       $("#medicacionPorResidente").append(
         `<tr id="fila-${medicamento.id}">
-     <td>${medicamento.nombreMedicamento}</td>
-     <td>${medicamento.dosis}</td>
-     <td class="d-none d-sm-table-cell">${medicamento.frecuencia}</td>
-     <td>${medicamento.viaAdministracion}</td>
-     <td>${formatearFecha(medicamento.fechaInicio)}</td>
-     <td>${formatearFecha(medicamento.fechaFin)}</td>
-    </tr>`
+          <td>${medicamento.nombreMedicamento}</td>
+          <td>${medicamento.dosis}</td>
+          <td class="d-none d-sm-table-cell">${medicamento.frecuencia}</td>
+          <td>${medicamento.viaAdministracion}</td>
+          <td>${formatearFecha(medicamento.fechaInicio)}</td>
+          <td>${formatearFecha(medicamento.fechaFin)}</td>
+        </tr>`
       );
+
+      $("#cardsContainerMedicacion").append(`
+         <div class="col-12">
+            <div class="card shadow-sm p-3 mb-2">
+              <h5 class="card-title mb-1">${medicamento.nombreMedicamento}</h5>
+              <p class="mb-1"><strong>Dosis:</strong> ${medicamento.dosis}</p>
+              <p class="mb-1"><strong>Frecuencia:</strong> ${medicamento.frecuencia}</p>
+              <p class="mb-1"><strong>Via de Administración:</strong> ${medicamento.viaAdministracion}</p>
+              <p class="mb-1"><strong>Fecha Inicio:</strong> ${formatearFecha(medicamento.fechaInicio)}</p>
+              <p class="mb-1"><strong>Fecha Fin:</strong> ${formatearFecha(medicamento.fechaFin)}</p>
+            </div>
+         </div>
+      `)
     });
   } catch (err) {
     console.error("Error en ObtenerMedicacionPorResidente:", err);

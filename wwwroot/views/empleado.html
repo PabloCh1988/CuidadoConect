@@ -9,8 +9,8 @@
             <div class="dash_head d-flex justify-content-between align-items-center">
                 <h3>Empleados</h3>
             </div>
-            <div class="table_section padding_infor_info">
-                <div class="table-responsive-sm">
+            <div class="table_section">
+                <div id="vistaTabla" class="table-responsive-sm d-none d-md-block">
                     <table id="Empleados" class="table table-hover">
                         <thead>
                             <tr class="table-primary">
@@ -20,12 +20,16 @@
                                 <th></th>
                                 <th>Tareas Asignadas</th>
                                 <th></th>
-
                             </tr>
                         </thead>
                         <tbody id="todosLosEmpleados"></tbody>
                     </table>
                 </div>
+            </div>
+
+            <!-- Vista en cards para pantallas pequeñas -->
+            <div id="vistaCardsEmpleados" class="d-md-none">
+                <div id="cardsContainerEmpleados" class="row g-2"></div>
             </div>
         </div>
     </div>
@@ -35,8 +39,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <!-- Modal Header -->
-            <div class="modal-header dash_head">
-                <h4 class="modal-title">Editar Turno</h4>
+            <div class="modal-header dash_headModal">
+                <h4 class="modal-title text-light">Editar Turno</h4>
             </div>
             <!-- Modal body -->
             <div class="modal-body">

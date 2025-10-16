@@ -11,7 +11,8 @@
             <select id="residenteSelect" class="form-control"></select>
         </div>
         <div class="table_section padding_infor_info2">
-            <div class="table-responsive-sm">
+            <!-- d-none d-md-block SIRVE PARA PODER REEMPLAZAR LA TABLA POR CARDS EN FORMATO CELULAR  -->
+            <div class="table-responsive-sm d-none d-md-block">
                 <table id="tablaHistoriaClinica" class="table table-hover">
                     <thead>
                         <tr class="table-primary">
@@ -25,6 +26,10 @@
                     <tbody id="historiasClinicas"></tbody>
                 </table>
             </div>
+        </div>
+        <!-- Vista en cards para pantallas pequeñas -->
+        <div id="vistaCardsHistorial" class="d-md-none">
+            <div id="cardsContainerHistorial" class="row g-2"></div>
         </div>
     </div>
 </div>

@@ -156,15 +156,60 @@ function authFetch(url, options) {
         });
 }
 
-// 👇 Manejo de errores visuales
+//  Manejo de errores visuales
+// function mensajesError(id, data, mensaje) {
+//     $(id).empty();
+//     if (data != null) {
+//         $.each(data.errors, function (index, item) {
+//             $(id).append("<ol><li>" + item + "</li></ol>");
+//         });
+//     } else {
+//         $(id).append("<ol><li>" + mensaje + "</li></ol>");
+//     }
+//     $(id).attr("hidden", false);
+// }
+
+// function mensajesError(id, data, mensaje) {
+//     const contenedor = $(id);
+//     contenedor.empty();
+
+//     let listaErrores = "<ul class='sinPunto'>";
+
+//     if (data && data.errors) {
+//         $.each(data.errors, function (key, items) {
+//             $.each(items, function (_, item) {
+//                 listaErrores += `<li>${item}</li>`;
+//             });
+//         });
+//     } else if (mensaje) {
+//         listaErrores += `<li>${mensaje}</li>`;
+//     }
+
+//     listaErrores += "</ul>";
+//     contenedor.append(listaErrores);
+//     contenedor.attr("hidden", false);
+// }
+
 function mensajesError(id, data, mensaje) {
-    $(id).empty();
-    if (data != null) {
-        $.each(data.errors, function (index, item) {
-            $(id).append("<ol><li>" + item + "</li></ol>");
+    const contenedor = $(id);
+    contenedor.empty();
+
+    let htmlErrores = "<div>";
+
+    if (data && data.errors) {
+        $.each(data.errors, function (key, items) {
+            $.each(items, function (_, item) {
+                htmlErrores += `<div>• ${item}</div>`;
+            });
         });
-    } else {
-        $(id).append("<ol><li>" + mensaje + "</li></ol>");
+    } else if (mensaje) {
+        htmlErrores += `<div>${mensaje}</div>`;
     }
-    $(id).attr("hidden", false);
+
+    htmlErrores += "</div>";
+
+    contenedor.html(htmlErrores);
+
+    // 👇 Esto sí muestra correctamente (no deja el atributo hidden)
+    contenedor.removeAttr("hidden");
 }

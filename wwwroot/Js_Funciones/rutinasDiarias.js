@@ -27,6 +27,46 @@ async function ObtenerRutinas() {
   }
 }
 
+function activarEdicion(rutinaId, descripcionActual) {
+  const celda = document.getElementById(`desc-${rutinaId}`);
+
+  // Evita duplicar inputs si ya está en modo edición
+  if (celda.querySelector("input")) return;
+
+  // Crear input con la descripción actual
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = descripcionActual;
+  input.className = "form-control";
+  input.id = `input-${rutinaId}`;
+  input.style.width = "100%";
+
+  // Botones de acción
+  const btnGuardar = document.createElement("button");
+  btnGuardar.className = "btn btn-primary btn-sm me-1 mt-2";
+  btnGuardar.innerHTML = '<i class="fa fa-check"></i>';
+  btnGuardar.onclick = function () {
+    guardarEdicion(rutinaId);
+  };
+
+  const btnCancelar = document.createElement("button");
+  btnCancelar.className = "btn btn-danger btn-sm mt-2";
+  btnCancelar.innerHTML = '<i class="fa fa-times"></i>';
+  btnCancelar.onclick = function () {
+    cancelarEdicion(rutinaId, descripcionActual);
+  };
+
+  // Reemplaza contenido por input y botones
+  celda.innerHTML = "";
+  celda.appendChild(input);
+  celda.appendChild(btnGuardar);
+  celda.appendChild(btnCancelar);
+
+  // Foco automático
+  input.focus();
+}
+
+
 
 $(document).on("change", "#residenteSelect2", function () {
   // console.log("Residente seleccionado:", this.value);
@@ -265,7 +305,7 @@ async function AsignarRutinaAResidente() {
       showConfirmButton: false,
       timer: 1500,
     });
-    ObtenerTodasLasRutinas();
+    ObtenerRutinas();
     $("#ModalAsignarRutinaAResidente").modal("hide");
 
   } catch (err) {
@@ -280,55 +320,6 @@ async function AsignarRutinaAResidente() {
   }
 }
 
-// async function ObtenerRutinasDeResidente(residenteId, dia) {
-//   try {
-//     const data = await authFetch(`detallesrutinas/residente/${residenteId}?dia=${dia}`);
-//     $("#rutinasResidente").empty();
-
-//     $.each(data, function (index, detalle) {
-//       $("#rutinasResidente").append(
-//         "<tr>" +
-//         "<td>" + detalle.rutinaDescripcion + "</td>" +
-//         "<td>" + detalle.hora + "</td>" +
-//         "<td>" + (detalle.observaciones ?? "") + "</td>" +
-//         "<td>" +
-//         (detalle.completado
-//           ? "<span class='btn btn-outline-danger'>Completada</span>"
-//           : "<button id='btnCompletar_" + detalle.detalleRutinaId + "' class='btn btn-outline-success' onclick='MarcarRutinaCompletada(" + detalle.detalleRutinaId + ")'>Completar</button>"
-//         ) +
-//         "</td>" +
-//         "</tr>"
-//       );
-//     });
-//   } catch (err) {
-//     console.error("Error en ObtenerRutinasDeResidente:", err);
-//     Swal.fire({
-//       icon: "error",
-//       title: "Error al obtener rutinas del residente",
-//       text: err.message,
-//       background: "#1295c9",
-//       color: "#f1f1f1",
-//     });
-//   }
-// }
-
-
-// $(document).ready(async function () {
-//   // Cargar residentes al iniciar
-
-
-//   // Evento para el botón "Ver rutinas"
-//   $("#btnCargarRutinas").on("click", function () {
-//     const residenteId = $("#residenteSelect").val();
-
-//     if (!residenteId) {
-//       Swal.fire("Seleccione un residente", "", "warning");
-//       return;
-//     }
-
-//     ObtenerHistorial(residenteId);
-//   });
-// });
 
 async function ObtenerHistorial(residenteId) {
   try {
@@ -345,7 +336,7 @@ async function ObtenerHistorial(residenteId) {
         "<tr>" +
         "<td>" + item.rutinaDescripcion + "</td>" +
         "<td>" + item.empleadoNombre + "</td>" +
-        "<td>" + new Date(item.fechaHora).toLocaleString() + "</td>" +
+        "<td>" + item.fechaHora + "</td>" +
         "</tr>"
       );
     });
@@ -386,118 +377,6 @@ async function MarcarRutinaCompletada(detalleRutinaId, dia) {
   }
 }
 
-
-
-// async function ObtenerTodasLasRutinas() {
-//   try {
-//     const data = await authFetch("detallesrutinas/todas");
-//     $("#rutinasResidente2").empty();
-
-//     // Agrupamos primero por residente
-//     const residentes = {};
-//     data.forEach(item => {
-//       if (!residentes[item.residenteId]) {
-//         residentes[item.residenteId] = {
-//           nombre: item.residenteNombre,
-//           dias: []
-//         };
-//       }
-//       residentes[item.residenteId].dias.push(item);
-//     });
-
-//     Object.values(residentes).forEach(residente => {
-//       // Fila de título del residente
-//       $("#rutinasResidente2").append(
-//         `<tr><td colspan="4" class="table-dark fw-bold text-center">
-//           ${residente.nombre}
-//         </td></tr>`
-//       );
-
-//       residente.dias.forEach(diaInfo => {
-//         if (diaInfo.rutinas.length > 0) {
-//           // Fila del día
-//           $("#rutinasResidente2").append(
-//             `<tr><td colspan="4" class="table-secondary fw-bold text-center">
-//               ${diaInfo.dia.toUpperCase()}
-//             </td></tr>`
-//           );
-
-//           diaInfo.rutinas.forEach(detalle => {
-//             $("#rutinasResidente2").append(
-//               `<tr>
-//                 <td>${detalle.rutinaDescripcion}</td>
-//                 <td>${detalle.hora}</td>
-//                 <td>${detalle.observaciones ?? ""}</td>
-//                 <td>
-//                   ${detalle.completado
-//                 ? "<span class='btn btn-outline-danger'>Completada</span>"
-//                 : `<button id="btnCompletar_${detalle.detalleRutinaId}_${diaInfo.dia}"
-//                           class="btn btn-outline-success"
-//                           onclick="MarcarRutinaCompletada(${detalle.detalleRutinaId}, '${diaInfo.dia}')">Completar</button>`
-//               }
-//                 </td>
-//               </tr>`
-//             );
-//           });
-//         }
-//       });
-//     });
-//   } catch (err) {
-//     console.error("Error en ObtenerTodasLasRutinas:", err);
-//     Swal.fire("Error al obtener todas las rutinas", err.message, "error");
-//   }
-// }
-
-
-// async function ObtenerRutinasPorResidente(residenteId) {
-//   try {
-//     const data = await authFetch(`detallesrutinas/por-residente?residenteId=${residenteId}`);
-//     $("#rutinasResidente2").empty();
-
-//     // Título del residente
-//     $("#rutinasResidente2").append(
-//       `<tr><td colspan="4" class="table-dark fw-bold text-center">
-//         ${data.residenteNombre}
-//       </td></tr>`
-//     );
-
-//     // Recorremos los días
-//     data.dias.forEach(diaInfo => {
-//       if (diaInfo.rutinas.length > 0) {
-//         // Cabecera de día
-//         $("#rutinasResidente2").append(
-//           `<tr><td colspan="4" class="table-secondary fw-bold text-center">
-//             ${diaInfo.dia.toUpperCase()}
-//           </td></tr>`
-//         );
-
-//         // Rutinas del día
-//         diaInfo.rutinas.forEach(detalle => {
-//           $("#rutinasResidente2").append(
-//             `<tr>
-//               <td>${detalle.rutinaDescripcion}</td>
-//               <td>${detalle.hora}</td>
-//               <td>${detalle.observaciones ?? ""}</td>
-//               <td>
-//                 ${detalle.completado
-//               ? "<span class='btn btn-outline-danger'>Completada</span>"
-//               : `<button id="btnCompletar_${detalle.detalleRutinaId}_${diaInfo.dia}"
-//                             class="btn btn-outline-success"
-//                             onclick="MarcarRutinaCompletada(${detalle.detalleRutinaId}, '${diaInfo.dia}')">
-//                             Completar</button>`
-//             }
-//               </td>
-//             </tr>`
-//           );
-//         });
-//       }
-//     });
-//   } catch (err) {
-//     console.error("Error en ObtenerRutinasPorResidente:", err);
-//     Swal.fire("Error al obtener rutinas", err.message, "error");
-//   }
-// }
-
 async function ObtenerRutinasPorResidente(residenteId) {
   try {
     console.log("Llamando API con residenteId:", residenteId);
@@ -513,7 +392,7 @@ async function ObtenerRutinasPorResidente(residenteId) {
 
     // Título del residente
     $("#rutinasResidente2").append(
-      `<tr><td colspan="4" class="table-dark fw-bold text-center">
+      `<tr><td colspan="4" class="table-warning fw-bold text-center">
         ${data.residenteNombre}
       </td></tr>`
     );
@@ -552,5 +431,57 @@ async function ObtenerRutinasPorResidente(residenteId) {
   }
 }
 
+async function ObtenerResidentesPorRutina(rutinaId, dia) {
+  try {
+    console.log(`Buscando residentes para rutina ${rutinaId} el día ${dia}`);
+    const data = await authFetch(`detallesrutinas/por-rutina-y-dia?rutinaId=${rutinaId}&dia=${dia}`);
 
-// ObtenerTodasLasRutinas();
+    $("#residentesPorRutina").empty();
+
+    if (!data || !data.residentes || data.residentes.length === 0) {
+      $("#residentesPorRutina").append("<tr><td colspan='4'>No hay residentes asignados</td></tr>");
+      return;
+    }
+
+    // Título
+    $("#residentesPorRutina").append(
+      `<tr><td colspan="4" class="table-warning fw-bold text-center">
+        ${data.rutinaDescripcion.toUpperCase()} - ${data.dia.toUpperCase()}
+      </td></tr>`
+    );
+
+    data.residentes.forEach(r => {
+      $("#residentesPorRutina").append(`
+        <tr>
+          <td>${r.residenteNombre}</td>
+          <td>${r.hora}</td>
+          <td class="d-none d-sm-table-cell">${r.observaciones ?? ""}</td>
+          <td>
+            ${r.completado
+          ? "<span class='btn btn-outline-danger'>Completada</span>"
+          : `<button id="btnCompletar_${r.detalleRutinaId}_${data.dia}"
+                        class="btn btn-outline-success"
+                        onclick="MarcarRutinaCompletada(${r.detalleRutinaId}, '${data.dia}')">
+                        Completar</button>`}
+          </td>
+        </tr>
+      `);
+    });
+  } catch (err) {
+    console.error("Error en ObtenerResidentesPorRutina:", err);
+    Swal.fire("Error al obtener residentes", err.message, "error");
+  }
+}
+
+document.getElementById("btnBuscarRutina").addEventListener("click", () => {
+  const rutinaId = document.getElementById("rutinaSelect2").value;
+  const dia = document.getElementById("diaSelect2").value;
+
+  if (!rutinaId || !dia) {
+    Swal.fire("Faltan datos", "Seleccione una rutina y un día", "warning");
+    return;
+  }
+
+  ObtenerResidentesPorRutina(rutinaId, dia);
+});
+

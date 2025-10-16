@@ -27,7 +27,7 @@ public class RegistrarHistorialDto
 public class HistorialDto
 {
     public int HistorialId { get; set; }
-    public DateTime FechaHora { get; set; }
+    public string FechaHora { get; set; }
     public bool Completado { get; set; }
     public string Empleado { get; set; } = "";
     public string Rutina { get; set; } = "";
