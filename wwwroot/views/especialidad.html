@@ -1,0 +1,113 @@
+<div class="row column1">
+
+    <div class="col-md-5 col-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="dash_head d-flex justify-content-between align-items-center">
+                <h3>Especialidades</h3>
+                <button type="button" class="model_bt btn btn-success fa fa-plus" title="Agregar" data-toggle="modal"
+                    data-target="#ModalCrearEspecialidadess" aria-hidden="true"></button>
+            </div>
+            <div class="table_section">
+                <div class="table-responsive-sm">
+                    <table id="Especialidad" class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th>Nombre de la Especialidad</th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="todosLasEpecialidades"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7 col-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="dash_head d-flex justify-content-between align-items-center">
+                <h3>Profesionales</h3>
+            </div>
+            <div class="table_section">
+                <div class="table-responsive-sm">
+                    <table id="Profesionales" class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th>Nombre</th>
+                                <th>Especialidad</th>
+                                <th>Email</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="todosLosProfesionales"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <!-- The Modal -->
+    <div id="ModalCrearEspecialidadess" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header dash_headModal">
+                    <h4 class="modal-title text-light">Agregar Especialidad</h4>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <input type="hidden" id="EspecialidadId">
+                        <div class="col-md-12">
+                            <label for="NombreEspecialidad" class="form-label">Nombre de la Especialidad</label>
+                            <input type="text" class="form-control" id="NombreEspecialidad"
+                                placeholder="Nombre de la Especialidad">
+                        </div>
+                        <div class="col-md-12">
+                            <span id="errorCrearEspecialidad" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="GuardarEspecialidad()">Guardar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="LimpiarModalEspecilialidad()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- the Modal Editar Especialidad -->
+    <div id="ModalEditarEspecialidad" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header dash_headModal">
+                    <h4 class="modal-title text-light">Editar Especialidad</h4>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div id="formEditarEspecialidad">
+                        <div class="row">
+                            <input type="hidden" id="EspecialidadIdEditar">
+                            <div class="col-md-12">
+                                <label for="NombreEspecialidadEditar" class="form-label">Nombre de la
+                                    Especialidad</label>
+                                <input type="text" class="form-control" id="NombreEspecialidadEditar">
+
+                                <span id="errorEditarEspecialidad" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="ActualizarEspecialidad()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>

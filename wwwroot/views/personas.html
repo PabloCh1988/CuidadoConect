@@ -1,0 +1,295 @@
+<div class="row column_title">
+    <div class="col-md-12">
+        <!-- <div class="MarcodeInicio"></div> -->
+
+    </div>
+    <!-- table section Personas -->
+    <div class="col-md-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="dash_head d-flex justify-content-between align-items-center">
+                <h3>Personas</h3>
+                <button type="button" class="model_bt btn cur-p btn-success fa fa-plus" title="Agregar Persona"
+                    data-toggle="modal" data-target="#ModalCrearPersonas" aria-hidden="true"></button>
+            </div>
+            <div class="table_section">
+                <!-- d-none d-md-block SIRVE PARA PODER REEMPLAZAR LA TABLA POR CARDS EN FORMATO CELULAR  -->
+                <div class="table-responsive-sm d-none d-md-block">
+                    <table id="Personas" class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th>Nombre y Apellido</th>
+                                <th>Fecha de Nacimiento</th>
+                                <th>Sexo</th>
+                                <th>DNI</th>
+                                <th>Telefono</th>
+                                <th>Rol</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="todasLasPersonas"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Vista en cards para pantallas pequeñas -->
+            <div id="vistaCardsPersonas" class="d-md-none">
+                <div id="cardsContainerPersonas" class="row g-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal Crear Personas -->
+<div id="ModalCrearPersonas" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header dash_headModal">
+                <h4 class="modal-title text-light">Agregar Persona</h4>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <input type="hidden" id="PersonaId">
+                    <div class="col-md-12">
+                        <label for="Nombre" class="form-label">Nombre y Apellido</label>
+                        <input type="text" class="form-control" id="Nombre" required>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="Fecha" class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="Fecha" placeholder="Fecha de Nacimiento">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="Sexo" class="form-label">Sexo</label>
+                        <select name="" id="Sexo" class="form-control">
+                            <option value="" selected disabled>Seleccione una Opción</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="DNI" class="form-label">DNI</label>
+                        <input type="number" class="form-control" id="DNI" placeholder="Numero de Documento">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="Telefono" class="form-label">Telefono</label>
+                        <input type="tel" class="form-control" id="Telefono" placeholder="Numero de Telefono">
+                    </div>
+                    <div class="col-md-12">
+                        <span id="errorCrear" class="text-danger form-label"></span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="guardarPersona()">Guardar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"
+                    onclick="VaciarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal Editar Personas -->
+<div id="ModalEditarPersonas" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header dash_headModal">
+                <h4 class="modal-title text-light">Editar Persona</h4>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <input type="hidden" id="PersonaIdEditar">
+                    <input type="hidden" id="RolExistenteEditar">
+                    <div class="col-md-12">
+                        <label for="NombreEditar" class="form-label">Nombre y Apellido</label>
+                        <input type="text" class="form-control" id="NombreEditar" required>
+
+                    </div>
+                    <div class="col-md-6">
+                        <label for="FechaEditar" class="form-label">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="FechaEditar">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="SexoEditar" class="form-label">Sexo</label>
+                        <select name="" id="SexoEditar" class="form-control">
+                            <option value="" selected disabled>Seleccione una Opción</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="DNIEditar" class="form-label">DNI</label>
+                        <input type="number" class="form-control" id="DNIEditar">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="TelefonoEditar" class="form-label">Telefono</label>
+                        <input type="tel" class="form-control" id="TelefonoEditar">
+                    </div>
+                    <div class="col-md-12">
+                        <span id="errorEditarPersona" class="text-danger form-label"></span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="guardarPersonaEditada()">Guardar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"
+                    onclick="vaciarModalEditar()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal EMPLEADOS -->
+<div id="modalEmpleado" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header dash_headModal">
+                <h4 class="modal-title text-light">Agregar Empleado</h4>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="formEmpleado">
+
+                    <!-- PersonaId llega desde otro flujo (hidden) -->
+                    <input type="number" id="PersonaId" readonly hidden>
+
+                    <!-- Turno (enum en backend) -->
+                    <label for="turno" class="form-label">Turno</label>
+                    <select id="turno" class="form-control">
+                        <option value="" selected hidden>Seleccione una Opción</option>
+                        <option value="1">Mañana</option>
+                        <option value="2">Tarde</option>
+                        <option value="3">Noche</option>
+                    </select>
+
+                    <label for="EmailEmpleado" class="form-label">Email</label>
+                    <input type="email" id="EmailEmpleado" class="form-control">
+
+                    <!-- Tareas asignadas -->
+                    <div class="mt-3">
+                        <label for="tareasAsignadas" class="form-label">Tarea asignada</label>
+                        <select id="tareasAsignadas" class="form-control">
+                            <option value="" selected hidden>Seleccione una Opción</option>
+                            <option value="Enfermero">Enfermero</option>
+                            <option value="Cocina">Cocina</option>
+                            <option value="Cuidador">Cuidador</option>
+                            <option value="Terapeuta">Terapeuta</option>
+                        </select>
+                    </div>
+
+                    <!-- Área de error general -->
+                    <span id="errorCrearEmpleado" class="text-danger"></span>
+
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="CrearEmpleado()">Guardar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"
+                    onclick="VaciarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal Profesional -->
+<div id="modalProfesional" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header dash_headModal">
+                <h4 class="modal-title text-light">Agregar Profesional</h4>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="formProfesional">
+
+                    <!-- PersonaId llega desde otro flujo (hidden) -->
+                    <input type="number" id="PersonaId" readonly hidden>
+
+                    <!-- Turno (enum en backend) -->
+                    <label for="EspecialidadId" class="form-label">Especialidades</label>
+                    <select id="EspecialidadId" class="form-control">
+                    </select>
+
+                    <label for="EmailProfesional" class="form-label">Email</label>
+                    <input type="email" id="EmailProfesional" class="form-control">
+
+                    <!-- Área de error general -->
+                    <span id="errorCrearProfesional" class="text-danger"></span>
+
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="CrearProfesional()">Guardar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"
+                    onclick="VaciarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal Residente -->
+<div id="modalResidente" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header dash_headModal">
+                <h4 class="modal-title text-light">Agregar Residente</h4>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div id="formResidente">
+
+                    <!-- PersonaId llega desde otro flujo (hidden) -->
+                    <input type="number" id="PersonaId" readonly hidden>
+
+
+                    <!-- Turno (enum en backend) -->
+                    <label for="FechaIngreso" class="form-label">Fecha de Ingreso</label>
+                    <input type="date" id="FechaIngreso" class="form-control">
+
+                    <label for="Email" class="form-label">Email Familiar</label>
+                    <input type="email" id="Email" class="form-control">
+
+                    <label for="Observaciones" class="form-label">Observaciones</label>
+                    <input type="text" id="Observaciones" class="form-control">
+
+                    <label for="ObraSocialId" class="form-label">Obra Social</label>
+                    <select id="ObraSocialId" class="form-control form-select"></select>
+
+                    <label for="NroAfiliado" class="form-label">Numero de Afiliado</label>
+                    <input type="number" id="NroAfiliado" class="form-control">
+
+                    <form id="formFoto" enctype="multipart/form-data">
+                        <label class="form-label">Foto del Residente</label>
+                        <input type="file" id="FotoResidente" accept="image/*" />
+                        <img id="previewFoto" src="" alt="Preview" style="max-width: 200px; display: none;" />
+
+                        <!-- <button type="submit">Subir Foto</button> -->
+                    </form>
+                    <!-- <img id="previewFoto" src="" alt="Preview" style="max-width: 200px; display: none;" /> -->
+
+                    <!-- Área de error general -->
+                    <span id="errorCrearResidente" class="text-danger"></span>
+
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="CrearResidente()">Guardar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"
+                    onclick="VaciarModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>

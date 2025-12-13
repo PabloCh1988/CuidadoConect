@@ -1,0 +1,94 @@
+<div class="row column_title">
+    <div class="col-md-12">
+        <!-- <div class="MarcodeInicio"></div> -->
+
+    </div>
+    <!-- table section Personas -->
+    <div class="col-md-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="dash_head d-flex justify-content-between align-items-center">
+                <h3>Agendar Cita Médica</h3>
+            </div>
+            <div class="table_section padding_infor_info">
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="residenteSelect" class="form-label">Residente</label>
+                            <select id="residenteSelect" class="form-control">
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="profesionalSelect" class="form-label">Profesional</label>
+                            <select id="profesionalSelect" class="form-control">
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="FechaCita" class="form-label">Fecha</label>
+                            <input type="date" id="FechaCita" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="HoraCita" class="form-label">Horario</label>
+                            <input type="time" id="HoraCita" class="form-control">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label for="Observaciones" class="form-label">Observaciones</label>
+                            <textarea name="" id="Observaciones" class="form-control"></textarea>
+                            <!-- <input type="text" id="Observaciones" class="form-control"> -->
+                        </div>
+                        <!-- <div class="col-md-6">
+                            <label for="ViaAdministracion" class="form-label">Vía</label>
+                            <input type="text" id="ViaAdministracion" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="FechaInicio" class="form-label">Fecha Inicio</label>
+                            <input type="date" id="FechaInicio" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="FechaFin" class="form-label">Fecha Fin</label>
+                            <input type="date" id="FechaFin" class="form-control">
+                        </div> -->
+                        <div class="col-md-12">
+                            <span id="errorAgendarCitaMedica" class="text-danger form-label"></span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="AgendarCitaMedica()">Guardar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="LimpiarModalCita()">Cancelar</button>
+                </div>
+
+                <div class="col-md-12">
+                    <label for="residenteSelect2" class="form-label"></label>
+                    <select id="residenteSelect2" class="form-control"></select>
+                </div>
+                <div class="table_section">
+                    <!-- d-none d-md-block SIRVE PARA PODER REEMPLAZAR LA TABLA POR CARDS EN FORMATO CELULAR  -->
+                    <div class="table-responsive-sm d-none d-md-block">
+                        <table id="tablaCitasMedicas" class="table table-hover">
+                            <thead>
+                                <tr class="table-primary">
+                                    <th>Observaciones</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Profesional</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="citasPorResidente"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Vista en cards para pantallas pequeñas -->
+                <div id="vistaCardsCitasMedicas" class="d-md-none">
+                    <div id="cardsContainerCitasMedicas" class="row g-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../Js_Funciones/citasMedicas.js"></script>
+<script src="../Js_Funciones/common/ObtenerResidentesDrop.js"></script>
+<script src="../Js_Funciones/common/ObtenerProfesionalesDrop.js"></script>

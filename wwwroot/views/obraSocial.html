@@ -1,0 +1,59 @@
+<!-- Tabla Obra social -->
+<div class="row column1">
+
+    <div class="col-md-12 margin_top_30">
+        <div class="white_shd full">
+            <div class="dash_head d-flex justify-content-between align-items-center">
+                <h3>Obras Sociales</h3>
+                <!-- <button type="button" class="model_bt btn btn-success fa fa-plus" title="Agregar" data-toggle="modal"
+                    data-target="#modalAgregarObraSocial" aria-hidden="true"></button> -->
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-title padding-bottom_1 pad-1">Agregar Obra Social</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="hidden" id="ObraSocialId">
+                        <!-- <label for="NombreObraSocial" class="form-label">Nombre de la Obra Social</label> -->
+                        <input type="text" class="form-control" id="NombreObraSocial"
+                            placeholder="Nombre de la Obra Social">
+                    </div>
+                    <div class="col-md-6">
+                        <!-- <label for="PlanObraSocial" class="form-label">Plan de la Obra Social</label> -->
+                        <input type="text" class="form-control" id="PlanObraSocial"
+                            placeholder="Plan de la Obra Social">
+                    </div>
+
+                    <!-- Área de error general -->
+                     <div class="col-md-12">
+                        <span id="errorObraSocial" class="text-danger"></span>
+                     </div>                    
+                </div>
+                <!-- Modal Footer -->
+                <div class="right_topbar">
+                    <button type="button" class="btn btn-primary" onclick="CrearObraSocial()">Guardar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"
+                                onclick="VaciarFormularioObraSocial()">Cancelar</button>
+                    <!-- <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button> -->
+                </div>
+            </div>
+
+
+
+            <div class="table_section padding_infor_info2">
+                <div class="table-responsive-sm">
+                    <table id="Obra_Social" class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th>Nombre</th>
+                                <th>Plan</th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                        <tbody id="todosLasObras"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

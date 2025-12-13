@@ -1,0 +1,66 @@
+<div class="row column_title">
+    <div class="col-md-12">
+        <!-- <div class="MarcodeInicio"></div> -->
+
+    </div>
+    <!-- table section Personas -->
+    <div class="col-md-12 margin_top_30">
+        <div class="white_shd full margin_bottom_30">
+            <div class="dash_head d-flex justify-content-between align-items-center">
+                <h3>Agregar Medicación</h3>
+            </div>
+            <div class="table_section padding_infor_info">
+                <div>
+                    <div class="row">
+                        <input type="hidden" id="PersonaId">
+                        <div class="col-md-12">
+                            <label for="residenteSelect" class="form-label">Residente</label>
+                            <select id="residenteSelect" class="form-control">
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="NombreMedicamento" class="form-label">Medicamento</label>
+                            <input type="text" id="NombreMedicamento" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="Dosis" class="form-label">Dosis</label>
+                            <input type="text" id="Dosis" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="Frecuencia" class="form-label">Frecuencia</label>
+                            <input type="text" id="Frecuencia" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ViaAdministracion" class="form-label">Vía</label>
+                            <input type="text" id="ViaAdministracion" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="FechaInicio" class="form-label">Fecha Inicio</label>
+                            <input type="date" id="FechaInicio" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="FechaFin" class="form-label">Fecha Fin</label>
+                            <input type="date" id="FechaFin" class="form-control">
+                        </div>
+                        <div class="col-md-12">
+                            <span id="errorCrearMedicamento" class="text-danger form-label"></span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="guardarMedicamento()">Guardar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"
+                        onclick="VaciarFormularioMedicacion()">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 3. LISTADO de prescripciones -->
+<div id="prescripcionesList" class="mt-4"></div>
+<script src="../Js_Funciones/medicacion.js"></script>
+<script src="../Js_Funciones/common/ObtenerResidentesDrop.js"></script>
