@@ -35,6 +35,7 @@ namespace CuidadoConect.Controllers
                 .Include(c => c.Profesional)
                 .ThenInclude(p => p.Persona)
                 .Where(c => c.ResidenteId == residenteId)
+                .OrderByDescending(c => c.Fecha)
                 .ToListAsync();
 
             return Ok(citas);

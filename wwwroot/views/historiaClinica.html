@@ -5,36 +5,35 @@
                 <h3 class="mb-2">Historia Clinica por Residente</h3>
             </div>
 
-        </div>
-        <div class="col-md-12">
-            <label for="residenteSelect" class="form-label"></label>
-            <select id="residenteSelect" class="form-control"></select>
-        </div>
-        <div class="table_section padding_infor_info2">
-            <!-- d-none d-md-block SIRVE PARA PODER REEMPLAZAR LA TABLA POR CARDS EN FORMATO CELULAR  -->
-            <div class="table-responsive-sm d-none d-md-block">
-                <!-- <table id="tablaHistoriaClinica" class="table table-hover"> -->
-                <table id="tablaHistoriaClinica" class="table table-hover d-none">
-                    <thead>
-                        <tr class="table-primary">
-                            <th>Fecha</th>
-                            <th>Diagnostico</th>
-                            <th>Patologías</th>
-                            <th>Observaciones</th>
-                            <th>Profesional</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historiasClinicas"></tbody>
-                </table>
-            </div>
-        </div>
-        <!-- Vista en cards para pantallas pequeñas -->
-        <div id="vistaCardsHistorial" class="d-md-none">
-            <div id="cardsContainerHistorial" class="row g-2"></div>
-        </div>
 
-        <div id="mensajeSinHistoria" class="alert alert-info d-none text-center mt-3">
-            No hay Historia Clínica Asignada
+            <div class="col-md-12">
+                <label for="residenteSelect" class="form-label"></label>
+                <select id="residenteSelect" class="form-control"></select>
+            </div>
+            <div class="table_section padding_infor_info2">
+                <!-- d-none d-md-block SIRVE PARA PODER REEMPLAZAR LA TABLA POR CARDS EN FORMATO CELULAR  -->
+                <div class="table-responsive-sm d-none d-md-block">
+                    <!-- <table id="tablaHistoriaClinica" class="table table-hover"> -->
+                    <table id="tablaHistoriaClinica" class="table table-hover d-none">
+                        <thead>
+                            <tr class="table-primary">
+                                <th>Fecha</th>
+                                <th>Diagnostico</th>
+                                <th>Patologías</th>
+                                <th>Observaciones</th>
+                                <th>Profesional</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historiasClinicas"></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Vista en cards para pantallas pequeñas -->
+            <div id="historiasClinicasCards" class="mt-2"></div>
+
+            <div id="mensajeSinHistoria" class="alert alert-info d-none text-center mt-3">
+                No hay Historia Clínica Asignada
+            </div>
         </div>
 
     </div>

@@ -87,17 +87,17 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
-        // 1️⃣ Buscar usuario Identity
+        // Buscar usuario Identity
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null)
             return Unauthorized("Credenciales inválidas");
 
-        // 2️⃣ Validar contraseña
+        // Validar contraseña
         var passwordOk = await _userManager.CheckPasswordAsync(user, model.Password);
         if (!passwordOk)
             return Unauthorized("Credenciales inválidas");
 
-        // 3️⃣ Obtener rol
+        // Obtener rol
         string rolNombre = "USUARIO";
 
         var rolUsuario = _context.UserRoles
@@ -112,7 +112,7 @@ public class AuthController : ControllerBase
                 rolNombre = rol.Name;
         }
 
-        // 4️⃣ 🔑 ADMINISTRADOR → LOGIN DIRECTO
+        // ADMINISTRADOR → LOGIN DIRECTO
         if (rolNombre == "ADMINISTRADOR")
         {
             await _signInManager.SignInAsync(user, isPersistent: false);
@@ -126,7 +126,7 @@ public class AuthController : ControllerBase
             });
         }
 
-        // 5️⃣ VALIDAR PERSONA SOLO PARA ROLES OPERATIVOS
+        //VALIDAR PERSONA SOLO PARA ROLES OPERATIVOS
         Persona persona = null;
 
         var empleado = await _context.Empleado
@@ -164,7 +164,7 @@ public class AuthController : ControllerBase
             return StatusCode(403, "El usuario se encuentra deshabilitado");
 
 
-        // 6️⃣ Login permitido
+        //  Login permitido
         await _signInManager.SignInAsync(user, isPersistent: false);
 
         return Ok(new
@@ -177,50 +177,6 @@ public class AuthController : ControllerBase
     }
 
 
-
-
-    // [HttpPost("login")]
-    // public async Task<IActionResult> Login([FromBody] LoginModel model)
-    // {
-    //     //BUSCAMOS EL USUARIO POR MEDIO DE EMAIL EN LA BASE DE DATOS
-    //     var user = await _userManager.FindByEmailAsync(model.Email);
-    //     if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
-    //     {
-    //         string rolNombre = "EMPLEADO";
-    //         //BUSCAR ROL QUE TIENE
-    //         var rolUsuario = _context.UserRoles.Where(r => r.UserId == user.Id).SingleOrDefault();
-    //         if (rolUsuario != null) //SI TIENE UN ROL ASIGNADO
-    //         {
-    //             var rol = _context.Roles.Where(r => r.Id == rolUsuario.RoleId).SingleOrDefault(); //BUSCAMOS EL ROL EN LA TABLA ROLES
-    //             rolNombre = rol.Name; // OBTENEMOS EL NOMBRE DEL ROL ASIGNADO AL USUARIO
-    //         }
-    //         //SI EL USUARIO ES ENCONTRADO Y LA CONTRASEÑA ES CORRECTA
-    //         var claims = new[]
-    //         {
-    //         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // ID DEL USUARIO
-    //         new Claim(ClaimTypes.Name, user.UserName), // USUARIO
-    //         new Claim("NombreCompleto", user.NombreCompleto),// NOMBRE COMPLETO DEL USUARIO
-    //         new Claim (ClaimTypes.Role, rolNombre), // ASIGNAMOS EL ROL AL USUARIO
-    //         };
-
-    //         //RECUPERAMOS LA KEY SETEADA EN EL APPSETTING
-    //         // var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-    //         // var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-
-    //         await _signInManager.SignInAsync(user, isPersistent: false); // esto inicia la sesión con cookie
-
-    //         return Ok(new
-    //         {
-    //             mensaje = "Login exitoso",
-    //             nombreCompleto = user.NombreCompleto,
-    //             email = user.Email
-    //         });
-    //     }
-
-    //     return Unauthorized("Credenciales inválidas");
-
-    // }
 
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()

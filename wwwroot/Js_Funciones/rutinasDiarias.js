@@ -21,8 +21,6 @@ async function ObtenerRutinas() {
       icon: "error",
       title: "Error al obtener rutinas",
       text: err.message,
-      background: "#1295c9",
-      color: "#f1f1f1",
     });
   }
 }
@@ -101,8 +99,6 @@ async function guardarEdicion(rutinaId) {
     Swal.fire({
       icon: "success",
       title: "Rutina actualizada",
-      background: "#1295c9",
-      color: "#f1f1f1",
       showConfirmButton: false,
       timer: 1200,
     });
@@ -140,8 +136,6 @@ async function guardarRutina() {
     Swal.fire({
       icon: "success",
       title: "Rutina creada correctamente",
-      background: "#1295c9",
-      color: "#f1f1f1",
       showConfirmButton: false,
       timer: 1500,
     });
@@ -211,8 +205,6 @@ function EliminarRutinaSI(id) {
         title: "Eliminado!",
         text: "La rutina ha sido eliminada.",
         icon: "success",
-        background: "#1295c9",
-        color: "#f1f1f1",
         showConfirmButton: false,
         timer: 1500,
       });
@@ -300,8 +292,6 @@ async function AsignarRutinaAResidente() {
     Swal.fire({
       icon: "success",
       title: "Rutina asignada al residente",
-      background: "#1295c9",
-      color: "#f1f1f1",
       showConfirmButton: false,
       timer: 1500,
     });
@@ -314,41 +304,6 @@ async function AsignarRutinaAResidente() {
       icon: "error",
       title: "Error al asignar rutina",
       text: err.message,
-      background: "#1295c9",
-      color: "#f1f1f1",
-    });
-  }
-}
-
-
-async function ObtenerHistorial(residenteId) {
-  try {
-    const data = await authFetch(`historialrutinas/historial/${residenteId}`);
-    $("#tablaHistorial tbody").empty();
-
-    if (data.length === 0) {
-      $("#tablaHistorial tbody").append("<tr><td colspan='4'>No hay historial</td></tr>");
-      return;
-    }
-
-    data.forEach(item => {
-      $("#tablaHistorial tbody").append(
-        "<tr>" +
-        "<td>" + item.rutinaDescripcion + "</td>" +
-        "<td>" + item.empleadoNombre + "</td>" +
-        "<td>" + item.fechaHora + "</td>" +
-        "</tr>"
-      );
-    });
-
-  } catch (err) {
-    console.error("Error en ObtenerHistorial:", err);
-    Swal.fire({
-      icon: "error",
-      title: "Error al obtener historial",
-      text: err.message,
-      background: "#1295c9",
-      color: "#f1f1f1",
     });
   }
 }
@@ -373,7 +328,7 @@ async function MarcarRutinaCompletada(detalleRutinaId, dia) {
     }
   } catch (err) {
     console.error("Error en MarcarRutinaCompletada:", err);
-    Swal.fire("Error al completar rutina", err.message, "error");
+    Swal.fire("Acción Denegada", err.message, "error");
   }
 }
 

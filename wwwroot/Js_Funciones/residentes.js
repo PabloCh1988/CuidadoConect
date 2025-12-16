@@ -5,6 +5,7 @@ $(document).on("click", ".ver-perfil", async function () {
   await BuscarResidenteId(id);
 });
 
+
 $(document).on("click", ".editar-residente", async function () {
   const id = $(this).data("id");
   console.log("ID clickeado para editar:", id);
@@ -49,7 +50,7 @@ function renderCards(personas) {
             <h3>${residente.nombreResidente}</h3>
             <p><strong>Edad: </strong>${obtenerBadgeEdad(residente.edad)}</p>
             <p><strong>Fecha de Ingreso: </strong>${fecha}</p>
-            <p><strong>Obra Social: </strong>${residente.nombreObraSocial} - ${residente.planObraSocial}</p>
+            
             <ul class="list-unstyled lista-centrada">
               <li><i class="fa fa-envelope-o"></i> : ${residente.emailFamiliar}</li>
               <li><i class="fa fa-phone"></i> : ${residente.contactoEmergencia}</li>
@@ -254,8 +255,6 @@ async function CrearResidente() {
     Swal.fire({
       icon: "success",
       title: "Residente creado correctamente",
-      background: '#1295c9',
-      color: '#f1f1f1',
       showConfirmButton: false,
       timer: 1500
     });
@@ -271,7 +270,7 @@ async function CrearResidente() {
 
 async function BuscarResidenteId(id) {
   function obtenerBadgeEdad(edad) {
-    let clase = "badge-primary"; 
+    let clase = "badge-primary";
     return `<span class="badge ${clase} badge-edad">${edad} años</span>`;
   }
   try {
@@ -302,7 +301,6 @@ async function BuscarResidenteId(id) {
           <li><i class="fa fa-envelope-o"></i> : ${residente.emailFamiliar}</li>
           <li><i class="fa fa-phone"></i> : ${residente.contactoEmergencia}</li>
         </ul>
-        <!-- Podés agregar más datos aquí -->
       </div>
     </div>
   `;
@@ -314,6 +312,7 @@ async function BuscarResidenteId(id) {
     console.error("Error al obtener residente:", error);
   }
 }
+
 
 async function CargarModalEditarResidente(id) {
   try {
@@ -403,10 +402,12 @@ async function CargarModalEditarResidente(id) {
       preview.style.display = "block";
     });
 
-  } catch (error) {
+  }
+  catch (error) {
     console.error("Error al obtener el residente:", error);
     alert("Error al obtener el residente: " + error.message);
   }
+  
 };
 
 
@@ -486,8 +487,28 @@ async function EditarResidente() {
     });
     await ObtenerResidentes();
 
-  } catch (error) {
+  }
+  catch (error) {
     console.error("Error al editar el residente:", error);
-    mensajesError('#errorEditarResidente', null, `Error al editar: ${error.message}`);
+
+    if (error.status === 401 || error.status === 403) {
+      Swal.fire({
+        icon: "error",
+        title: "Acceso Denegado",
+        text: "No tienes permisos para realizar esta acción",
+      });
+    } else if (error.status === 400) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Datos inválidos. Revisa los campos e intenta nuevamente.",
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Ocurrió un error inesperado",
+      });
+    }
   }
 }

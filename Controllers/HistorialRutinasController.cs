@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuidadoConect.Models;
 using System.Security.Claims;
+using CuidadoConect.Models.Vistas;
 
 namespace CuidadoConect.Controllers
 {
@@ -124,9 +125,11 @@ namespace CuidadoConect.Controllers
             return Ok(historialDto);
         }
 
-        [HttpGet("historial/{residenteId}")]
-        public async Task<IActionResult> ObtenerHistorialPorResidente(int residenteId)
+        [HttpPost("historialcompletado")]
+        public async Task<ActionResult<List<RutinasCompletadasDTO>>> ObtenerHistorial([FromBody] FiltroFechas filtro)
         {
+            var hoy = DateTime.Today;
+
             var historial = await _context.HistorialRutina
                 .Include(h => h.DetalleRutina)
                     .ThenInclude(d => d.RutinaDiaria)
@@ -134,23 +137,65 @@ namespace CuidadoConect.Controllers
                     .ThenInclude(d => d.Residente)
                         .ThenInclude(r => r.Persona)
                 .Include(h => h.Empleado)
-                    .ThenInclude(e => e.Persona) // Incluimos Persona del Empleado
-                .Where(h => h.DetalleRutina.ResidenteId == residenteId && h.Completado)
+                    .ThenInclude(e => e.Persona)
+                .Where(h =>
+                    h.FechaHora.Date <= hoy &&
+
+                    // FILTRO OPCIONAL POR RESIDENTE
+                    (!filtro.ResidenteId.HasValue ||
+                     h.DetalleRutina.ResidenteId == filtro.ResidenteId.Value) &&
+
+                    // FILTRO OPCIONAL POR FECHA DESDE
+                    (!filtro.FiltroFechaDesde.HasValue ||
+                     h.FechaHora.Date >= filtro.FiltroFechaDesde.Value.Date) &&
+
+                    // FILTRO OPCIONAL POR FECHA HASTA
+                    (!filtro.FiltroFechaHasta.HasValue ||
+                     h.FechaHora.Date <= filtro.FiltroFechaHasta.Value.Date)
+                )
                 .OrderByDescending(h => h.FechaHora)
-                .Select(h => new
+                .Select(h => new RutinasCompletadasDTO
                 {
-                    ResidenteId = h.DetalleRutina.ResidenteId,
-                    ResidenteNombre = h.DetalleRutina.Residente.Persona.NombreyApellido,
-                    RutinaDescripcion = h.DetalleRutina.RutinaDiaria.Descripcion,
-                    EmpleadoNombre = h.Empleado != null && h.Empleado.Persona != null
+                    NombreResidente = h.DetalleRutina.Residente.Persona.NombreyApellido,
+                    DescripcionRutina = h.DetalleRutina.RutinaDiaria.Descripcion,
+                    FechaHora = h.FechaHora,
+                    NombreEmpleado = h.Empleado != null && h.Empleado.Persona != null
                         ? h.Empleado.Persona.NombreyApellido
-                        : "Desconocido", // Nombre completo del empleado
-                    FechaHora = h.FechaHora.ToString("dd/MM/yyyy HH:mm"), // formateo la fecha para que muestre en formato 24hs como lo guardamos
+                        : "Desconocido"
                 })
                 .ToListAsync();
 
             return Ok(historial);
         }
+
+
+        // [HttpGet("historial/{residenteId}")]
+        // public async Task<IActionResult> ObtenerHistorialPorResidente(int residenteId)
+        // {
+        //     var historial = await _context.HistorialRutina
+        //         .Include(h => h.DetalleRutina)
+        //             .ThenInclude(d => d.RutinaDiaria)
+        //         .Include(h => h.DetalleRutina)
+        //             .ThenInclude(d => d.Residente)
+        //                 .ThenInclude(r => r.Persona)
+        //         .Include(h => h.Empleado)
+        //             .ThenInclude(e => e.Persona) // Incluimos Persona del Empleado
+        //         .Where(h => h.DetalleRutina.ResidenteId == residenteId && h.Completado)
+        //         .OrderByDescending(h => h.FechaHora)
+        //         .Select(h => new
+        //         {
+        //             ResidenteId = h.DetalleRutina.ResidenteId,
+        //             ResidenteNombre = h.DetalleRutina.Residente.Persona.NombreyApellido,
+        //             RutinaDescripcion = h.DetalleRutina.RutinaDiaria.Descripcion,
+        //             EmpleadoNombre = h.Empleado != null && h.Empleado.Persona != null
+        //                 ? h.Empleado.Persona.NombreyApellido
+        //                 : "Desconocido", // Nombre completo del empleado
+        //             FechaHora = h.FechaHora.ToString("dd/MM/yyyy HH:mm"), // formateo la fecha para que muestre en formato 24hs como lo guardamos
+        //         })
+        //         .ToListAsync();
+
+        //     return Ok(historial);
+        // }
 
         // POST: api/HistorialRutinas
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

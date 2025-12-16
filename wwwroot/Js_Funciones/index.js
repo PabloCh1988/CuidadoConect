@@ -148,12 +148,12 @@ async function ObtenerPersonasDeshabilitadas() {
 
         $("#todasLasPersonasDeshabilitadas").empty();
         $("#cardsContainerPersonasDeshabilitadas").empty();
-        
+
         // mensaje si no hay personas deshabilitadas
         if (data.length === 0) {
             $("#tablaPersonasDeshabilitadas table").addClass("d-none");
             $("#mensajeSinDeshabilitadas").removeClass("d-none");
-            
+
             return;
         } else {
             $("#tablaPersonasDeshabilitadas table").removeClass("d-none");
@@ -198,10 +198,12 @@ async function ObtenerPersonasDeshabilitadas() {
         console.error("Error al obtener personas deshabilitadas", err);
     }
 }
- // llama la funcion solo al presionar el boton de collapse
+// llama la funcion solo al presionar el boton de collapse
 $('#PersonasDeshabilitadas').on('show.bs.collapse', function () {
     ObtenerPersonasDeshabilitadas();
 });
+
+
 
 function HabilitarPersona(id) {
     authFetch(`personas/habilitar/${id}`, { method: "PUT" })
@@ -209,7 +211,6 @@ function HabilitarPersona(id) {
             ObtenerPersonas();
             ObtenerPersonasDeshabilitadas();
 
-            // cerrar collapse
             $('#PersonasDeshabilitadas').collapse('hide');
 
             Swal.fire({
@@ -220,12 +221,25 @@ function HabilitarPersona(id) {
             });
         })
         .catch(err => {
-            console.error(err);
+            console.error("No se pudo acceder a la API:", err);
+            console.error("Status:", err.status);
+            console.error("Mensaje:", err.message);
+
+            if (err.status === 401 || err.status === 403) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Acceso Denegado",
+                    text: "No tienes permisos para realizar esta acción",
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: err.message || "Ocurrió un error inesperado",
+                });
+            }
         });
 }
-
-
-
 
 
 
@@ -386,8 +400,8 @@ async function guardarPersonaEditada() {
             rol: document.getElementById("RolExistenteEditar").value,
         };
         // VALIDACIONES OBLIGATORIAS
-        if (!personaEditada.nombreyApellido || 
-            !personaEditada.fechaNacimiento || 
+        if (!personaEditada.nombreyApellido ||
+            !personaEditada.fechaNacimiento ||
             !personaEditada.sexo) {
 
             mensajesError('#errorEditarPersona', null,
@@ -466,22 +480,39 @@ function VaciarModal() {
     ObtenerPersonas();
 }
 
+
 function EliminarPersona(id) {
-    authFetch(`personas/${id}`, { method: "DELETE", })
+    authFetch(`personas/${id}`, { method: "DELETE" })
         .then(() => {
-            // Mostrar mensaje de éxito
+            ObtenerPersonas();
             Swal.fire({
-                title: "Deshabilitada!",
-                text: "La persona ha sido deshabilitada.",
-                icon: 'success',
+                icon: "success",
+                title: "Persona Deshabilitada",
                 showConfirmButton: false,
                 timer: 1500
             });
-            $('#PersonasDeshabilitadas').collapse('hide');
-            ObtenerPersonas(); // Actualiza la lista de personas
         })
-        .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
+        .catch(err => {
+            console.error("Error al acceder a la API:", err);
+            console.error("Status:", err.status);
+            console.error("Mensaje:", err.message);
+
+            if (err.status === 401 || err.status === 403) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Acceso Denegado",
+                    text: "No tienes permisos para realizar esta acción",
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: err.message || "Ocurrió un error inesperado",
+                });
+            }
+        });
 }
+
 
 
 function mensajesError(id, data, mensaje) {

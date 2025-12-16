@@ -48,8 +48,17 @@ async function obtenerCitasProfesional() {
 
   } catch (err) {
     console.error("Error al obtener citas del profesional:", err);
-    Swal.fire("Acceso Denegado", "No tiene acceso a las citas médicas.", "error");
+    Swal.fire({
+      title: "Acceso Denegado",
+      text: "No tiene acceso a las citas médicas.",
+      icon: "error",
+      confirmButtonText: "Aceptar"
+    }).then(() => {
+      // Redirección al index.html después de cerrar el Swal
+      window.location.href = "index.html";
+    });
   }
+
 }
 
 async function actualizarEstadoCita(id, nuevoEstado) {

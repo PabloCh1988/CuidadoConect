@@ -1,36 +1,34 @@
-// async function ObtenerResidentesDrop() {
-//     try {
-//         const data = await authFetch("residentes"); // endpoint correcto
-//         const select = document.getElementById("residenteSelect");
-//         const select2 = document.getElementById("residenteSelectRutina");
-//         const select3 = document.getElementById("residenteSelect2");
-//         select.innerHTML = '<option value="" selected disabled>Seleccione un residente</option>';
-//         select2.innerHTML = '<option value="" selected disabled>Seleccione un residente</option>';
-//         select3.innerHTML = '<option value="" selected disabled>Seleccione un residente</option>';
-//         data.forEach(residente => {
-//             select.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
-//             select2.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
-//             select3.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
-//         });
-//     } catch (err) {
-//         console.error("Error al cargar residentes:", err);
-//     }
-// }
 
 async function ObtenerResidentesDrop() {
     try {
-        const data = await authFetch("residentes");
+        const data = await authFetch("residentes"); // endpoint correcto
 
+        // Lista de selects a llenar
         const selects = [
             document.getElementById("residenteSelect"),
             document.getElementById("residenteSelectRutina"),
-            document.getElementById("residenteSelect2")
-        ].filter(s => s !== null); // 👉 filtra los que existen
+            document.getElementById("residenteSelect2"),
+            document.getElementById("rutinaSelect2") // si querés llenarlo también
+        ].filter(s => s !== null); // filtra los que existen
 
         selects.forEach(select => {
-            select.innerHTML = '<option value="" selected disabled>Seleccione un residente</option>';
+            // Vaciar el select primero
+            select.innerHTML = "";
+
+            // Opción por defecto
+            const optionDefault = document.createElement("option");
+            optionDefault.value = "";
+            optionDefault.disabled = true;
+            optionDefault.selected = true;
+            optionDefault.textContent = "Seleccione un residente";
+            select.appendChild(optionDefault);
+
+            // Agregar las opciones
             data.forEach(residente => {
-                select.innerHTML += `<option value="${residente.residenteId}">${residente.nombreResidente}</option>`;
+                const option = document.createElement("option");
+                option.value = residente.residenteId;
+                option.textContent = residente.nombreResidente;
+                select.appendChild(option);
             });
         });
 
@@ -38,3 +36,8 @@ async function ObtenerResidentesDrop() {
         console.error("Error al cargar residentes:", err);
     }
 }
+
+// Llamar la función al cargar la página
+document.addEventListener("DOMContentLoaded", () => {
+    ObtenerResidentesDrop();
+});

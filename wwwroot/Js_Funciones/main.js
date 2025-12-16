@@ -47,7 +47,12 @@ function cargarVista(view) {
         requestAnimationFrame(() => {
           obtenerCitasProfesional();
         });
-      }
+      } else if(view === "rutinasCompletadas"){
+        ObtenerResidentesDrop();
+        ObtenerHistorial();
+      } else if (view === "buscarPorRutinas") {
+        ObtenerResidentesDrop();
+      } 
 
       // Ejecutar scripts de la vista si los hay
       const tempDiv = document.createElement("div");
@@ -67,8 +72,19 @@ function cargarVista(view) {
 }
 
 function cargarVistaPorHash() {
-  let vista = window.location.hash.replace("#", "") || "home";
+  // let vista = window.location.hash.replace("#", "") || "home";
+  // cargarVista(vista);
+  let hash = window.location.hash.replace("#", "") || "home";
+
+  // Ejemplo: perfil?id=2
+  let [vista, queryString] = hash.split("?");
   cargarVista(vista);
+
+  // Guardar los parámetros en window.location.search para que perfil.html los pueda leer
+  if (queryString) {
+    history.replaceState(null, "", window.location.pathname + "?" + queryString + window.location.hash);
+  }
+
 }
 
 function navigateTo(vista) {

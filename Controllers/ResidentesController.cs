@@ -199,7 +199,7 @@ namespace CuidadoConect.Controllers
 
             return Ok(residente);
         }
-
+        [Authorize(Roles = "ADMINISTRADOR, EMPLEADO")]
         // PUT: api/Residentes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]

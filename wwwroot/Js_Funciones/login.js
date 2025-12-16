@@ -105,14 +105,3 @@ if (registerForm) {
         });
     }
 }
-// else {
-            //     Swal.fire({
-            //         title: "Login Fallido",
-            //         text: "Por favor verifique su usuario y contraseña.",
-            //         icon: 'error',
-            //         background: '#f1f1f1',
-            //         color: '#000000',
-            //         confirmButtonColor: '#2512cf',
-            //         confirmButtonText: 'Aceptar'
-            //     });
-            // }

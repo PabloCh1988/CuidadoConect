@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CuidadoConect.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CuidadoConect.Controllers
 {
@@ -38,7 +39,7 @@ namespace CuidadoConect.Controllers
                 .ToListAsync();
 
             return Ok(personas);
-            
+
         }
 
 
@@ -55,7 +56,8 @@ namespace CuidadoConect.Controllers
 
             return persona;
         }
-
+        
+        [Authorize(Roles = "ADMINISTRADOR")]
         [HttpPut("habilitar/{id}")]
         public async Task<IActionResult> Rehabilitar(int id)
         {
@@ -124,7 +126,7 @@ namespace CuidadoConect.Controllers
             return CreatedAtAction("GetPersona", new { id = persona.Id }, persona);
         }
 
-
+        [Authorize(Roles = "ADMINISTRADOR")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePersona(int id)
         {

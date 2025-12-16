@@ -35,8 +35,7 @@ async function AgendarCitaMedica() {
     Swal.fire({
       icon: "success",
       title: "Cita médica agendada correctamente",
-      background: '#1295c9',
-      color: '#f1f1f1',
+
       showConfirmButton: false,
       timer: 1500
     });
@@ -75,17 +74,6 @@ function getBadgeClass(estado) {
       return "<button type='button' class='btn btn-outline-light text-dark btn-sm' disabled>Desconocido</button>";
   }
 }
-
-// function getBadgeClass(estado) {
-//   switch (estado) {
-//     case "Pendiente": return "<span class='btn btn-outline-warning'>Pendiente</span>";
-//     case "Confirmada": return "bg-success text-white";
-//     case "Cancelada": return "bg-danger text-white";
-//     case "Completada": return "bg-secondary text-white";
-//     default: return "bg-light text-dark";
-//   }
-// }
-// "bg-warning text-dark";
 
 async function obtenerCitasPorResidente(residenteId) {
   try {
@@ -141,50 +129,3 @@ async function obtenerCitasPorResidente(residenteId) {
   }
 }
 
-
-// async function obtenerCitasPorResidente(residenteId) {
-//   try {
-//     console.log("Llamando API con residenteId:", residenteId);
-//     // const data = await authFetch(`citasmedicas?residenteId=${residenteId}`);
-//     const data = await authFetch(`citasmedicas/por-residente?residenteId=${residenteId}`);
-
-//     console.log("Respuesta API:", data);
-
-//     $("#citasPorResidente").empty();
-//     $("#cardsContainerCitasMedicas").empty();
-
-//     if (!data || data.length === 0) {
-//       $("#citasPorResidente").append("<tr><td colspan='4'>No hay Citas Médicas Solicitadas</td></tr>");
-//       $("#cardsContainerCitasMedicas").append("<div class='col-12 text-center'><td colspan='4'>No hay Citas Médicas Solicitadas</td></div>");
-//       return;
-//     }
-
-//     // Título del residente
-//     $.each(data, function (index, citas) {
-//       $("#citasPorResidente").append(
-//         `<tr id="fila-${citas.id}">
-//      <td>${citas.observaciones}</td>
-//      <td>${formatearFecha(citas.fecha)}</td>
-//      <td>${citas.hora}</td>
-//      <td>${citas.profesional.persona?.nombreyApellido}</td>
-//      <td>${citas.estado}</td>
-//     </tr>`
-//       );
-
-//       $("#cardsContainerCitasMedicas").append(`
-//                 <div class="col-12">
-//                     <div class="card shadow-sm p-3 mb-2">
-//                         <h5 class="card-title mb-1">${citas.observaciones}</h5>
-//                         <p class="mb-1"><strong>Fecha:</strong> ${formatearFecha(citas.fecha)}</p>
-//                         <p class="mb-1"><strong>Hora:</strong> ${citas.hora}</p>
-//                         <p class="mb-1"><strong>Estado:</strong> ${citas.estado}</p>
-//                         <h6 class="card-title mb-1"><strong>Profesional:</strong> ${citas.profesional.persona?.nombreyApellido}</h6>
-//                     </div>
-//                 </div>
-//         `)
-//     });
-//   } catch (err) {
-//     console.error("Error en ObtenerCitasPorResidente:", err);
-//     Swal.fire("Error al obtener las citas", err.message, "error");
-//   }
-// }

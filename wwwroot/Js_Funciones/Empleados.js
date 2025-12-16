@@ -1,13 +1,13 @@
 async function mostrarTotalEmpleados() {
-  try {
-    const emple = await authFetch(`empleados`);
+    try {
+        const emple = await authFetch(`empleados`);
 
-    const total = emple.length;
-    document.getElementById('total-empleados').textContent = total;
-  } catch (error) {
-    console.error('Error al obtener empleados:', error);
-    document.getElementById('total-empleados').textContent = 'Error';
-  }
+        const total = emple.length;
+        document.getElementById('total-empleados').textContent = total;
+    } catch (error) {
+        console.error('Error al obtener empleados:', error);
+        document.getElementById('total-empleados').textContent = 'Error';
+    }
 }
 
 async function ObtenerEmpleados() {
@@ -51,8 +51,6 @@ async function ObtenerEmpleados() {
             icon: 'error',
             title: 'Error al obtener empleados',
             text: err.message,
-            background: '#1295c9',
-            color: '#f1f1f1'
         });
     }
 }
@@ -170,31 +168,35 @@ function EditarTurno(id) {
             alert("Error al obtener el empleado: " + error.message);
         });
 }
-
 async function EditarTurnoSI() {
     const empleadoId = $('#EmpleadoId').val();
     const turno = document.getElementById("turnoEditar").value;
     const tareasAsignadas = document.getElementById("tareasAsignadasEditar").value;
     const personaId = parseInt(document.getElementById("PersonaId").value);
     const emailempleado = document.getElementById("EmailEditar");
+
     if (isNaN(empleadoId)) {
         mensajesError('#errorCrear', null, "Debes seleccionar un empleado válido");
         return;
     }
+
     const empleado = {
         id: empleadoId,
         turno: turno,
         tareasAsignadas: tareasAsignadas,
         personaId: personaId,
-        email: emailempleado,
+        email: emailempleado.value, // tomar el value
     };
+
     try {
         await authFetch(`empleados/${empleadoId}`, {
             method: "PUT",
             body: JSON.stringify(empleado)
         });
+
         $('#modalEditarTurno').modal('hide');
-        ObtenerEmpleados(); // Actualizar la lista de empleados
+        ObtenerEmpleados();
+
         Swal.fire({
             icon: "success",
             title: "Empleado editado correctamente",
@@ -203,8 +205,33 @@ async function EditarTurnoSI() {
         });
     } catch (error) {
         console.error("Error al editar el empleado:", error);
-        mensajesError('#errorEditar', null, `Error al editar: ${error.message}`);
+
+        if (error.status === 401 || error.status === 403) {
+            console.error("Error al obtener citas del profesional:", err);
+            Swal.fire({
+                title: "Acceso Denegado",
+                text: "No tienes permisos para realizar esta acción.",
+                icon: "error",
+                confirmButtonText: "Aceptar"
+            }).then(() => {
+                // Redirección al index.html después de cerrar el Swal
+                window.location.href = "index.html";
+            });
+        } else if (error.status === 400) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Datos inválidos. Revisa los campos e intenta nuevamente.",
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: error.message || "Ocurrió un error inesperado",
+            });
+        }
     }
 }
+
 
 ObtenerEmpleados();

@@ -24,8 +24,6 @@ async function ObtenerEspecialidades() {
             icon: 'error',
             title: 'Error al obtener especialidades',
             text: err.message,
-            background: '#1295c9',
-            color: '#f1f1f1'
         });
     }
 }
@@ -51,8 +49,6 @@ function activarEdicionEspecialidad(id, descripcionActual) {
                 icon: "warning",
                 title: "Campo vacío",
                 text: "El nombre de la especialidad no puede estar vacío.",
-                background: "#1295c9",
-                color: "#f1f1f1"
             });
             input.focus();
             return; // evita seguir
