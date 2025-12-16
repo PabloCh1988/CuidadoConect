@@ -12,6 +12,8 @@ public class Persona
     public int DNI { get; set; }
     public string? Telefono { get; set; }
     public string? Rol { get; set; }
+    public bool Eliminada { get; set; }
+    public DateTime? FechaDeshabilitado { get; set; }
 
     public virtual ICollection<Empleado> Empleados { get; set; } = [];
     public virtual ICollection<Profesional> Profesionales { get; set; } = [];

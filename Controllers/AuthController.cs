@@ -1,6 +1,8 @@
+using CuidadoConect.Models;
 using CuidadoConect.Models.Usuario;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -85,45 +87,140 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
-        //BUSCAMOS EL USUARIO POR MEDIO DE EMAIL EN LA BASE DE DATOS
+        // 1️⃣ Buscar usuario Identity
         var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+        if (user == null)
+            return Unauthorized("Credenciales inválidas");
+
+        // 2️⃣ Validar contraseña
+        var passwordOk = await _userManager.CheckPasswordAsync(user, model.Password);
+        if (!passwordOk)
+            return Unauthorized("Credenciales inválidas");
+
+        // 3️⃣ Obtener rol
+        string rolNombre = "USUARIO";
+
+        var rolUsuario = _context.UserRoles
+            .SingleOrDefault(r => r.UserId == user.Id);
+
+        if (rolUsuario != null)
         {
-            string rolNombre = "EMPLEADO";
-            //BUSCAR ROL QUE TIENE
-            var rolUsuario = _context.UserRoles.Where(r => r.UserId == user.Id).SingleOrDefault();
-            if (rolUsuario != null) //SI TIENE UN ROL ASIGNADO
-            {
-                var rol = _context.Roles.Where(r => r.Id == rolUsuario.RoleId).SingleOrDefault(); //BUSCAMOS EL ROL EN LA TABLA ROLES
-                rolNombre = rol.Name; // OBTENEMOS EL NOMBRE DEL ROL ASIGNADO AL USUARIO
-            }
-            //SI EL USUARIO ES ENCONTRADO Y LA CONTRASEÑA ES CORRECTA
-            var claims = new[]
-            {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // ID DEL USUARIO
-            new Claim(ClaimTypes.Name, user.UserName), // USUARIO
-            new Claim("NombreCompleto", user.NombreCompleto),// NOMBRE COMPLETO DEL USUARIO
-            new Claim (ClaimTypes.Role, rolNombre), // ASIGNAMOS EL ROL AL USUARIO
-            };
+            var rol = _context.Roles
+                .SingleOrDefault(r => r.Id == rolUsuario.RoleId);
 
-            //RECUPERAMOS LA KEY SETEADA EN EL APPSETTING
-            // var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            // var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            if (rol != null)
+                rolNombre = rol.Name;
+        }
 
-
-            await _signInManager.SignInAsync(user, isPersistent: false); // 👈 esto inicia la sesión con cookie
+        // 4️⃣ 🔑 ADMINISTRADOR → LOGIN DIRECTO
+        if (rolNombre == "ADMINISTRADOR")
+        {
+            await _signInManager.SignInAsync(user, isPersistent: false);
 
             return Ok(new
             {
                 mensaje = "Login exitoso",
                 nombreCompleto = user.NombreCompleto,
-                email = user.Email
+                email = user.Email,
+                rol = rolNombre
             });
         }
 
-        return Unauthorized("Credenciales inválidas");
+        // 5️⃣ VALIDAR PERSONA SOLO PARA ROLES OPERATIVOS
+        Persona persona = null;
 
+        var empleado = await _context.Empleado
+            .Include(e => e.Persona)
+            .FirstOrDefaultAsync(e => e.Email == model.Email);
+
+        if (empleado != null)
+            persona = empleado.Persona;
+
+        if (persona == null)
+        {
+            var profesional = await _context.Profesional
+                .Include(p => p.Persona)
+                .FirstOrDefaultAsync(p => p.Email == model.Email);
+
+            if (profesional != null)
+                persona = profesional.Persona;
+        }
+
+        if (persona == null)
+        {
+            var residente = await _context.Residente
+                .Include(r => r.Persona)
+                .FirstOrDefaultAsync(r => r.EmailFamiliar == model.Email);
+
+            if (residente != null)
+                persona = residente.Persona;
+        }
+
+        if (persona == null)
+            return Unauthorized("Usuario no registrado en el sistema");
+
+        if (persona.Eliminada)
+            // return Unauthorized("El usuario se encuentra deshabilitado");
+            return StatusCode(403, "El usuario se encuentra deshabilitado");
+
+
+        // 6️⃣ Login permitido
+        await _signInManager.SignInAsync(user, isPersistent: false);
+
+        return Ok(new
+        {
+            mensaje = "Login exitoso",
+            nombreCompleto = persona.NombreyApellido,
+            email = user.Email,
+            rol = rolNombre
+        });
     }
+
+
+
+
+    // [HttpPost("login")]
+    // public async Task<IActionResult> Login([FromBody] LoginModel model)
+    // {
+    //     //BUSCAMOS EL USUARIO POR MEDIO DE EMAIL EN LA BASE DE DATOS
+    //     var user = await _userManager.FindByEmailAsync(model.Email);
+    //     if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+    //     {
+    //         string rolNombre = "EMPLEADO";
+    //         //BUSCAR ROL QUE TIENE
+    //         var rolUsuario = _context.UserRoles.Where(r => r.UserId == user.Id).SingleOrDefault();
+    //         if (rolUsuario != null) //SI TIENE UN ROL ASIGNADO
+    //         {
+    //             var rol = _context.Roles.Where(r => r.Id == rolUsuario.RoleId).SingleOrDefault(); //BUSCAMOS EL ROL EN LA TABLA ROLES
+    //             rolNombre = rol.Name; // OBTENEMOS EL NOMBRE DEL ROL ASIGNADO AL USUARIO
+    //         }
+    //         //SI EL USUARIO ES ENCONTRADO Y LA CONTRASEÑA ES CORRECTA
+    //         var claims = new[]
+    //         {
+    //         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // ID DEL USUARIO
+    //         new Claim(ClaimTypes.Name, user.UserName), // USUARIO
+    //         new Claim("NombreCompleto", user.NombreCompleto),// NOMBRE COMPLETO DEL USUARIO
+    //         new Claim (ClaimTypes.Role, rolNombre), // ASIGNAMOS EL ROL AL USUARIO
+    //         };
+
+    //         //RECUPERAMOS LA KEY SETEADA EN EL APPSETTING
+    //         // var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+    //         // var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+
+    //         await _signInManager.SignInAsync(user, isPersistent: false); // esto inicia la sesión con cookie
+
+    //         return Ok(new
+    //         {
+    //             mensaje = "Login exitoso",
+    //             nombreCompleto = user.NombreCompleto,
+    //             email = user.Email
+    //         });
+    //     }
+
+    //     return Unauthorized("Credenciales inválidas");
+
+    // }
 
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()

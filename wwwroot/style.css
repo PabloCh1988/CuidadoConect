@@ -70,6 +70,32 @@
 /*------------------------------------------------------------------
     3. basic
 -------------------------------------------------------------------*/
+/* Hace que el contenido principal ocupe toda la altura */
+#content {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenedor interno del dashboard */
+.midde_cont {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Donde se carga el contenido dinámico */
+#app {
+    flex: 1;
+}
+
+/* Footer */
+.footer {
+    padding: 15px 0;
+    background-color: #f8f9fa;
+}
+
+
 @media (max-width: 575.98px) {
     .botones-rutina {
         flex-direction: column;
@@ -2057,6 +2083,11 @@ button.main_bt {
 
 .msg_list li:nth-child(4) {
     border-bottom: none;
+}
+
+.fw-bold {
+    font-weight: bold;
+    font-size: 17px;
 }
 
 

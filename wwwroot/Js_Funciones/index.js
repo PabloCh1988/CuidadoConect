@@ -115,8 +115,8 @@ async function ObtenerPersonas() {
                 "<td>" + persona.dni + "</td>" +
                 "<td>" + persona.telefono + "</td>" +
                 "<td>" + rolHtml + "</td>" +
-                "<td><button class='btn btn-outline-success fa fa-pencil' title='Editar' onclick='EditarPersona(" + persona.id + ")'></button></td>" +
-                "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarPersona(" + persona.id + ")'></button></td>" +
+                "<td><button class='btn btn-outline-primary fa fa-pencil' title='Editar' onclick='EditarPersona(" + persona.id + ")'></button></td>" +
+                "<td><button class='btn btn-outline-danger fa fa-times' title='Deshabilitar' onclick='EliminarPersona(" + persona.id + ")'></button></td>" +
                 "</tr>"
             );
 
@@ -141,6 +141,92 @@ async function ObtenerPersonas() {
         console.error("Error en ObtenerPersonas:", err);
     }
 }
+
+async function ObtenerPersonasDeshabilitadas() {
+    try {
+        const data = await authFetch("personas/deshabilitadas");
+
+        $("#todasLasPersonasDeshabilitadas").empty();
+        $("#cardsContainerPersonasDeshabilitadas").empty();
+        
+        // mensaje si no hay personas deshabilitadas
+        if (data.length === 0) {
+            $("#tablaPersonasDeshabilitadas table").addClass("d-none");
+            $("#mensajeSinDeshabilitadas").removeClass("d-none");
+            
+            return;
+        } else {
+            $("#tablaPersonasDeshabilitadas table").removeClass("d-none");
+            $("#mensajeSinDeshabilitadas").addClass("d-none");
+        }
+
+        $.each(data, function (index, persona) {
+
+            $("#todasLasPersonasDeshabilitadas").append(`
+                <tr class="table-danger">
+                    <td>${persona.nombreyApellido}</td>
+                    <td class='text-center'>${formatearFecha(persona.fechaNacimiento)}</td>
+                    <td>${persona.sexo}</td>
+                    <td>${persona.dni}</td>
+                    <td>${persona.telefono}</td>
+                    <td class='text-center'>${formatearFecha(persona.fechaDeshabilitado)}</td>
+                    <td>${persona.rol ?? "-"}</td>
+                    <td>
+                        <button class="btn btn-outline-success fa fa-undo"
+                            title="Habilitar"
+                            onclick="HabilitarPersona(${persona.id})">
+                        </button>
+                    </td>
+                </tr>
+            `);
+
+            $("#cardsContainerPersonasDeshabilitadas").append(`
+                <div class="col-12">
+                    <div class="card bg-light border-secondary p-3">
+                        <h5 class="card-title text-muted">${persona.nombreyApellido}</h5>
+                        <p><strong>DNI:</strong> ${persona.dni}</p>
+                        <p><strong>DNI:</strong> ${formatearFecha(persona.fechaDeshabilitado)}</p>
+                        <button class="btn btn-outline-success fa fa-undo"
+                            onclick="HabilitarPersona(${persona.id})">
+                        </button>
+                    </div>
+                </div>
+            `);
+        });
+
+    } catch (err) {
+        console.error("Error al obtener personas deshabilitadas", err);
+    }
+}
+ // llama la funcion solo al presionar el boton de collapse
+$('#PersonasDeshabilitadas').on('show.bs.collapse', function () {
+    ObtenerPersonasDeshabilitadas();
+});
+
+function HabilitarPersona(id) {
+    authFetch(`personas/habilitar/${id}`, { method: "PUT" })
+        .then(() => {
+            ObtenerPersonas();
+            ObtenerPersonasDeshabilitadas();
+
+            // cerrar collapse
+            $('#PersonasDeshabilitadas').collapse('hide');
+
+            Swal.fire({
+                icon: "success",
+                title: "Persona habilitada nuevamente",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        })
+        .catch(err => {
+            console.error(err);
+        });
+}
+
+
+
+
 
 
 function formatearFecha(fecha) {
@@ -221,11 +307,11 @@ async function guardarPersona() {
         return;
     }
     const fechaNacimiento = new Date(crearPersona.fechaNacimiento);
-    const fechaLimite = new Date("2010-12-31");
+    const fechaLimite = new Date("2007-12-31");
 
-    // Validación: la fecha de nacimiento no puede ser posterior al 31/12/2024
+    // Validación: la fecha de nacimiento no puede ser posterior al 31/12/2007
     if (fechaNacimiento > fechaLimite) {
-        mensajesError('#errorCrear', null, "La fecha de nacimiento no puede ser posterior al 31/12/2010");
+        mensajesError('#errorCrear', null, "La fecha de nacimiento no puede ser posterior al 31/12/2007");
         return;
     }
 
@@ -250,8 +336,6 @@ async function guardarPersona() {
         Swal.fire({
             icon: "success",
             title: "Persona creada correctamente",
-            background: '#1295c9',
-            color: '#f1f1f1',
             showConfirmButton: false,
             timer: 1500
         });
@@ -294,13 +378,39 @@ async function guardarPersonaEditada() {
         const id = document.getElementById("PersonaIdEditar").value;
         const personaEditada = {
             id: id,
-            nombreyApellido: document.getElementById("NombreEditar").value,
+            nombreyApellido: document.getElementById("NombreEditar").value.trim(),
             fechaNacimiento: document.getElementById("FechaEditar").value,
             sexo: document.getElementById("SexoEditar").value,
             dni: document.getElementById("DNIEditar").value,
             telefono: document.getElementById("TelefonoEditar").value,
             rol: document.getElementById("RolExistenteEditar").value,
         };
+        // VALIDACIONES OBLIGATORIAS
+        if (!personaEditada.nombreyApellido || 
+            !personaEditada.fechaNacimiento || 
+            !personaEditada.sexo) {
+
+            mensajesError('#errorEditarPersona', null,
+                "El nombre, la fecha de nacimiento y el sexo son obligatorios");
+            return;
+        }
+
+        // VALIDACIÓN FECHA
+        const fechaNacimiento = new Date(personaEditada.fechaNacimiento);
+        const fechaLimite = new Date("2007-12-31");
+
+        if (fechaNacimiento > fechaLimite) {
+            mensajesError('#errorEditarPersona', null,
+                "La fecha de nacimiento no puede ser posterior al 31/12/2007");
+            return;
+        }
+
+        // VALIDACIÓN DNI
+        if (!personaEditada.dni || personaEditada.dni.length <= 6) {
+            mensajesError('#errorEditarPersona', null,
+                "El DNI debe tener más de 6 caracteres");
+            return;
+        }
 
         await authFetch(`personas/${id}`, {
             method: "PUT",
@@ -311,8 +421,6 @@ async function guardarPersonaEditada() {
         Swal.fire({
             icon: "success",
             title: "Persona editada correctamente",
-            background: '#1295c9',
-            color: '#f1f1f1',
             showConfirmButton: false,
             timer: 1500
         });
@@ -322,38 +430,6 @@ async function guardarPersonaEditada() {
     }
 }
 
-
-// async function guardarPersonaEditada(id) {
-//     const personaEditadaId = document.getElementById("PersonaIdEditar").value;
-
-//     const editarPersona = {
-//         personaId: personaEditadaId,
-//         nombreyApellido: document.getElementById("NombreEditar").value,
-//         fechaNacimiento: document.getElementById("FechaEditar").value,
-//         sexo: document.getElementById("SexoEditar").value,
-//         dni: document.getElementById("DNIEditar").value,
-//         telefono: document.getElementById("TelefonoEditar").value,
-//     };
-//     try {
-//         await authFetch(`personas/${personaEditadaId}`, {
-//             method: 'PUT',
-//             body: JSON.stringify(editarPersona)
-//         });
-//         $("#ModalEditarPersonas").modal('hide');
-//         ObtenerPersonas();
-//         Swal.fire({
-//             icon: "success",
-//             title: "Persona editada correctamente",
-//             background: '#1295c9',
-//             color: '#f1f1f1',
-//             showConfirmButton: false,
-//             timer: 1500
-//         });
-//     } catch (error) {
-//         console.error("Error al editar la persona:", error);
-//         mensajesError('#errorEditarPersona', null, `Error al crear: ${err.message}`);
-//     }
-// }
 function vaciarModalEditar() {
     document.getElementById("PersonaIdEditar").value = "";
     document.getElementById("NombreEditar").value = "";
@@ -391,62 +467,22 @@ function VaciarModal() {
 }
 
 function EliminarPersona(id) {
-    Swal.fire({
-        title: "Estas seguro de eliminar esta persona?",
-        text: "¡No podrás revertir esto!",
-        icon: 'warning',
-        background: '#1295c9',
-        color: '#f1f1f1',
-        showCancelButton: true,
-        confirmButtonColor: '#0005d1',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, eliminarla'
-
-    }).then((result) => {
-        if (result.isConfirmed) {
-            EliminarPersonaSi(id);
-        }
-    });
-}
-
-function EliminarPersonaSi(id) {
     authFetch(`personas/${id}`, { method: "DELETE", })
         .then(() => {
             // Mostrar mensaje de éxito
             Swal.fire({
-                title: "Eliminado!",
-                text: "La persona ha sido eliminada.",
+                title: "Deshabilitada!",
+                text: "La persona ha sido deshabilitada.",
                 icon: 'success',
-                background: '#1295c9',
-                color: '#f1f1f1',
                 showConfirmButton: false,
                 timer: 1500
             });
+            $('#PersonasDeshabilitadas').collapse('hide');
             ObtenerPersonas(); // Actualiza la lista de personas
         })
         .catch(error => console.error("No se pudo acceder a la api, verifique el mensaje de error: ", error))
 }
 
-// function mensajesError(id, data, mensaje) {
-//     const contenedor = $(id);
-//     contenedor.empty();
-
-//     let listaErrores = "<ul class='sinPunto'>";
-
-//     if (data && data.errors) {
-//         $.each(data.errors, function (key, items) {
-//             $.each(items, function (_, item) {
-//                 listaErrores += `<li>${item}</li>`;
-//             });
-//         });
-//     } else if (mensaje) {
-//         listaErrores += `<li>${mensaje}</li>`;
-//     }
-
-//     listaErrores += "</ul>";
-//     contenedor.append(listaErrores);
-//     contenedor.attr("hidden", false);
-// }
 
 function mensajesError(id, data, mensaje) {
     const contenedor = $(id);

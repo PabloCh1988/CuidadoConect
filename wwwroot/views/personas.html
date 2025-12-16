@@ -37,6 +37,48 @@
             </div>
         </div>
     </div>
+
+    <div class=" col-lg-12 grid-margin stretch-card d-flex flex-wrap justify-content-end">
+        <div class="d-flex align-right">
+            <a href="#PersonasDeshabilitadas" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
+                    class=""></i> <span class="fw-bold">Personas Deshabilitadas</span></a>
+        </div>
+    </div>
+
+
+    <div class="col-md-12">
+        <div class="collapse" id="PersonasDeshabilitadas">
+            <div class="white_shd full margin_bottom_30">
+                <div class="table_section" id="tablaPersonasDeshabilitadas">
+                    <div class="table-responsive-sm d-none d-md-block">
+                        <table id="" class="table table-hover">
+                            <thead>
+                                <tr class="table-primary">
+                                    <th>Nombre y Apellido</th>
+                                    <th>Fecha de Nacimiento</th>
+                                    <th>Sexo</th>
+                                    <th>DNI</th>
+                                    <th>Telefono</th>
+                                    <th>Deshabilitada el día</th>
+                                    <th>Rol</th>
+                                    <th>Habilitar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todasLasPersonasDeshabilitadas"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vistaCardsPersonasDeshabilitadas" class="d-md-none">
+                <div id="cardsContainerPersonasDeshabilitadas" class="row g-2"></div>
+            </div>
+            <div id="mensajeSinDeshabilitadas" class=" mt-3 text-center d-none">
+                <h5>No hay personas deshabilitadas.</h5>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- The Modal Crear Personas -->
@@ -90,6 +132,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <!-- The Modal Editar Personas -->
@@ -261,6 +304,9 @@
                     <label for="Email" class="form-label">Email Familiar</label>
                     <input type="email" id="Email" class="form-control">
 
+                    <label for="Tutor" class="form-label">Tutor a Cargo</label>
+                    <input type="text" id="Tutor" class="form-control">
+
                     <label for="Observaciones" class="form-label">Observaciones</label>
                     <input type="text" id="Observaciones" class="form-control">
 
@@ -293,3 +339,5 @@
         </div>
     </div>
 </div>
+
+<script src="../Js_Funciones/index.js"></script>

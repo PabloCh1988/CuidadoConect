@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CuidadoConect.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20251215153845_BoolPersonaEliminada")]
+    partial class BoolPersonaEliminada
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -354,9 +357,6 @@ namespace CuidadoConect.Migrations
                     b.Property<bool>("Eliminada")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("FechaDeshabilitado")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("FechaNacimiento")
                         .HasColumnType("datetime2");
 
@@ -434,9 +434,6 @@ namespace CuidadoConect.Migrations
 
                     b.Property<int?>("ProfesionalId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Tutor")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

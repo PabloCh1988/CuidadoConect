@@ -24,8 +24,21 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Persona>>> GetPersona()
         {
-            var personas = await _context.Persona.OrderBy(p => p.NombreyApellido).ToListAsync();
+            var personas = await _context.Persona.OrderBy(p => p.NombreyApellido)
+            .Where(p => !p.Eliminada).ToListAsync();
             return Ok(personas);
+        }
+
+        // MUESTRA LAS PERSONAS DESHABILITADAS
+        [HttpGet("deshabilitadas")]
+        public async Task<IActionResult> GetPersonasDeshabilitadas()
+        {
+            var personas = await _context.Persona
+                .Where(p => p.Eliminada == true)
+                .ToListAsync();
+
+            return Ok(personas);
+            
         }
 
 
@@ -42,6 +55,22 @@ namespace CuidadoConect.Controllers
 
             return persona;
         }
+
+        [HttpPut("habilitar/{id}")]
+        public async Task<IActionResult> Rehabilitar(int id)
+        {
+            var persona = await _context.Persona.FindAsync(id);
+            if (persona == null) return NotFound();
+
+            persona.Eliminada = false;
+            persona.FechaDeshabilitado = null;
+            await _context.SaveChangesAsync();
+
+            // return Ok();
+            return Ok(new { mensaje = "Persona habilitada correctamente" });
+
+        }
+
 
         // PUT: api/Personas/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -95,77 +124,26 @@ namespace CuidadoConect.Controllers
             return CreatedAtAction("GetPersona", new { id = persona.Id }, persona);
         }
 
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePersona(int id)
         {
-            // 1️⃣ Cargar la Persona junto con todos los hijos de Residente
+            // Buscar la persona por ID
             var persona = await _context.Persona
-                .Include(p => p.Residentes)
-                    .ThenInclude(r => r.CitasMedicas)
-                .Include(p => p.Residentes)
-                    .ThenInclude(r => r.HistorialMedicos)
-                .Include(p => p.Residentes)
-                    .ThenInclude(r => r.DetallesRutinas)
-                        .ThenInclude(dr => dr.Historiales)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (persona == null)
                 return NotFound();
 
-            // 2️⃣ Eliminar en cascada manualmente
-            foreach (var residente in persona.Residentes)
-            {
-                // Eliminar CitasMedicas
-                _context.CitaMedica.RemoveRange(residente.CitasMedicas);
+            // Marcar como eliminada en lugar de borrar
+            persona.Eliminada = true;
+            persona.FechaDeshabilitado = DateTime.Now;
 
-                // Eliminar HistorialMedicos
-                _context.HistorialMedico.RemoveRange(residente.HistorialMedicos);
-
-                // Eliminar Historiales de DetallesRutinas
-                foreach (var detalle in residente.DetallesRutinas)
-                {
-                    _context.HistorialRutina.RemoveRange(detalle.Historiales);
-                }
-
-                // Eliminar DetallesRutinas
-                _context.DetalleRutina.RemoveRange(residente.DetallesRutinas);
-            }
-
-            // 3️⃣ Eliminar los Residente asociados
-            _context.Residente.RemoveRange(persona.Residentes);
-
-            // 4️⃣ Finalmente, eliminar la Persona
-            _context.Persona.Remove(persona);
-
-            // 5️⃣ Guardar cambios en la base de datos
+            // Guardar cambios
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
-
-
-        // // DELETE: api/Personas/5
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeletePersona(int id)
-        // {
-        //     var persona = await _context.Persona
-        //     .Include(p => p.Residentes)
-        //     .ThenInclude(r => r.CitasMedicas)
-        //     .Include(p => p.Residentes)
-        //     .ThenInclude(r => r.HistorialMedicos)
-        //     .Include(p => p.Residentes)
-        //     .ThenInclude(r => r.DetallesRutinas)
-        //     .FirstOrDefaultAsync(p => p.Id == id);
-
-        //     if (persona == null)
-        //         return NotFound();
-
-        //     // EF Core eliminará en cascada en memoria
-        //     _context.Persona.Remove(persona);
-        //     await _context.SaveChangesAsync();
-
-        //     return NoContent();
-        // }
 
         private bool PersonaExists(int id)
         {

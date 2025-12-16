@@ -32,7 +32,8 @@ namespace CuidadoConect.Controllers
         {
             var residentes = await _context.Residente
             .Include(r => r.Persona)
-            .Include(r => r.ObraSocial) // ← si ObraSocial es una navegación a Persona
+            .Include(r => r.ObraSocial)
+            .Where(r => r.Persona.Eliminada == false)
             .Select(r => new ResidenteDto
             {
                 ResidenteId = r.Id,
@@ -60,6 +61,50 @@ namespace CuidadoConect.Controllers
             return edad;
         }
 
+        [HttpGet("deshabilitados")]
+        public async Task<ActionResult<IEnumerable<ResidenteDto>>> GetResidentesDeshabilitados()
+        {
+            var residentes = await _context.Residente
+                .Include(r => r.Persona)
+                .Include(r => r.ObraSocial)
+                .Where(r => r.Persona.Eliminada)
+                .Select(r => new ResidenteDto
+                {
+                    ResidenteId = r.Id,
+                    NombreResidente = r.Persona.NombreyApellido,
+                    ContactoEmergencia = r.Persona.Telefono,
+                    FechaIngreso = r.FechaIngreso,
+                    FechaDeshabilitado = (DateTime)r.Persona.FechaDeshabilitado,
+                    NombreObraSocial = r.ObraSocial.Nombre
+                })
+                .ToListAsync();
+
+            return Ok(residentes);
+        }
+
+
+        [HttpPut("habilitar/{residenteId}")]
+        public async Task<IActionResult> HabilitarResidente(int residenteId)
+        {
+            var residente = await _context.Residente
+                .Include(r => r.Persona)
+                .FirstOrDefaultAsync(r => r.Id == residenteId);
+
+            if (residente == null)
+                return NotFound();
+
+            // Habilita a la persona vinculada al residente
+            residente.Persona.Eliminada = false;
+            residente.Persona.FechaDeshabilitado = null;
+
+            await _context.SaveChangesAsync();
+
+            // return Ok();
+            return Ok(new { mensaje = "Residente habilitado" });
+
+        }
+
+
         // GET: api/Residentes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ResidenteDto>> GetResidente(int id)
@@ -77,6 +122,7 @@ namespace CuidadoConect.Controllers
                     Observaciones = r.Observaciones,
                     ContactoEmergencia = r.Persona.Telefono,
                     EmailFamiliar = r.EmailFamiliar,
+                    TutorACargo = r.Tutor,
                     FotoBase64 = r.FotoBase64,
                     NombreObraSocial = r.ObraSocial.Nombre,
                     planObraSocial = r.ObraSocial.Plan,
@@ -159,37 +205,35 @@ namespace CuidadoConect.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutResidente(int id, Residente residente)
         {
-            var emailExiste = await _context.Residente.AnyAsync(r => r.EmailFamiliar == residente.EmailFamiliar && r.Id != id);
-            if (emailExiste)
-            {
-                return BadRequest("El email del familiar ya está en uso por otro residente.");
-            }
-
             if (id != residente.Id)
-            {
                 return BadRequest();
-            }
 
-            _context.Entry(residente).State = EntityState.Modified;
+            var residenteDb = await _context.Residente.FindAsync(id);
+            if (residenteDb == null)
+                return NotFound();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ResidenteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            // Validar email duplicado
+            var emailExiste = await _context.Residente
+                .AnyAsync(r => r.EmailFamiliar == residente.EmailFamiliar && r.Id != id);
 
-            return NoContent();
+            if (emailExiste)
+                return BadRequest("El email del familiar ya está en uso por otro residente.");
+
+            // ✔️ Actualizar SOLO los campos editables
+            residenteDb.FechaIngreso = residente.FechaIngreso;
+            residenteDb.EmailFamiliar = residente.EmailFamiliar;
+            residenteDb.Tutor = residente.Tutor;
+            residenteDb.Observaciones = residente.Observaciones;
+            residenteDb.ObraSocialId = residente.ObraSocialId;
+            residenteDb.NroAfiliado = residente.NroAfiliado;
+
+
+            await _context.SaveChangesAsync();
+            // return Ok();
+            return Ok(new { mensaje = "Residente editado correctamente" });
+
         }
+
 
         // POST: api/Residentes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -197,6 +241,11 @@ namespace CuidadoConect.Controllers
         public async Task<ActionResult<Residente>> PostResidente(Residente residente)
         {
             _context.Residente.Add(residente);
+            var emailExiste = await _context.Residente
+                .AnyAsync(r => r.EmailFamiliar == residente.EmailFamiliar);
+
+            if (emailExiste)
+                return BadRequest("El email del familiar ya está en uso por otro residente.");
 
             var persona = await _context.Persona.FindAsync(residente.PersonaId); // Buscar la persona y asignar rol
             if (persona != null)

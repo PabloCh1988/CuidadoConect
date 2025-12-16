@@ -80,17 +80,39 @@ if (registerForm) {
                         }
                     });
 
-            } else {
+            }
+            else {
+                const mensaje = await response.text();
+
+                let titulo = "Login fallido";
+                let texto = "Por favor verifique su usuario y contraseña.";
+
+                if (response.status === 403) {
+                    titulo = "Acceso denegado";
+                    texto = mensaje; // "El usuario se encuentra deshabilitado"
+                }
+
                 Swal.fire({
-                    title: "Login Fallido",
-                    text: "Por favor verifique su usuario y contraseña.",
+                    title: titulo,
+                    text: texto,
                     icon: 'error',
                     background: '#f1f1f1',
                     color: '#000000',
                     confirmButtonColor: '#2512cf',
                     confirmButtonText: 'Aceptar'
                 });
-            }
+            }            
         });
     }
 }
+// else {
+            //     Swal.fire({
+            //         title: "Login Fallido",
+            //         text: "Por favor verifique su usuario y contraseña.",
+            //         icon: 'error',
+            //         background: '#f1f1f1',
+            //         color: '#000000',
+            //         confirmButtonColor: '#2512cf',
+            //         confirmButtonText: 'Aceptar'
+            //     });
+            // }

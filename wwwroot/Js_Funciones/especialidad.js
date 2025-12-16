@@ -75,40 +75,6 @@ function activarEdicionEspecialidad(id, descripcionActual) {
     input.focus();
 }
 
-
-// function activarEdicionEspecialidad(id, descripcionActual) {
-//     const celda = document.getElementById(`desc-${id}`);
-//     if (celda.querySelector("input")) return;
-
-//     const input = document.createElement("input");
-//     input.type = "text";
-//     input.value = descripcionActual;
-//     input.className = "form-control";
-//     input.id = `input-${id}`;
-//     input.style.width = "100%";
-
-//     const btnGuardar = document.createElement("button");
-//     btnGuardar.className = "btn btn-primary btn-sm me-1 mt-2";
-//     btnGuardar.innerHTML = '<i class="fa fa-check"></i>';
-//     btnGuardar.onclick = function () {
-//         guardarEdicionEspecialidad(id);
-//     };
-
-//     const btnCancelar = document.createElement("button");
-//     btnCancelar.className = "btn btn-danger btn-sm mt-2";
-//     btnCancelar.innerHTML = '<i class="fa fa-times"></i>';
-//     btnCancelar.onclick = function () {
-//         cancelarEdicionEspecialidad(id, descripcionActual);
-//     };
-
-//     celda.innerHTML = "";
-//     celda.appendChild(input);
-//     celda.appendChild(btnGuardar);
-//     celda.appendChild(btnCancelar);
-
-//     input.focus();
-// }
-
 async function guardarEdicionEspecialidad(id) {
     const nuevaDescripcion = document.getElementById(`input-${id}`).value;
 
@@ -121,8 +87,6 @@ async function guardarEdicionEspecialidad(id) {
         Swal.fire({
             icon: "success",
             title: "Especialidad actualizada",
-            background: "#1295c9",
-            color: "#f1f1f1",
             showConfirmButton: false,
             timer: 1200,
         });
@@ -158,8 +122,6 @@ async function GuardarEspecialidad() {
         Swal.fire({
             icon: "success",
             title: "Especialidad creada correctamente",
-            background: '#1295c9',
-            color: '#f1f1f1',
             showConfirmButton: false,
             timer: 1500
         });
@@ -179,8 +141,6 @@ function EliminarEspecialidad(id) {
         title: "Estas seguro de eliminar esta especialidad?",
         text: "¡No podrás revertir esto!",
         icon: 'warning',
-        background: '#1295c9',
-        color: '#f1f1f1',
         showCancelButton: true,
         confirmButtonColor: '#0005d1',
         cancelButtonColor: '#d33',
@@ -198,8 +158,6 @@ function EliminarEspecialidad(id) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Especialidad eliminada correctamente',
-                    background: '#1295c9',
-                    color: '#f1f1f1',
                     showConfirmButton: false,
                     timer: 1500
                 });
@@ -244,8 +202,6 @@ async function ActualizarEspecialidad() {
         Swal.fire({
             icon: "success",
             title: "Especialidad actualizada correctamente",
-            background: '#1295c9',
-            color: '#f1f1f1',
             showConfirmButton: false,
             timer: 1500
         });

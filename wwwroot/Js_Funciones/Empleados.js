@@ -25,9 +25,8 @@ async function ObtenerEmpleados() {
                     <td>${empleado.persona.nombreyApellido}</td>
                     <td>${empleado.email}</td>
                     <td>${empleado.turno}</td>
-                    <td><button class="btn btn-outline-success fa fa-pencil" title="Editar" onclick="EditarTurno(${empleado.id})"></button></td>
+                    <td><button class="btn btn-outline-primary fa fa-pencil" title="Editar" onclick="EditarTurno(${empleado.id})"></button></td>
                     <td>${empleado.tareasAsignadas}</td>
-                    <td><button class="btn btn-outline-danger fa fa-times" onclick="EliminarEmpleado(${empleado.id})"></button></td>
                 </tr>
             `);
 
@@ -41,7 +40,6 @@ async function ObtenerEmpleados() {
                         <p class="mb-1"><strong>Tareas:</strong> ${empleado.tareasAsignadas}</p>
                         <div class="mt-2 d-flex justify-content-between">
                             <button class="btn btn-outline-success fa fa-pencil" title="Editar" onclick="EditarTurno(${empleado.id})"></button>
-                            <button class="btn btn-outline-danger fa fa-times" title="Eliminar" onclick="EliminarEmpleado(${empleado.id})"></button>
                         </div>
                     </div>
                 </div>
@@ -70,8 +68,12 @@ async function CrearEmpleado() {
         mensajesError('#errorCrearEmpleado', null, "Debes seleccionar una persona válida");
         return;
     }
-    if (!emailempleado || emailempleado.trim() === "" || !emailempleado.includes("@")) {
+    if (!emailempleado || emailempleado.trim() === "") {
         mensajesError('#errorCrearEmpleado', null, "El email es obligatorio");
+        return;
+    }
+    if (!emailempleado.includes("@")) {
+        mensajesError('#errorCrearEmpleado', null, "Ingrese un email válido");
         return;
     }
     if (!turno || !tareasAsignadas) {
@@ -108,8 +110,6 @@ async function CrearEmpleado() {
         Swal.fire({
             icon: "success",
             title: "Empleado creado correctamente",
-            background: '#1295c9',
-            color: '#f1f1f1',
             showConfirmButton: false,
             timer: 1500
         });
@@ -125,8 +125,6 @@ function EliminarEmpleado(id) {
         title: "Estas seguro de eliminar este empleado?",
         text: "¡No podrás revertir esto!",
         icon: 'warning',
-        background: '#1295c9',
-        color: '#f1f1f1',
         showCancelButton: true,
         confirmButtonColor: '#0005d1',
         cancelButtonColor: '#d33',
@@ -145,8 +143,6 @@ async function EliminarEmpleadoSi(id) {
             Swal.fire({
                 icon: 'success',
                 title: 'Empleado eliminado correctamente',
-                background: '#1295c9',
-                color: '#f1f1f1',
                 showConfirmButton: false,
                 timer: 1500
             });
@@ -166,6 +162,7 @@ function EditarTurno(id) {
             $('#PersonaId').val(data.personaId);
             $('#turnoEditar').val(data.turno);
             $('#tareasAsignadasEditar').val(data.tareasAsignadas);
+            $('#EmailEditar').val(data.email)
             // Mostrar el modal
             $('#modalEditarTurno').modal('show');
         }).catch(error => {
@@ -179,6 +176,7 @@ async function EditarTurnoSI() {
     const turno = document.getElementById("turnoEditar").value;
     const tareasAsignadas = document.getElementById("tareasAsignadasEditar").value;
     const personaId = parseInt(document.getElementById("PersonaId").value);
+    const emailempleado = document.getElementById("EmailEditar");
     if (isNaN(empleadoId)) {
         mensajesError('#errorCrear', null, "Debes seleccionar un empleado válido");
         return;
@@ -188,6 +186,7 @@ async function EditarTurnoSI() {
         turno: turno,
         tareasAsignadas: tareasAsignadas,
         personaId: personaId,
+        email: emailempleado,
     };
     try {
         await authFetch(`empleados/${empleadoId}`, {
@@ -199,8 +198,6 @@ async function EditarTurnoSI() {
         Swal.fire({
             icon: "success",
             title: "Empleado editado correctamente",
-            background: '#1295c9',
-            color: '#f1f1f1',
             showConfirmButton: false,
             timer: 1500
         });

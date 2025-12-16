@@ -1,22 +1,16 @@
 <div class="row column_title">
-    <div class="col-md-12">
-        <!-- <div class="MarcodeInicio"></div> -->
 
-    </div>
-    <!-- table section Personas -->
     <div class="col-md-12 margin_top_30">
         <div class="white_shd full margin_bottom_30">
             <div class="dash_head dash_head2 d-flex flex-wrap justify-content-between align-items-center mb-3">
                 <h3 class="mb-2">Medicación por Residente</h3>
             </div>
-
-
             <div class="col-md-12">
                 <label for="residenteSelect" class="form-label"></label>
                 <select id="residenteSelect" class="form-control"></select>
             </div>
             <div class="table_section padding_infor_info2">
-                <div class="table-responsive-sm d-none d-md-block">
+                <div id="contenedorTablaMedicacion" class="table-responsive-sm d-none">
                     <table id="tablaMedicacion" class="table table-hover">
                         <thead>
                             <tr class="table-primary">
@@ -31,16 +25,21 @@
                         <tbody id="medicacionPorResidente"></tbody>
                     </table>
                 </div>
+
             </div>
             <!-- Vista en cards para pantallas pequeñas -->
-        <div id="vistaCardsMedicacion" class="d-md-none">
-            <div id="cardsContainerMedicacion" class="row g-2"></div>
-        </div>
+            <div id="vistaCardsMedicacion" class="d-md-none">
+                <div id="cardsContainerMedicacion" class="row g-2"></div>
+            </div>
+            <div id="mensajeSinMedicacion" class="alert alert-info d-none text-center mt-3">
+                No hay Medicación Asignada
+            </div>
         </div>
     </div>
+</div>
 
 
-    <!-- 3. LISTADO de prescripciones -->
-    <div id="prescripcionesList" class="mt-4"></div>
-    <script src="../Js_Funciones/medicacion.js"></script>
-    <script src="../Js_Funciones/common/ObtenerResidentesDrop.js"></script>
+<!-- 3. LISTADO de prescripciones -->
+<div id="prescripcionesList" class="mt-4"></div>
+<script src="../Js_Funciones/medicacion.js"></script>
+<script src="../Js_Funciones/common/ObtenerResidentesDrop.js"></script>

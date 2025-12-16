@@ -30,7 +30,11 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Profesional>>> GetProfesional()
         {
-            var profesionales = await _context.Profesional.Include(p => p.Persona).Include(p => p.Especialidad).ToListAsync();// Incluir datos relacionados de Persona y Especialidad
+            var profesionales = await _context.Profesional.Include(p => p.Persona)
+            .Include(p => p.Especialidad)
+            .Where(e => e.Persona != null && !e.Persona.Eliminada)
+            .ToListAsync();// Incluir datos relacionados de Persona y Especialidad
+            
             return Ok(profesionales);
         }
 

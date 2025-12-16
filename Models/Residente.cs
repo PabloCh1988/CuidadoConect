@@ -8,6 +8,7 @@ public class Residente
     public DateTime FechaIngreso { get; set; }
     public string? Observaciones { get; set; }
     public string? EmailFamiliar { get; set; }
+    public string? Tutor { get; set; }
     public int? ObraSocialId { get; set; }
     public virtual ObraSocial? ObraSocial { get; set; }
     public int NroAfiliado { get; set; }
@@ -27,9 +28,11 @@ public class ResidenteDto
     public string? Observaciones { get; set; }
     public string? ContactoEmergencia { get; set; }
     public string? EmailFamiliar { get; set; }
+    public string? TutorACargo { get; set; }
     public string? FotoBase64 { get; set; }
     public string? NombreObraSocial { get; set; }
 
     public string? planObraSocial { get; set; }
     public int nroAfiliado { get; set; }
+    public DateTime FechaDeshabilitado { get; set; }
 }

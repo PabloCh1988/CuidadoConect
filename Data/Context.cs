@@ -36,23 +36,29 @@ public class Context : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder); // Llama al método base para aplicar las configuraciones predeterminadas
 
-            modelBuilder.Entity<Residente>()
-        .HasOne(r => r.Persona)
-        .WithMany(p => p.Residentes)
-        .HasForeignKey(r => r.PersonaId)
-        .OnDelete(DeleteBehavior.Restrict);
 
-    modelBuilder.Entity<Empleado>()
-        .HasOne(e => e.Persona)
-        .WithMany(p => p.Empleados)
-        .HasForeignKey(e => e.PersonaId)
-        .OnDelete(DeleteBehavior.Restrict);
+        // Ignorar DTOs para que no se creen tablas
+        modelBuilder.Ignore<RegistrarHistorialDto>();
+        modelBuilder.Ignore<HistorialDto>();
 
-    modelBuilder.Entity<Profesional>()
-        .HasOne(pr => pr.Persona)
-        .WithMany(p => p.Profesionales)
-        .HasForeignKey(pr => pr.PersonaId)
-        .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Residente>()
+    .HasOne(r => r.Persona)
+    .WithMany(p => p.Residentes)
+    .HasForeignKey(r => r.PersonaId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Empleado>()
+            .HasOne(e => e.Persona)
+            .WithMany(p => p.Empleados)
+            .HasForeignKey(e => e.PersonaId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Profesional>()
+            .HasOne(pr => pr.Persona)
+            .WithMany(p => p.Profesionales)
+            .HasForeignKey(pr => pr.PersonaId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<CitaMedica>()
             .HasOne(cm => cm.Residente)// Relación con Residente

@@ -32,12 +32,7 @@ function renderCards(personas) {
   container.innerHTML = ""; // limpiar antes de cargar
 
   function obtenerBadgeEdad(edad) {
-    let clase = "badge-info"; // default
-
-    if (edad >= 80) clase = "badge-danger";
-    else if (edad >= 65) clase = "badge-warning";
-    else clase = "badge-success";
-
+    let clase = "badge-primary";
     return `<span class="badge ${clase} badge-edad">${edad} años</span>`;
   }
 
@@ -96,10 +91,99 @@ async function ObtenerResidentes() {
   }
 }
 
+async function ObtenerResidentesDeshabilitados() {
+  try {
+    const data = await authFetch("residentes/deshabilitados");
+
+    $("#todosLosResidentesDeshabilitados").empty();
+    $("#cardsContainerResidentesDeshabilitados").empty();
+
+    if (data.length === 0) {
+      $("#tablaResidentesDeshabilitados table").addClass("d-none");
+      $("#mensajeSinDeshabilitados").removeClass("d-none");
+      return;
+    }
+
+    $("#tablaResidentesDeshabilitados table").removeClass("d-none");
+    $("#mensajeSinDeshabilitados").addClass("d-none");
+
+    $.each(data, function (index, residente) {
+
+      const fechaIngreso = residente.fechaIngreso
+        ? new Date(residente.fechaIngreso).toLocaleDateString("es-AR")
+        : "-";
+
+      const fechaDeshabilitado = residente.fechaDeshabilitado
+        ? new Date(residente.fechaDeshabilitado).toLocaleDateString("es-AR")
+        : "-";
+
+      $("#todosLosResidentesDeshabilitados").append(`
+                <tr class="table-danger">
+                    <td>${residente.nombreResidente}</td>
+                    <td class="text-center">${fechaIngreso}</td>
+                    <td>${residente.contactoEmergencia}</td>
+                    <td class="text-center">${fechaDeshabilitado}</td>
+                    <td class="text-center">
+                        <button class="btn btn-outline-success fa fa-undo"
+                            title="Habilitar"
+                            onclick="HabilitarResidente(${residente.residenteId})">
+                        </button>
+                    </td>
+                </tr>
+            `);
+
+      $("#cardsContainerResidentesDeshabilitados").append(`
+                <div class="col-12">
+                    <div class="card bg-light border-secondary p-3">
+                        <h5 class="card-title text-muted">${residente.nombreResidente}</h5>
+                        <p><strong>Fecha deshabilitado:</strong> ${fechaDeshabilitado}</p>
+                        <button class="btn btn-outline-success fa fa-undo"
+                            onclick="HabilitarResidente(${residente.id})">
+                        </button>
+                    </div>
+                </div>
+            `);
+    });
+
+  } catch (err) {
+    console.error("Error al obtener residentes deshabilitados", err);
+  }
+}
+
+$('#ResidentesDeshabilitados').on('show.bs.collapse', function () {
+  ObtenerResidentesDeshabilitados();
+});
+
+function HabilitarResidente(id) {
+  authFetch(`residentes/habilitar/${id}`, { method: "PUT" })
+    .then(() => {
+
+      Swal.fire({
+        icon: "success",
+        title: "Residente habilitado nuevamente",
+        showConfirmButton: false,
+        timer: 1500
+      });
+
+      // cerrar primero
+      $('#ResidentesDeshabilitados').collapse('hide');
+
+      // luego refrescar
+      setTimeout(() => {
+        ObtenerResidentes();
+        ObtenerResidentesDeshabilitados();
+      }, 300);
+
+    });
+}
+
+
+
 async function CrearResidente() {
   const personaId = $('#formResidente').data('PersonaId');
   const fechaIngr = document.getElementById("FechaIngreso").value;
   const email = document.getElementById("Email").value;
+  const tutoraCargo = document.getElementById("Tutor").value;
   const observacion = document.getElementById("Observaciones").value;
   const obraSocial = document.getElementById("ObraSocialId").value;
   const nroAfil = document.getElementById("NroAfiliado").value;
@@ -125,6 +209,7 @@ async function CrearResidente() {
     personaId: personaId,
     fechaIngreso: fechaIngr,
     emailFamiliar: email,
+    tutor: tutoraCargo,
     observaciones: observacion,
     obraSocialId: obraSocial,
     nroAfiliado: nroAfil
@@ -137,6 +222,7 @@ async function CrearResidente() {
     $('#modalResidente').modal('hide');
     document.getElementById("FechaIngreso").value = "";
     document.getElementById("Email").value = "";
+    document.getElementById("Tutor").value = "";
     document.getElementById("Observaciones").value = "";
     document.getElementById("ObraSocialId").value = "";
     document.getElementById("NroAfiliado").value = "";
@@ -185,12 +271,7 @@ async function CrearResidente() {
 
 async function BuscarResidenteId(id) {
   function obtenerBadgeEdad(edad) {
-    let clase = "badge-info"; // default
-
-    if (edad >= 80) clase = "badge-danger";
-    else if (edad >= 65) clase = "badge-warning";
-    else clase = "badge-success";
-
+    let clase = "badge-primary"; 
     return `<span class="badge ${clase} badge-edad">${edad} años</span>`;
   }
   try {
@@ -214,6 +295,7 @@ async function BuscarResidenteId(id) {
         <p><strong>Edad:</strong> ${obtenerBadgeEdad(residente.edad)}</p>
         <p><strong>Fecha de Ingreso:</strong> ${fecha}</p>
         <p><strong>Observaciones:</strong> ${residente.observaciones}</p>
+        <p><strong>Tutor a Cargo:</strong> ${residente.tutorACargo}</p>
         <p><strong>Obra Social:</strong> ${residente.nombreObraSocial} - ${residente.planObraSocial}</p>
         <p><strong>Número de Afiliado:</strong> ${residente.nroAfiliado || 'No especificado'}</p>
         <ul class="list-unstyled2">
@@ -241,6 +323,7 @@ async function CargarModalEditarResidente(id) {
     document.getElementById("PersonaId").value = data.personaId;
     document.getElementById("FechaIngresoEditar").value = data.fechaIngreso.split('T')[0];
     document.getElementById("EmailEditar").value = data.emailFamiliar;
+    document.getElementById("TutorEditar").value = data.tutor;
     document.getElementById("ObservacionesEditar").value = data.observaciones;
     document.getElementById("NroAfiliadoEditar").value = data.nroAfiliado;
 
@@ -331,7 +414,8 @@ async function EditarResidente() {
   const residenteId = document.getElementById("ResidenteId").value;
   const personaId = document.getElementById("PersonaId").value;
   const fechaIngresoEdit = document.getElementById("FechaIngresoEditar").value;
-  const emailEditar = document.getElementById("EmailEditar").value;
+  const emailEditar = document.getElementById("EmailEditar").value.trim();
+  const tutorAcargo = document.getElementById("TutorEditar").value.trim();
   const obser = document.getElementById("ObservacionesEditar").value;
   const NroAfiliadoEditado = document.getElementById("NroAfiliadoEditar").value;
   const obraSocialEditada = document.getElementById("ObraSocialId").value;
@@ -356,23 +440,25 @@ async function EditarResidente() {
     personaId: personaId,
     fechaIngreso: fechaIngresoEdit,
     emailFamiliar: emailEditar,
+    tutor: tutorAcargo,
     observaciones: obser,
     obraSocialId: obraSocialId,
     nroAfiliado: NroAfiliadoEditado
   }
-  console.log("Body a enviar:", residenteEditado);
+  const archivoFoto = document.getElementById("FotoResidenteEditar").files[0];
+  //Validacion para no superar los 2MB
+  if (archivoFoto && archivoFoto.size > 2 * 1024 * 1024) {
+    mensajesError('#errorEditarResidente', null, "La imagen no debe superar los 2MB");
+    return;
+  }
+
   try {
     await authFetch(`residentes/${residenteId}`, {
       method: 'PUT',
       body: JSON.stringify(residenteEditado)
     });
 
-    const archivoFoto = document.getElementById("FotoResidenteEditar").files[0];
-    //Validacion para no superar los 2MB
-    if (archivoFoto && archivoFoto.size > 2 * 1024 * 1024) {
-      mensajesError('#errorEditarResidente', null, "La imagen no debe superar los 2MB");
-      return;
-    }
+
     if (archivoFoto && archivoFoto.size <= 2 * 1024 * 1024) {
       const preview = document.getElementById("previewFoto");
       const urlTemporal = URL.createObjectURL(archivoFoto);
@@ -389,18 +475,17 @@ async function EditarResidente() {
       });
     }
 
-    $("#modalEditarResidente").modal('hide'); 
+    $("#modalEditarResidente").modal('hide');
+    document.getElementById("previewFoto").value = "";
     $("#errorEditarResidente").empty();
     Swal.fire({
       icon: "success",
       title: "Residente editado correctamente",
-      background: '#1295c9',
-      color: '#f1f1f1',
       showConfirmButton: false,
       timer: 1500
     });
     await ObtenerResidentes();
-    
+
   } catch (error) {
     console.error("Error al editar el residente:", error);
     mensajesError('#errorEditarResidente', null, `Error al editar: ${error.message}`);

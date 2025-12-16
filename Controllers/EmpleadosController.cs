@@ -29,9 +29,13 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleado()
         {
-            var empleados = await _context.Empleado.Include(e => e.Persona)
+
+            var empleados = await _context.Empleado
+            .Include(e => e.Persona)
+            .Where(e => e.Persona != null && !e.Persona.Eliminada)
             .ToListAsync();
-            return await _context.Empleado.ToListAsync();
+
+            return Ok(empleados);
         }
 
         // GET: api/Empleados/5

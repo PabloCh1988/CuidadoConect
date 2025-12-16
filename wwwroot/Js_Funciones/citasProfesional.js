@@ -48,7 +48,7 @@ async function obtenerCitasProfesional() {
 
   } catch (err) {
     console.error("Error al obtener citas del profesional:", err);
-    Swal.fire("Error", "No tiene acceso a las citas médicas.", "error");
+    Swal.fire("Acceso Denegado", "No tiene acceso a las citas médicas.", "error");
   }
 }
 

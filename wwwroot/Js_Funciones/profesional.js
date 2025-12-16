@@ -20,7 +20,6 @@ async function ObtenerProfesionales() {
                 "<td>" + profesional.persona.nombreyApellido + "</td>" +
                 "<td>" + profesional.especialidad.nombreEspecialidad + "</td>" +
                 "<td>" + profesional.email + "</td>" +
-                "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarProfesional(" + profesional.id + ")'></button></td>" +
                 "</tr>"
             );
         });
@@ -30,8 +29,6 @@ async function ObtenerProfesionales() {
             icon: 'error',
             title: 'Error al obtener profesionales',
             text: err.message,
-            background: '#1295c9',
-            color: '#f1f1f1'
         });
     }
 }
@@ -69,8 +66,6 @@ async function CrearProfesional() {
         Swal.fire({
             icon: "success",
             title: "Profesional creado correctamente",
-            background: '#1295c9',
-            color: '#f1f1f1',
             showConfirmButton: false,
             timer: 1500
         });
@@ -90,8 +85,6 @@ function EliminarProfesional(id) {
         title: "Estas seguro de eliminar este profesional?",
         text: "¡No podrás revertir esto!",
         icon: 'warning',
-        background: '#1295c9',
-        color: '#f1f1f1',
         showCancelButton: true,
         confirmButtonColor: '#0005d1',
         cancelButtonColor: '#d33',
@@ -110,8 +103,6 @@ async function EliminarProfesionalSi(id) {
             Swal.fire({
                 icon: "success",
                 title: "Profesional eliminado correctamente",
-                background: '#1295c9',
-                color: '#f1f1f1',
                 showConfirmButton: false,
                 timer: 1500
             });

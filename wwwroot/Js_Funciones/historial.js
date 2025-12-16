@@ -26,14 +26,27 @@
 //   }
 // }
 
+// $(document).on("change", "#residenteSelect", function () {
+//   const residenteId = this.value;
+//   if (residenteId) {
+//     obtenerHistoriaClinicaPorResidente(residenteId);
+//   } else {
+//     $("#historiasClinicas").empty();
+//   }
+// });
 $(document).on("change", "#residenteSelect", function () {
   const residenteId = this.value;
+
   if (residenteId) {
     obtenerHistoriaClinicaPorResidente(residenteId);
   } else {
     $("#historiasClinicas").empty();
+    $("#cardsContainerHistorial").empty();
+    $("#tablaHistoriaClinica").addClass("d-none");
+    $("#mensajeSinHistoria").addClass("d-none");
   }
 });
+
 
 async function guardarHistorial() {
   try {
@@ -104,49 +117,93 @@ function VaciarFormularioHistorial() {
   $("#errorCrearHistorial").empty();
 }
 
+// async function obtenerHistoriaClinicaPorResidente(residenteId) {
+//   try {
+//     console.log("Llamando API con residenteId:", residenteId);
+//     // const data = await authFetch(`historialesmedicos?residenteId=${residenteId}`);
+//     const data = await authFetch(`historialesmedicos/por-residente?residenteId=${residenteId}`);
+//     console.log("Respuesta API:", data);
+
+//     $("#historiasClinicas").empty();
+//     $("#cardsContainerHistorial").empty();
+
+//     if (!data || data.length === 0) {
+//       $("#historiasClinicas").append("<tr><td colspan='5'>No hay Historia Clinica Asignada</td></tr>");
+//       $("#cardsContainerHistorial").append("<div class='col-12 text-center'><td colspan='5'>No hay Historia Clinica Asignada</td></div>");
+//       return;
+//     }
+
+//     // Título del residente
+//     $.each(data, function (index, historia) {
+//       $("#historiasClinicas").append(
+//         `<tr id="fila-${historia.id}">
+//      <td>${formatearFecha(historia.fechaConsulta)}</td>
+//      <td class='font-weight-bold'>${historia.diagnostico}</td>
+//      <td>${historia.patologias}</td>
+//      <td>${historia.observaciones}</td>
+//      <td class='font-weight-bold'>${historia.profesional.persona?.nombreyApellido}</td>
+//     </tr>`
+//       );
+
+//       $("#cardsContainerHistorial").append(`
+//                 <div class="col-12">
+//                     <div class="card shadow-sm p-3 mb-2">
+//                         <h5 class="card-title mb-1">${historia.diagnostico}</h5>
+//                         <p class="mb-1"><strong>Fecha:</strong> ${formatearFecha(historia.fechaConsulta)}</p>
+//                         <p class="mb-1"><strong>Patologías:</strong> ${historia.patologias}</p>
+//                         <p class="mb-1"><strong>Observaciones:</strong> ${historia.observaciones}</p>
+//                         <h6 class="card-title mb-1"><strong>Profesional:</strong> ${historia.profesional.persona?.nombreyApellido}</h6>
+//                     </div>
+//                 </div>
+//         `)
+//     });
+//   } catch (err) {
+//     console.error("Error en ObtenerHistoriaClinicaPorResidente:", err);
+//     Swal.fire("Error al obtener la Historia Clínica", err.message, "error");
+//   }
+// }
+
+
 async function obtenerHistoriaClinicaPorResidente(residenteId) {
   try {
     console.log("Llamando API con residenteId:", residenteId);
-    // const data = await authFetch(`historialesmedicos?residenteId=${residenteId}`);
-    const data = await authFetch(`historialesmedicos/por-residente?residenteId=${residenteId}`);
+
+    const data = await authFetch(
+      `historialesmedicos/por-residente?residenteId=${residenteId}`
+    );
+
     console.log("Respuesta API:", data);
 
-    $("#historiasClinicas").empty();
-    $("#cardsContainerHistorial").empty();
+    const tabla = $("#tablaHistoriaClinica");
+    const tbody = $("#historiasClinicas");
+    const mensaje = $("#mensajeSinHistoria");
+
+    tbody.empty();
+    mensaje.addClass("d-none");
 
     if (!data || data.length === 0) {
-      $("#historiasClinicas").append("<tr><td colspan='5'>No hay Historia Clinica Asignada</td></tr>");
-      $("#cardsContainerHistorial").append("<div class='col-12 text-center'><td colspan='5'>No hay Historia Clinica Asignada</td></div>");
+      tabla.addClass("d-none");
+      mensaje.removeClass("d-none");
       return;
     }
 
-    // Título del residente
-    $.each(data, function (index, historia) {
-      $("#historiasClinicas").append(
-        `<tr id="fila-${historia.id}">
-     <td>${formatearFecha(historia.fechaConsulta)}</td>
-     <td class='font-weight-bold'>${historia.diagnostico}</td>
-     <td>${historia.patologias}</td>
-     <td>${historia.observaciones}</td>
-     <td class='font-weight-bold'>${historia.profesional.persona?.nombreyApellido}</td>
-    </tr>`
-      );
+    tabla.removeClass("d-none");
 
-      $("#cardsContainerHistorial").append(`
-                <div class="col-12">
-                    <div class="card shadow-sm p-3 mb-2">
-                        <h5 class="card-title mb-1">${historia.diagnostico}</h5>
-                        <p class="mb-1"><strong>Fecha:</strong> ${formatearFecha(historia.fechaConsulta)}</p>
-                        <p class="mb-1"><strong>Patologías:</strong> ${historia.patologias}</p>
-                        <p class="mb-1"><strong>Observaciones:</strong> ${historia.observaciones}</p>
-                        <h6 class="card-title mb-1"><strong>Profesional:</strong> ${historia.profesional.persona?.nombreyApellido}</h6>
-                    </div>
-                </div>
-        `)
+    $.each(data, function (index, historia) {
+      tbody.append(`
+    <tr>
+      <td>${formatearFecha(historia.fechaConsulta)}</td>
+      <td>${historia.diagnostico}</td>
+      <td>${historia.patologias}</td>
+      <td>${historia.observaciones}</td>
+      <td>${historia.profesional?.persona?.nombreyApellido ?? "-"}</td>
+    </tr>  `);
     });
+
+
   } catch (err) {
     console.error("Error en ObtenerHistoriaClinicaPorResidente:", err);
-    Swal.fire("Error al obtener la Historia Clínica", err.message, "error");
+    Swal.fire("Error", "No se pudo obtener la historia clínica", "error");
   }
 }
 

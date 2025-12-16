@@ -15,6 +15,44 @@
          </div>
       </div>
    </div>
+
+   <div class=" col-lg-12 grid-margin stretch-card d-flex flex-wrap justify-content-end">
+        <div class="d-flex align-right">
+            <a href="#ResidentesDeshabilitados" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
+                    class=""></i> <span class="fw-bold">Residentes Deshabilitados</span></a>
+        </div>
+    </div>
+
+
+    <div class="col-md-12">
+        <div class="collapse" id="ResidentesDeshabilitados">
+            <div class="white_shd full margin_bottom_30">
+                <div class="table_section" id="tablaResidentesDeshabilitados">
+                    <div class="table-responsive-sm d-none d-md-block">
+                        <table id="" class="table table-hover">
+                            <thead>
+                                <tr class="table-primary">
+                                    <th>Nombre y Apellido</th>
+                                    <th class="text-center">Fecha de Ingreso</th>
+                                    <th>Telefono</th>
+                                    <th class="text-center">Deshabilitado el día</th>
+                                    <th class="text-center">Habilitar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todosLosResidentesDeshabilitados"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="vistaCardsResidentesDeshabilitadas" class="d-md-none">
+                <div id="cardsContainerResidentesDeshabilitados" class="row g-2"></div>
+            </div>
+            <div id="mensajeSinDeshabilitados" class=" mt-3 text-center d-none">
+                <h5>No hay Residentes deshabilitados.</h5>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="modal fade" id="modalPerfil" tabindex="-1" aria-labelledby="modalPerfilLabel" aria-hidden="true">
    <div class="modal-dialog modal-lg modal-dialog-slide">
@@ -57,11 +95,8 @@
                <label for="ObservacionesEditar" class="form-label">Observaciones</label>
                <input type="text" id="ObservacionesEditar" class="form-control">
 
-               <!-- <label>Obra Social actual:</label>
-               <p id="LabelObraSocialActual" class="form-control-plaintext text-info mb-2"></p>
-
-               <label for="ObraSocialId">Modificar obra social:</label>
-               <select id="ObraSocialId" class="form-control"></select> -->
+               <label for="TutorEditar" class="form-label">Tutor a Cargo</label>
+               <input type="text" id="TutorEditar" class="form-control">
 
                <div class="form-group">
                   <label>Obra Social actual:</label>
@@ -100,3 +135,4 @@
 </div>
 
 <script src="../Js_Funciones/common/ObtenerObraSocialDropdown.js"></script>
+<script src="../Js_Funciones/residentes.js"></script>
