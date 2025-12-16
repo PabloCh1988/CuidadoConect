@@ -8,7 +8,7 @@ async function ObtenerResidentesDrop() {
             document.getElementById("residenteSelect"),
             document.getElementById("residenteSelectRutina"),
             document.getElementById("residenteSelect2"),
-            document.getElementById("rutinaSelect2") // si querés llenarlo también
+            // document.getElementById("rutinaSelect2")
         ].filter(s => s !== null); // filtra los que existen
 
         selects.forEach(select => {

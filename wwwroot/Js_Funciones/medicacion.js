@@ -75,3 +75,73 @@ async function obtenerMedicamentosPorResidente(residenteId) {
   }
 }
 
+async function guardarMedicamento() {
+  try {
+    const residente = document.getElementById("residenteSelect").value;
+    const nombreMedicina = document.getElementById("NombreMedicamento").value;
+    const dosisMedic = document.getElementById("Dosis").value;
+    const frecuenciaMedic = document.getElementById("Frecuencia").value;
+    const via = document.getElementById("ViaAdministracion").value;
+    const fechaIn = document.getElementById("FechaInicio").value;
+    const fechaOut = document.getElementById("FechaFin").value;
+
+    if (!residente || !nombreMedicina || !dosisMedic || !frecuenciaMedic || !via || !fechaIn || !fechaOut) {
+      mensajesError(
+        "#errorCrearMedicamento", null, "Por favor, complete todos los campos.");
+      return;
+    }
+
+    const medicamento = {
+      nombreMedicamento: nombreMedicina,
+      dosis: dosisMedic,
+      frecuencia: frecuenciaMedic,
+      viaAdministracion: via,
+      fechaInicio: fechaIn,
+      fechaFin: fechaOut,
+      residenteId: residente
+    }
+
+    const data = await authFetch("medicaciones", {
+      method: 'POST',
+      body: JSON.stringify(medicamento)
+    });
+    $("#errorCrearMedicamento").empty();
+    document.getElementById("residenteSelect").value = "";
+    document.getElementById("NombreMedicamento").value = "";
+    document.getElementById("Dosis").value = "";
+    document.getElementById("Frecuencia").value = "";
+    document.getElementById("ViaAdministracion").value = "";
+    document.getElementById("FechaInicio").value = "";
+    document.getElementById("FechaFin").value = "";
+    console.log("Medicamento guardado", data);
+
+    Swal.fire({
+      icon: "success",
+      title: "Medicamento creado correctamente",
+      showConfirmButton: false,
+      timer: 1500
+    });
+  } catch (err) {
+    console.log("Error al crear el medicamento:", err);
+    mensajesError('#errorCrearMedicamento', null, `Error al crear: ${err.message}`);
+  }
+}
+
+async function VaciarFormularioMedicacion() {
+  document.getElementById("NombreMedicamento").value = "";
+  document.getElementById("Dosis").value = "";
+  document.getElementById("Frecuencia").value = "";
+  document.getElementById("ViaAdministracion").value = "";
+  document.getElementById("FechaInicio").value = "";
+  document.getElementById("FechaFin").value = "";
+  $('#errorCrearMedicamento').empty();
+}
+
+$(document).on("change", "#residenteSelect", function () {
+  const residenteId = this.value;
+  if (residenteId) {
+    obtenerMedicamentosPorResidente(residenteId);
+  } else {
+    $("#medicacionPorResidente").empty();
+  }
+});

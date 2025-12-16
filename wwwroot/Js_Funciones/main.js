@@ -51,7 +51,7 @@ function cargarVista(view) {
         ObtenerResidentesDrop();
         ObtenerHistorial();
       } else if (view === "buscarPorRutinas") {
-        ObtenerResidentesDrop();
+        ObtenerRutinasDrop();
       } 
 
       // Ejecutar scripts de la vista si los hay
