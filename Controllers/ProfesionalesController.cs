@@ -30,6 +30,7 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Profesional>>> GetProfesional()
         {
+            // MUESTRO SOLO LOS PROFESIONALES CUYAS PERSONAS NO ESTÁN ELIMINADAS
             var profesionales = await _context.Profesional.Include(p => p.Persona)
             .Include(p => p.Especialidad)
             .Where(e => e.Persona != null && !e.Persona.Eliminada)
@@ -90,7 +91,7 @@ namespace CuidadoConect.Controllers
         [HttpPost]
         public async Task<ActionResult<Profesional>> PostProfesional(Profesional profesional)
         {
-            _context.Profesional.Add(profesional);
+            _context.Profesional.Add(profesional); // Agregar el profesional a la base de datos
 
             var persona = await _context.Persona.FindAsync(profesional.PersonaId); // Buscar la persona y asignar rol
             if (persona != null)

@@ -118,18 +118,19 @@ namespace CuidadoConect.Controllers
             }
         }
 
-        [HttpPut("{id}/estado")]
-        public async Task<IActionResult> CambiarEstado(int id, [FromBody] EstadoCitaMedica nuevoEstado)
-        {
-            var cita = await _context.CitaMedica.FindAsync(id);
-            if (cita == null)
-                return NotFound();
+          
+        // [HttpPut("{id}/estado")]
+        // public async Task<IActionResult> CambiarEstado(int id, [FromBody] EstadoCitaMedica nuevoEstado)
+        // {
+        //     var cita = await _context.CitaMedica.FindAsync(id);
+        //     if (cita == null)
+        //         return NotFound();
 
-            cita.Estado = nuevoEstado;
-            await _context.SaveChangesAsync();
+        //     cita.Estado = nuevoEstado;
+        //     await _context.SaveChangesAsync();
 
-            return Ok(new { mensaje = "Estado actualizado" });
-        }
+        //     return Ok(new { mensaje = "Estado actualizado" });
+        // }
 
 
 
@@ -176,9 +177,9 @@ namespace CuidadoConect.Controllers
                 .ThenBy(c => c.Hora)
                 .ToListAsync();
 
-            return Ok(citas);
+            return Ok(citas); 
         }
-
+        // METODO PARA MODIFICAR EL ESTADO DE LA CITA. SOLO LO HACE EL PROFESIONAL
         // Confirmar o cancelar una cita
         [HttpPut("{id}/actualizar-estado")]
         public async Task<IActionResult> ActualizarEstadoCita(int id, [FromBody] EstadoCitaMedica nuevoEstado)

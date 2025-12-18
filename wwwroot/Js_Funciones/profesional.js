@@ -12,7 +12,7 @@ async function mostrarTotalProfesionales() {
 
 async function ObtenerProfesionales() {
     try {
-        const data = await authFetch("profesionales"); // 👈 ya devuelve JSON
+        const data = await authFetch("profesionales"); // ya devuelve JSON
         $("#todosLosProfesionales").empty(); // Limpiar la tabla antes de mostrar los datos
         $.each(data, function (index, profesional) {
             $("#todosLosProfesionales").append(

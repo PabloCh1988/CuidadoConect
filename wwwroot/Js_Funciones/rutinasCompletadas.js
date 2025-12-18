@@ -9,76 +9,77 @@ function formatearFechaHora(fechaHora) {
     return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
 }
 
+async function comboResidentes() {
+    const residentes = await authFetch("residentes");
 
-async function ObtenerHistorial(filtros = {}) {
-    try {
-        console.log("Filtros enviados:", filtros);
+    const comboSelectBuscar = document.querySelector("#residenteSelect");
+    comboSelectBuscar.innerHTML = "";
 
-        // Construir body dinámicamente solo con filtros definidos
-        const body = {};
-        if (filtros.residenteId) body.residenteId = filtros.residenteId;
-        if (filtros.fechaDesde) body.filtroFechaDesde = filtros.fechaDesde;
-        if (filtros.fechaHasta) body.filtroFechaHasta = filtros.fechaHasta;
+    let opcionesBuscar = `<option value="0">[Todos los Residentes]</option>`;
+    residentes.forEach(res => {
+        opcionesBuscar += `<option value="${res.residenteId}">${res.nombreResidente}</option>`;
+    });
 
-        const data = await authFetch("historialrutinas/historialcompletado", {
-            method: "POST",
-            body: JSON.stringify(body)
-        });
+    comboSelectBuscar.innerHTML = opcionesBuscar;
+    comboSelectBuscar.onchange = ObtenerHistorial;
 
-        const tbody = $("#tablaHistorial tbody");
-        tbody.empty();
+    ObtenerHistorial();
+}
 
-        if (!data || data.length === 0) {
-            tbody.append(`
-        <tr>
-          <td colspan="4" class="text-center">
-            No hay historial de rutinas
-          </td>
-        </tr>
-      `);
-            return;
-        }
-
-        data.forEach(item => {
-            tbody.append(`
-        <tr>
-          <td>${item.descripcionRutina}</td>
-          <td>${item.nombreEmpleado}</td>
-          <td>${formatearFechaHora(item.fechaHora)}</td>
-        </tr>
-      `);
-        });
-
-    } catch (err) {
-        console.error("Error en ObtenerHistorial:", err);
-        Swal.fire({
-            icon: "error",
-            title: "Error al obtener historial",
-            text: err.message,
-            background: "#1295c9",
-            color: "#f1f1f1",
-        });
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("FechaDesde").onchange = function () {
+        ObtenerHistorial();
     }
-}
+});
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("FechaHasta").onchange = function () {
+        ObtenerHistorial();
+    }
+});
 
+async function ObtenerHistorial() {
+    let fechaDesde = document.getElementById("FechaDesde").value || null;
+    let fechaHasta = document.getElementById("FechaHasta").value || null;
+    const select = document.getElementById("residenteSelect").value;
 
-// Función para obtener los filtros desde los inputs
-function obtenerFiltros() {
-    return {
-        residenteId: $("#residenteSelect").val() || null,
-        fechaDesde: $("#FechaDesde").val() || null,
-        fechaHasta: $("#FechaHasta").val() || null
+    const filtro = {
+        FiltroFechaDesde: fechaDesde,
+        FiltroFechaHasta: fechaHasta
     };
+
+    if (select !== "0") {
+        filtro.ResidenteId = parseInt(select);
+    }
+
+    const data = await authFetch("historialrutinas/historialcompletado", {
+        method: "POST",
+        body: JSON.stringify(filtro)
+    });
+
+    const tbody = $("#tablaHistorial tbody");
+    tbody.empty();
+
+    if (!data || data.length === 0) {
+        tbody.append(`
+            <tr>
+                <td colspan="4" class="text-center">
+                    No hay historial de rutinas
+                </td>
+            </tr>
+        `);
+        return;
+    }
+
+    data.forEach(item => {
+        tbody.append(`
+            <tr>
+                <td>${item.descripcionRutina}</td>
+                <td>${item.nombreEmpleado}</td>
+                <td>${formatearFechaHora(item.fechaHora)}</td>
+            </tr>
+        `);
+    });
 }
 
-// Cuando cambie algún filtro, recargar historial
-$("#residenteSelect, #FechaDesde, #FechaHasta").on("change", () => {
-    const filtros = obtenerFiltros();
-    ObtenerHistorial(filtros);
-});
 
-// Inicialización al cargar la página
-$(document).ready(() => {
-    // cargarResidentes();
-    ObtenerHistorial(); // carga inicial sin filtros
-});
+comboResidentes();

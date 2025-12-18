@@ -1,4 +1,4 @@
-$(document).on("change", "#residenteSelect", function () {
+$(document).on("change", "#residenteSelect2", function () {
   const residenteId = this.value;
 
   if (residenteId) {
@@ -85,15 +85,16 @@ async function obtenerHistoriaClinicaPorResidente(residenteId) {
 
     tbody.empty();
     contenedorCards.empty();
-    mensaje.addClass("d-none");
+    mensaje.addClass("d-none"); // oculto el mensaje inicialmente
 
+    // Si no hay datos, muestro mensaje y oculto tabla y cards
     if (!data || data.length === 0) {
       tabla.addClass("d-none");
       contenedorCards.addClass("d-none");
       mensaje.removeClass("d-none");
       return;
     }
-
+    // Si hay datos, muestro tabla y cards
     tabla.removeClass("d-none");
     contenedorCards.removeClass("d-none");
 

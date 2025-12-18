@@ -10,29 +10,6 @@ async function mostrarTotalObrasSociales() {
   }
 }
 
-// async function ObtenerObrasSociales() {
-//     try {
-//         const data = await authFetch("obrasociales");
-//         $("#todosLasObras").empty(); // Limpiar la tabla antes de mostrar los datos
-//         $.each(data, function (index, obraSocial) {
-//             $("#todosLasObras").append(
-//                 "<tr>" +
-//                 "<td>" + obraSocial.nombre + "</td>" +
-//                 "<td>" + obraSocial.plan + "</td>" +
-//                 "<td><button class='btn btn-outline-danger fa fa-times' title='Editar' onclick='EditarObraSocial(" + obraSocial.id + ")'></button></td>" +
-//                 "<td><button class='btn btn-outline-danger fa fa-times' title='Eliminar' onclick='EliminarObraSocial(" + obraSocial.id + ")'></button></td>" +
-//                 "</tr>"
-//             );
-//         });
-//     } catch (err) {
-//         console.error("Error en ObtenerObrasSociales:", err);
-//         Swal.fire({
-//             icon: 'error',
-//             title: 'Error al obtener obras sociales',
-//             text: err.message,
-//         });
-//     }
-// }
 async function ObtenerObrasSociales() {
     try {
         const data = await authFetch("obrasociales");
@@ -141,6 +118,7 @@ async function guardarEdicionObraSocial(id) {
         Swal.fire("Error", "No se pudo editar la obra social", "error");
     }
 }
+
 // BOTON CANCELAR EDICION
 function cancelarEdicionObraSocial(id, nombreOriginal, planOriginal) {
     document.getElementById(`nombre-${id}`).innerText = nombreOriginal;
@@ -185,10 +163,6 @@ async function CrearObraSocial() {
         console.error("Error al crear la Obra Social:", err);
         mensajesError('#errorObraSocial', null, `Error al crear: ${err.message}`);
     }
-}
-
-function EditarObraSocial(){
-
 }
 
 function VaciarFormularioObraSocial() {

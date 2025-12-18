@@ -1,29 +1,46 @@
-
 async function ObtenerResidentesDrop() {
     try {
-        const data = await authFetch("residentes"); // endpoint correcto
+        const data = await authFetch("residentes");
 
-        // Lista de selects a llenar
-        const selects = [
-            document.getElementById("residenteSelect"),
-            document.getElementById("residenteSelectRutina"),
-            document.getElementById("residenteSelect2"),
-            // document.getElementById("rutinaSelect2")
-        ].filter(s => s !== null); // filtra los que existen
+        // Configuración por select
+        const configs = [
+            {
+                id: "residenteSelect",
+                incluirTodos: true,
+                textoDefault: "Todos los residentes"
+            },
+            {
+                id: "residenteSelectRutina",
+                incluirTodos: false,
+                textoDefault: "Seleccione un residente"
+            },
+            {
+                id: "residenteSelect2",
+                incluirTodos: false,
+                textoDefault: "Seleccione un residente"
+            }
+        ];
 
-        selects.forEach(select => {
-            // Vaciar el select primero
+        configs.forEach(cfg => {
+            const select = document.getElementById(cfg.id);
+            if (!select) return;
+
             select.innerHTML = "";
 
             // Opción por defecto
             const optionDefault = document.createElement("option");
             optionDefault.value = "";
-            optionDefault.disabled = true;
+            optionDefault.textContent = cfg.textoDefault;
             optionDefault.selected = true;
-            optionDefault.textContent = "Seleccione un residente";
+
+            //  solo deshabilitamos cuando NO hay "Todos"
+            if (!cfg.incluirTodos) {
+                optionDefault.disabled = true;
+            }
+
             select.appendChild(optionDefault);
 
-            // Agregar las opciones
+            // Opciones reales
             data.forEach(residente => {
                 const option = document.createElement("option");
                 option.value = residente.residenteId;
@@ -36,8 +53,3 @@ async function ObtenerResidentesDrop() {
         console.error("Error al cargar residentes:", err);
     }
 }
-
-// Llamar la función al cargar la página
-document.addEventListener("DOMContentLoaded", () => {
-    ObtenerResidentesDrop();
-});

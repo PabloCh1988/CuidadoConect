@@ -63,12 +63,8 @@ async function obtenerCitasProfesional() {
 
 async function actualizarEstadoCita(id, nuevoEstado) {
   try {
-    // Ajusta el body según lo que espere tu API; la convención común es { estado: 'Confirmada' }
     await authFetch(`citasmedicas/${id}/actualizar-estado`, {
       method: "PUT",
-      // headers: {
-      //   "Content-Type": "application/json"
-      // },
       body: JSON.stringify(nuevoEstado)
     });
 
@@ -88,6 +84,7 @@ async function actualizarEstadoCita(id, nuevoEstado) {
   }
 }
 
+// funcion para darle colores a los estados de las citas
 function getBadgeClass(estado) {
   switch (estado) {
     case "Pendiente":

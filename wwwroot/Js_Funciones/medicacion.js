@@ -1,5 +1,5 @@
 
-$(document).on("change", "#residenteSelect", function () {
+$(document).on("change", "#residenteSelect2", function () {
   const residenteId = this.value;
 
   $("#mensajeSinMedicacion").addClass("d-none");
@@ -36,12 +36,12 @@ async function obtenerMedicamentosPorResidente(residenteId) {
     });
 
     if (!medicamentosFiltrados.length) {
-      contenedorTabla.addClass("d-none");
+      // contenedorTabla.addClass("d-none");
       mensaje.removeClass("d-none");
       return;
     }
 
-    contenedorTabla.removeClass("d-none");
+    // contenedorTabla.removeClass("d-none");
 
     $.each(medicamentosFiltrados, function (_, medicamento) {
       tbody.append(`

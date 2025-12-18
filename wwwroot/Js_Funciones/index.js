@@ -12,7 +12,6 @@ function cargarFechaHoy() {
 
 async function cargarRutinasHoy() {
     const data = await authFetch("detallesrutinas/rutinasHoy");
-    // const data = await res.json();
 
     const ul = document.getElementById("lista-rutinas-hoy");
     ul.innerHTML = "";
@@ -185,7 +184,7 @@ async function ObtenerPersonasDeshabilitadas() {
                     <div class="card bg-light border-secondary p-3">
                         <h5 class="card-title text-muted">${persona.nombreyApellido}</h5>
                         <p><strong>DNI:</strong> ${persona.dni}</p>
-                        <p><strong>DNI:</strong> ${formatearFecha(persona.fechaDeshabilitado)}</p>
+                        <p><strong>Deshabilitado el día:</strong> ${formatearFecha(persona.fechaDeshabilitado)}</p>
                         <button class="btn btn-outline-success fa fa-undo"
                             onclick="HabilitarPersona(${persona.id})">
                         </button>
@@ -329,7 +328,7 @@ async function guardarPersona() {
         return;
     }
 
-    if (crearPersona.dni.length <= 6) {
+    if (crearPersona.dni.length <= 6 || crearPersona.dni.length >= 9) {
         mensajesError('#errorCrear', null, "El DNI debe tener más de 6 caracteres");
         return;
     }

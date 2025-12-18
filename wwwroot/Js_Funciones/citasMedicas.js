@@ -1,3 +1,4 @@
+// ONCHANGE PARA VER CITAS MEDICAS
 $(document).on("change", "#residenteSelect2", function () {
   const residenteId = this.value;
   if (residenteId) {
@@ -35,7 +36,6 @@ async function AgendarCitaMedica() {
     Swal.fire({
       icon: "success",
       title: "Cita médica agendada correctamente",
-
       showConfirmButton: false,
       timer: 1500
     });
@@ -74,7 +74,7 @@ function getBadgeClass(estado) {
       return "<button type='button' class='btn btn-outline-light text-dark btn-sm' disabled>Desconocido</button>";
   }
 }
-
+// FUNCION PARA OBTENER CITAS MEDICAS POR RESIDENTE
 async function obtenerCitasPorResidente(residenteId) {
   try {
     console.log("Llamando API con residenteId:", residenteId);
@@ -93,7 +93,7 @@ async function obtenerCitasPorResidente(residenteId) {
 
     // Generar contenido dinámico
     data.forEach((citas) => {
-      const badgeClass = getBadgeClass(citas.estado); // ← Aquí aplicamos tu función
+      const badgeClass = getBadgeClass(citas.estado); // llamo a la funcion para darle colores segun el estado
 
       // Tabla
       $("#citasPorResidente").append(`

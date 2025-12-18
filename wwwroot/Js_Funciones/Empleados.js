@@ -1,3 +1,4 @@
+// FUNCION PARA MOSTRAR TOTAL DE EMPLEADOS EN ESCRITORIO
 async function mostrarTotalEmpleados() {
     try {
         const emple = await authFetch(`empleados`);
@@ -14,7 +15,6 @@ async function ObtenerEmpleados() {
     try {
         const data = await authFetch("empleados");
 
-        // Limpio ambas vistas
         $("#todosLosEmpleados").empty();
         $("#cardsContainerEmpleados").empty();
 
@@ -97,12 +97,15 @@ async function CrearEmpleado() {
         document.getElementById("turno").value = "";
         document.getElementById("tareasAsignadas").value = "";
         document.getElementById("EmailEmpleado").value = "";
-        console.log("Empleado guardado:", data);
+        
+        // ===== ACTUALIZACIÓN VISUAL DE LA TABLA =====
 
-        // 🔥 Actualizar la tabla: quitar el select y mostrar "Empleado"
+        // Busca la fila de la tabla donde el primer <td> coincida con personaId
         const fila = $(`#todasLasPersonas tr`).filter(function () {
             return $(this).find("td:first").text() == personaId;
         });
+        // Reemplaza el contenido de la columna 7 (índice 6)
+        // Normalmente ahí estaba el <select>, ahora muestra "Empleado"
         fila.find("td:eq(6)").html("Empleado"); // Columna del select
 
         Swal.fire({
@@ -168,12 +171,77 @@ function EditarTurno(id) {
             alert("Error al obtener el empleado: " + error.message);
         });
 }
+// async function EditarTurnoSI() {
+//     const empleadoId = $('#EmpleadoId').val();
+//     const turno = document.getElementById("turnoEditar").value;
+//     const tareasAsignadas = document.getElementById("tareasAsignadasEditar").value;
+//     const personaId = parseInt(document.getElementById("PersonaId").value);
+//     const emailempleado = document.getElementById("EmailEditar");
+
+//     if (isNaN(empleadoId)) {
+//         mensajesError('#errorCrear', null, "Debes seleccionar un empleado válido");
+//         return;
+//     }
+
+//     const empleado = {
+//         id: empleadoId,
+//         turno: turno,
+//         tareasAsignadas: tareasAsignadas,
+//         personaId: personaId,
+//         email: emailempleado.value, // tomar el value
+//     };
+
+//     try {
+//         await authFetch(`empleados/${empleadoId}`, {
+//             method: "PUT",
+//             body: JSON.stringify(empleado)
+//         });
+
+//         $('#modalEditarTurno').modal('hide');
+//         ObtenerEmpleados();
+
+//         Swal.fire({
+//             icon: "success",
+//             title: "Empleado editado correctamente",
+//             showConfirmButton: false,
+//             timer: 1500
+//         });
+//     } catch (error) {
+//         console.error("Error al editar el empleado:", error);
+
+//         if (error.status === 401 || error.status === 403) {
+//             console.error("Error al obtener citas del profesional:", err);
+//             Swal.fire({
+//                 title: "Acceso Denegado",
+//                 text: "No tienes permisos para realizar esta acción.",
+//                 icon: "error",
+//                 confirmButtonText: "Aceptar"
+//             }).then(() => {
+//                 // Redirección al index.html después de cerrar el Swal
+//                 window.location.href = "index.html";
+//             });
+//         } else if (error.status === 400) {
+//             Swal.fire({
+//                 icon: "error",
+//                 title: "Error",
+//                 text: "Datos inválidos. Revisa los campos e intenta nuevamente.",
+//             });
+//         } else {
+//             Swal.fire({
+//                 icon: "error",
+//                 title: "Error",
+//                 text: error.message || "Ocurrió un error inesperado",
+//             });
+//         }
+//     }
+// }
+
 async function EditarTurnoSI() {
-    const empleadoId = $('#EmpleadoId').val();
+    const empleadoId = parseInt($('#EmpleadoId').val());
     const turno = document.getElementById("turnoEditar").value;
     const tareasAsignadas = document.getElementById("tareasAsignadasEditar").value;
     const personaId = parseInt(document.getElementById("PersonaId").value);
-    const emailempleado = document.getElementById("EmailEditar");
+    const emailempleado = document.getElementById("EmailEditar").value;
 
     if (isNaN(empleadoId)) {
         mensajesError('#errorCrear', null, "Debes seleccionar un empleado válido");
@@ -182,10 +250,10 @@ async function EditarTurnoSI() {
 
     const empleado = {
         id: empleadoId,
-        turno: turno,
-        tareasAsignadas: tareasAsignadas,
-        personaId: personaId,
-        email: emailempleado.value, // tomar el value
+        turno,
+        tareasAsignadas,
+        personaId,
+        email: emailempleado
     };
 
     try {
@@ -203,31 +271,32 @@ async function EditarTurnoSI() {
             showConfirmButton: false,
             timer: 1500
         });
+
     } catch (error) {
         console.error("Error al editar el empleado:", error);
 
         if (error.status === 401 || error.status === 403) {
-            console.error("Error al obtener citas del profesional:", err);
             Swal.fire({
                 title: "Acceso Denegado",
                 text: "No tienes permisos para realizar esta acción.",
                 icon: "error",
                 confirmButtonText: "Aceptar"
             }).then(() => {
-                // Redirección al index.html después de cerrar el Swal
                 window.location.href = "index.html";
             });
+
         } else if (error.status === 400) {
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: "Datos inválidos. Revisa los campos e intenta nuevamente.",
+                text: "Datos inválidos. Revisa los campos."
             });
+
         } else {
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: error.message || "Ocurrió un error inesperado",
+                text: error.message || "Ocurrió un error inesperado"
             });
         }
     }

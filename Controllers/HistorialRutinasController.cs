@@ -139,20 +139,15 @@ namespace CuidadoConect.Controllers
                 .Include(h => h.Empleado)
                     .ThenInclude(e => e.Persona)
                 .Where(h =>
-                    h.FechaHora.Date <= hoy &&
+    h.FechaHora.Date <= hoy &&
+    (!filtro.FiltroFechaDesde.HasValue || h.FechaHora.Date >= filtro.FiltroFechaDesde.Value.Date) &&
+    (!filtro.FiltroFechaHasta.HasValue || h.FechaHora.Date <= filtro.FiltroFechaHasta.Value.Date) &&
+    (!filtro.ResidenteId.HasValue || h.DetalleRutina.ResidenteId == filtro.ResidenteId.Value) &&
+    h.DetalleRutina.Residente != null &&
+    h.DetalleRutina.Residente.Persona != null &&
+    h.Completado == true
+)
 
-                    // FILTRO OPCIONAL POR RESIDENTE
-                    (!filtro.ResidenteId.HasValue ||
-                     h.DetalleRutina.ResidenteId == filtro.ResidenteId.Value) &&
-
-                    // FILTRO OPCIONAL POR FECHA DESDE
-                    (!filtro.FiltroFechaDesde.HasValue ||
-                     h.FechaHora.Date >= filtro.FiltroFechaDesde.Value.Date) &&
-
-                    // FILTRO OPCIONAL POR FECHA HASTA
-                    (!filtro.FiltroFechaHasta.HasValue ||
-                     h.FechaHora.Date <= filtro.FiltroFechaHasta.Value.Date)
-                )
                 .OrderByDescending(h => h.FechaHora)
                 .Select(h => new RutinasCompletadasDTO
                 {

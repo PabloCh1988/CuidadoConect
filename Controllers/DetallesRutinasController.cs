@@ -211,7 +211,7 @@ namespace CuidadoConect.Controllers
                                && h.FechaHora.Date == hoy
                                && h.Completado)
                 })
-                .Where(x => !x.Completado) // ← SOLO las pendientes
+                .Where(x => !x.Completado) // SOLO las pendientes
                 .OrderBy(x => x.ResidenteNombre)
                 .ThenBy(x => x.Hora)
                 .ToList();
@@ -235,8 +235,8 @@ namespace CuidadoConect.Controllers
             dia = dia.ToLower();
 
             var hoy = DateTime.Today;
-            var inicioSemana = hoy.AddDays(-(int)hoy.DayOfWeek + (int)DayOfWeek.Monday);
-            var finSemana = inicioSemana.AddDays(6);
+            var inicioSemana = hoy.AddDays(-(int)hoy.DayOfWeek + (int)DayOfWeek.Monday); // lunes de esta semana
+            var finSemana = inicioSemana.AddDays(6); // domingo de esta semana
 
             var detalles = await _context.DetalleRutina
                 .Include(d => d.Residente)

@@ -29,7 +29,7 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Empleado>>> GetEmpleado()
         {
-
+            // MUESTRO SOLO LOS EMPLEADOS CUYAS PERSONAS NO ESTÁN ELIMINADAS
             var empleados = await _context.Empleado
             .Include(e => e.Persona)
             .Where(e => e.Persona != null && !e.Persona.Eliminada)
@@ -91,7 +91,7 @@ namespace CuidadoConect.Controllers
         {
             _context.Empleado.Add(empleado);
 
-            // 🔹 Buscar la persona y asignar rol
+            // Buscar la persona y asignar rol
             var persona = await _context.Persona.FindAsync(empleado.PersonaId);
             if (persona != null)
             {

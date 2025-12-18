@@ -25,6 +25,7 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Persona>>> GetPersona()
         {
+            // MUESTRA LAS PERSONAS HABILITADAS
             var personas = await _context.Persona.OrderBy(p => p.NombreyApellido)
             .Where(p => !p.Eliminada).ToListAsync();
             return Ok(personas);

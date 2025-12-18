@@ -65,7 +65,7 @@ function activarEdicion(rutinaId, descripcionActual) {
 }
 
 $('#ModalAsignarRutinaAResidente').on('shown.bs.modal', function () {
-    ObtenerRutinasDrop();
+  ObtenerRutinasDrop();
 });
 
 
@@ -386,10 +386,10 @@ async function ObtenerRutinasPorResidente(residenteId) {
 }
 
 async function cargarVistaRutinas() {
-    const html = await fetch("views/buscarPorRutinas.html").then(r => r.text());
-    document.getElementById("app").innerHTML = html;
+  const html = await fetch("views/buscarPorRutinas.html").then(r => r.text());
+  document.getElementById("app").innerHTML = html;
 
-    ObtenerRutinasDrop(); // ACÁ, recién ahora
+  ObtenerRutinasDrop(); // ACÁ, recién ahora
 }
 
 
@@ -434,29 +434,20 @@ async function ObtenerResidentesPorRutina(rutinaId, dia) {
     Swal.fire("Error al obtener residentes", err.message, "error");
   }
 
-  $(document).on("click", "#btnBuscarRutina", function () {
+  
+
+}
+
+$(document).on("click", "#btnBuscarRutina", function () {
     const rutinaId = $("#rutinaSelect2").val();
     const dia = $("#diaSelect2").val();
 
     if (!rutinaId || !dia) {
-        Swal.fire("Faltan datos", "Seleccione una rutina y un día", "warning");
-        return;
+      Swal.fire("Faltan datos", "Seleccione una rutina y un día", "warning");
+      return;
     }
 
     ObtenerResidentesPorRutina(rutinaId, dia);
-});
+  });
 
-}
-
-// document.getElementById("btnBuscarRutina").addEventListener("click", () => {
-//   const rutinaId = document.getElementById("rutinaSelect2").value;
-//   const dia = document.getElementById("diaSelect2").value;
-
-//   if (!rutinaId || !dia) {
-//     Swal.fire("Faltan datos", "Seleccione una rutina y un día", "warning");
-//     return;
-//   }
-
-//   ObtenerResidentesPorRutina(rutinaId, dia);
-// });
 

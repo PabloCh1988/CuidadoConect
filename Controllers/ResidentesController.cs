@@ -30,6 +30,7 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Residente>>> GetResidente()
         {
+            // MUESTRO SOLO LOS RESIDENTES CUYAS PERSONAS NO ESTÁN ELIMINADAS
             var residentes = await _context.Residente
             .Include(r => r.Persona)
             .Include(r => r.ObraSocial)
@@ -64,6 +65,7 @@ namespace CuidadoConect.Controllers
         [HttpGet("deshabilitados")]
         public async Task<ActionResult<IEnumerable<ResidenteDto>>> GetResidentesDeshabilitados()
         {
+            // MUESTRO SOLO LOS RESIDENTES CUYAS PERSONAS ESTÁN ELIMINADAS
             var residentes = await _context.Residente
                 .Include(r => r.Persona)
                 .Include(r => r.ObraSocial)
@@ -219,7 +221,7 @@ namespace CuidadoConect.Controllers
             if (emailExiste)
                 return BadRequest("El email del familiar ya está en uso por otro residente.");
 
-            // ✔️ Actualizar SOLO los campos editables
+            // Actualizar SOLO los campos editables
             residenteDb.FechaIngreso = residente.FechaIngreso;
             residenteDb.EmailFamiliar = residente.EmailFamiliar;
             residenteDb.Tutor = residente.Tutor;
@@ -283,8 +285,8 @@ namespace CuidadoConect.Controllers
 
             using var ms = new MemoryStream();
             await foto.CopyToAsync(ms);
-            var bytes = ms.ToArray();
-            var base64 = Convert.ToBase64String(bytes);
+            var bytes = ms.ToArray(); // CONVIERTE LA IMAGEN EN BYTES
+            var base64 = Convert.ToBase64String(bytes); // CONVIERTE LOS BYTES A binario BASE64
 
             // Detectar tipo MIME (opcional)
             var mimeType = foto.ContentType; // ej: "image/jpeg"

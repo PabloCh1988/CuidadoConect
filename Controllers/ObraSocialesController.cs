@@ -93,7 +93,7 @@ namespace CuidadoConect.Controllers
                 return NotFound();
             }
 
-            // Antes de eliminar la obra social
+            // Antes de eliminar la obra social, desvincularla de los residentes que la usan
             var residentes = await _context.Residente.Where(r => r.ObraSocialId == id).ToListAsync();
             foreach (var r in residentes)
             {

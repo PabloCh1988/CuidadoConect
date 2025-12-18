@@ -181,8 +181,8 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        await _signInManager.SignOutAsync(); // 👈 elimina la cookie
-        return Ok(new { mensaje = "Sesión cerrada correctamente" }); // 👈 devuelve JSON válido
+        await _signInManager.SignOutAsync(); //elimina la cookie
+        return Ok(new { mensaje = "Sesión cerrada correctamente" }); // devuelve JSON válido
     }
 
 }

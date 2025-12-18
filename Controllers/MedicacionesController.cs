@@ -24,6 +24,7 @@ namespace CuidadoConect.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Medicacion>>> GetMedicaciones([FromQuery] int? residenteId)
         {
+             // Construyo la consulta base (no se ejecuta aún; IQueryable permite agregar filtros antes de ejecutar)
             IQueryable<Medicacion> query = _context.Medicacion;
 
             if (residenteId.HasValue)
